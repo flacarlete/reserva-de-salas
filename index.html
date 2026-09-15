@@ -25,12 +25,12 @@
 
   <main class="p-6 max-w-6xl w-full mx-auto flex-1 space-y-6">
 
-    <!-- TABELA DE HORÁRIOS FIXOS (EXIBIDA LOGO NO TOPO) -->
+    <!-- TABELA DE HORÁRIOS FIXOS -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-3">
         <div>
           <h2 class="text-sm font-bold text-[#1b4332]">📋 Grade de Horários Fixos por Sala (7º ao 9º Ano)</h2>
-          <p class="text-xs text-gray-500">Salas sem horário específico indicado ocupam o período vespertino completo[cite: 6]</p>
+          <p class="text-xs text-gray-500">Salas sem horário específico indicado ocupam o período vespertino completo</p>
         </div>
         <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black">🖨️ Imprimir Grade</button>
       </div>
@@ -55,7 +55,7 @@
       </div>
     </div>
 
-    <!-- FORMULÁRIO DE NOVA RESERVA ABAIXO DA GRADE -->
+    <!-- FORMULÁRIO DE NOVA RESERVA -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <h2 class="text-sm font-bold text-[#1b4332] mb-3 uppercase tracking-wider">➕ Realizar Nova Reserva / Atividade Extra em Sala</h2>
       
@@ -144,7 +144,7 @@
       console.warn("Erro ao iniciar Firebase:", err);
     }
 
-    // MAPA DE SALAS FIXAS (Conforme planilha oficial, sem quadras, horários corretos)[cite: 6]
+    // MAPA DE SALAS FIXAS[cite: 6]
     const DADOS_SALAS_FIXAS = [
       { bloco: 1, andar: 1, serie: "7ºB", sala: "3", seg: "AEE LINGUAGUENS", ter: "AEE", qua: "AEE LINGUAGUENS", qui: "AEE CIÊNCIAS", sex: "AEE CIÊNCIAS" },
       { bloco: 1, andar: 1, serie: "7ºD", sala: "4", seg: "AEE CIÊNCIAS", ter: "AEE", qua: "AEE CIÊNCIAS", qui: "AEE LINGUAGENS E HUMANIDADES", sex: "AEE" },
@@ -179,6 +179,9 @@
 
     let reservasSalasList = [];
 
+    // DESENHA A TABELA IMEDIATAMENTE AO CARREGAR O SCRIPT
+    renderizarTabelaSalas();
+
     window.addEventListener('DOMContentLoaded', () => {
       document.getElementById('dataAtualSistema').textContent = new Date().toLocaleDateString('pt-BR');
       document.getElementById('reservaData').value = new Date().toISOString().split('T')[0];
@@ -189,12 +192,10 @@
       if (usaNuvem) {
         db.ref('escola_arena_salas/reservas').on('value', (snapshot) => {
           reservasSalasList = snapshot.val() || [];
-          renderizarTabelaSalas();
           renderizarReservasExtras();
         });
       } else {
         reservasSalasList = JSON.parse(localStorage.getItem('escola_reservas_salas') || '[]');
-        renderizarTabelaSalas();
         renderizarReservasExtras();
       }
     }
