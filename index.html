@@ -50,7 +50,9 @@
               <th class="p-2 border">6º Feira</th>
             </tr>
           </thead>
-          <tbody id="tabelaSalasFiskTbody"></tbody>
+          <tbody id="corpoTabelaSalas">
+            <!-- As linhas serão inseridas aqui automaticamente -->
+          </tbody>
         </table>
       </div>
     </div>
@@ -179,12 +181,12 @@
 
     let reservasSalasList = [];
 
-    // DESENHA A TABELA IMEDIATAMENTE AO CARREGAR O SCRIPT
-    renderizarTabelaSalas();
-
+    // EXECUTA IMEDIATAMENTE AO CARREGAR A PÁGINA
     window.addEventListener('DOMContentLoaded', () => {
       document.getElementById('dataAtualSistema').textContent = new Date().toLocaleDateString('pt-BR');
       document.getElementById('reservaData').value = new Date().toISOString().split('T')[0];
+      
+      renderizarTabelaSalas();
       carregarDados();
     });
 
@@ -225,7 +227,7 @@
     }
 
     function renderizarTabelaSalas() {
-      const tbody = document.getElementById('tabelaSalasFiskTbody');
+      const tbody = document.getElementById('corpoTabelaSalas');
       if (!tbody) return;
       tbody.innerHTML = '';
 
