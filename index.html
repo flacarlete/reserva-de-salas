@@ -25,7 +25,37 @@
 
   <main class="p-6 max-w-6xl w-full mx-auto flex-1 space-y-6">
 
-    <!-- FORMULÁRIO DE NOVA RESERVA -->
+    <!-- TABELA DE HORÁRIOS FIXOS (EXIBIDA LOGO NO TOPO) -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-3">
+        <div>
+          <h2 class="text-sm font-bold text-[#1b4332]">📋 Grade de Horários Fixos por Sala (7º ao 9º Ano)</h2>
+          <p class="text-xs text-gray-500">Salas sem horário específico indicado ocupam o período vespertino completo[cite: 6]</p>
+        </div>
+        <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black">🖨️ Imprimir Grade</button>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs border border-gray-300">
+          <thead class="bg-gray-100 font-semibold text-gray-700">
+            <tr>
+              <th class="p-2 border text-center">Bloco</th>
+              <th class="p-2 border text-center">Andar</th>
+              <th class="p-2 border text-center">Série</th>
+              <th class="p-2 border text-center">Nº Sala</th>
+              <th class="p-2 border">2º Feira</th>
+              <th class="p-2 border">3º Feira</th>
+              <th class="p-2 border">4º Feira</th>
+              <th class="p-2 border">5º Feira</th>
+              <th class="p-2 border">6º Feira</th>
+            </tr>
+          </thead>
+          <tbody id="tabelaSalasFiskTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- FORMULÁRIO DE NOVA RESERVA ABAIXO DA GRADE -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <h2 class="text-sm font-bold text-[#1b4332] mb-3 uppercase tracking-wider">➕ Realizar Nova Reserva / Atividade Extra em Sala</h2>
       
@@ -85,36 +115,6 @@
       <div class="mt-6 pt-4 border-t">
         <h3 class="text-xs font-bold text-gray-700 mb-3 uppercase">📅 Reservas Extras / Avulsas Agendadas na Nuvem</h3>
         <div id="listaReservasExtras" class="space-y-2"></div>
-      </div>
-    </div>
-
-    <!-- TABELA DE HORÁRIOS FIXOS -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-      <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-3">
-        <div>
-          <h2 class="text-sm font-bold text-[#1b4332]">📋 Grade de Horários Fixos por Sala (7º ao 9º Ano)</h2>
-          <p class="text-xs text-gray-500">Salas sem horário específico indicado ocupam o período vespertino completo[cite: 6]</p>
-        </div>
-        <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black">🖨️ Imprimir Grade</button>
-      </div>
-
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs border border-gray-300">
-          <thead class="bg-gray-100 font-semibold text-gray-700">
-            <tr>
-              <th class="p-2 border text-center">Bloco</th>
-              <th class="p-2 border text-center">Andar</th>
-              <th class="p-2 border text-center">Série</th>
-              <th class="p-2 border text-center">Nº Sala</th>
-              <th class="p-2 border">2º Feira</th>
-              <th class="p-2 border">3º Feira</th>
-              <th class="p-2 border">4º Feira</th>
-              <th class="p-2 border">5º Feira</th>
-              <th class="p-2 border">6º Feira</th>
-            </tr>
-          </thead>
-          <tbody id="tabelaSalasFiskTbody"></tbody>
-        </table>
       </div>
     </div>
 
