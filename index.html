@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reserva e Gestão de Salas — Colégio Arena</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex flex-col">
+
+  <header class="bg-[#1b4332] text-white px-6 py-4 shadow flex justify-between items-center">
+    <div>
+      <h1 class="text-lg font-bold flex items-center gap-2">
+        <span>🏫</span> Colégio Arena — Gestão e Reserva de Salas
+      </h1>
+      <p class="text-xs text-emerald-200 mt-0.5">Painel de Consulta de Horários Fixos e Agendamentos</p>
+    </div>
+    <div class="text-right text-xs text-emerald-100">
+      <span id="dataAtualSistema"></span>
+    </div>
+  </header>
+
+  <main class="p-6 max-w-6xl w-full mx-auto flex-1 space-y-6">
+
+    <!-- FORMULÁRIO DE NOVA RESERVA -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <h2 class="text-sm font-bold text-[#1b4332] mb-3 uppercase tracking-wider">➕ Realizar Nova Reserva / Atividade Extra em Sala</h2>
+      
+      <form id="formReservaSala" onsubmit="salvarReservaSala(event)" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-gray-700 mb-1">Sala / Nº</label>
+            <select id="reservaSalaNum" class="w-full border rounded px-3 py-2 text-xs bg-white font-semibold text-[#1b4332]" required>
+              <option value="">Selecione a sala...</option>
+              <option value="Sala 3 (AEE)">Sala 3 (AEE)</option>
+              <option value="Sala 4 (AEE)">Sala 4 (AEE)</option>
+              <option value="Sala 7 (AEE)">Sala 7 (AEE)</option>
+              <option value="Sala 8 (AEE)">Sala 8 (AEE)</option>
+              <option value="Sala 9 (Maker/Robótica)">Sala 9 (Maker/Robótica)</option>
+              <option value="Sala 10 (AEE)">Sala 10 (AEE)</option>
+              <option value="Sala 11">Sala 11</option>
+              <option value="Sala 12">Sala 12</option>
+              <option value="Sala 13">Sala 13</option>
+              <option value="Sala 14 (Dança/Meditação)">Sala 14 (Dança/Meditação)</option>
+              <option value="Sala 15">Sala 15</option>
+              <option value="Sala 16 (Monitoria)">Sala 16 (Monitoria)</option>
+              <option value="Sala 17 (Teatro)">Sala 17 (Teatro)</option>
+              <option value="Sala 18 (Tatame)">Sala 18 (Tatame)</option>
+              <option value="Sala 19">Sala 19</option>
+              <option value="Sala 20 (Sala Estudos)">Sala 20 (Sala Estudos)</option>
+              <option value="Sala 21 (Sala Estudos)">Sala 21 (Sala Estudos)</option>
+              <option value="Sala 22">Sala 22</option>
+              <option value="Sala 23">Sala 23</option>
+              <option value="Salas 24 a 27 (Arena)">Salas 24 a 27 (Arena)</option>
+              <option value="Salas 28 a 31 (Cambridge)">Salas 28 a 31 (Cambridge)</option>
+              <option value="Sala 32/33 (Pl. Redação)">Sala 32/33 (Pl. Redação)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-700 mb-1">Data da Reserva</label>
+            <input type="date" id="reservaData" class="w-full border rounded px-3 py-2 text-xs" required />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-700 mb-1">Horário</label>
+            <input type="text" id="reservaHorario" placeholder="Ex: 15h00 – 15h45" class="w-full border rounded px-3 py-2 text-xs" required />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-700 mb-1">Responsável / Solicitante</label>
+            <input type="text" id="reservaResponsavel" placeholder="Seu nome..." class="w-full border rounded px-3 py-2 text-xs" required />
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-700 mb-1">Atividade / Motivo</label>
+          <input type="text" id="reservaAtividade" placeholder="Descreva a atividade..." class="w-full border rounded px-3 py-2 text-xs" required />
+        </div>
+        <div class="flex justify-end">
+          <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-xs font-semibold hover:bg-emerald-900 transition">Confirmar Reserva</button>
+        </div>
+      </form>
+
+      <!-- LISTA DE RESERVAS EXTRAS CADASTRADAS -->
+      <div class="mt-6 pt-4 border-t">
+        <h3 class="text-xs font-bold text-gray-700 mb-3 uppercase">📅 Reservas Extras / Avulsas Agendadas na Nuvem</h3>
+        <div id="listaReservasExtras" class="space-y-2"></div>
+      </div>
+    </div>
+
+    <!-- TABELA DE HORÁRIOS FIXOS -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-3">
+        <div>
+          <h2 class="text-sm font-bold text-[#1b4332]">📋 Grade de Horários Fixos por Sala (7º ao 9º Ano)</h2>
+          <p class="text-xs text-gray-500">Salas sem horário específico indicado ocupam o período vespertino completo[cite: 6]</p>
+        </div>
+        <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black">🖨️ Imprimir Grade</button>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs border border-gray-300">
+          <thead class="bg-gray-100 font-semibold text-gray-700">
+            <tr>
+              <th class="p-2 border text-center">Bloco</th>
+              <th class="p-2 border text-center">Andar</th>
+              <th class="p-2 border text-center">Série</th>
+              <th class="p-2 border text-center">Nº Sala</th>
+              <th class="p-2 border">2º Feira</th>
+              <th class="p-2 border">3º Feira</th>
+              <th class="p-2 border">4º Feira</th>
+              <th class="p-2 border">5º Feira</th>
+              <th class="p-2 border">6º Feira</th>
+            </tr>
+          </thead>
+          <tbody id="tabelaSalasFiskTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyByKHMqBOnJh19EKeRZ16auYdkXccVMUV0",
+      authDomain: "contraturno-arena.firebaseapp.com",
+      databaseURL: "https://contraturno-arena-default-rtdb.firebaseio.com",
+      projectId: "contraturno-arena",
+      storageBucket: "contraturno-arena.firebasestorage.app",
+      messagingSenderId: "852932695112",
+      appId: "1:852932695112:web:9432fb710979d30480747d",
+      measurementId: "G-M2MKTFB6EP"
+    };
+
+    let db = null;
+    let usaNuvem = false;
+    try {
+      if (firebaseConfig.apiKey) {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.database();
+        usaNuvem = true;
+      }
+    } catch(err) {
+      console.warn("Erro ao iniciar Firebase:", err);
+    }
+
+    // MAPA DE SALAS FIXAS (Conforme planilha oficial, sem quadras, horários corretos)[cite: 6]
+    const DADOS_SALAS_FIXAS = [
+      { bloco: 1, andar: 1, serie: "7ºB", sala: "3", seg: "AEE LINGUAGUENS", ter: "AEE", qua: "AEE LINGUAGUENS", qui: "AEE CIÊNCIAS", sex: "AEE CIÊNCIAS" },
+      { bloco: 1, andar: 1, serie: "7ºD", sala: "4", seg: "AEE CIÊNCIAS", ter: "AEE", qua: "AEE CIÊNCIAS", qui: "AEE LINGUAGENS E HUMANIDADES", sex: "AEE" },
+      { bloco: 1, andar: 1, serie: "7ºG", sala: "7", seg: "AEE", ter: "AEE", qua: "AEE", qui: "", sex: "PROVA" },
+      { bloco: 1, andar: 1, serie: "7ºF", sala: "8", seg: "AEE HUMANIDADES", ter: "AEE", qua: "AEE HUMANIDADES", qui: "", sex: "PROVA" },
+      { bloco: 1, andar: 1, serie: "Maker", sala: "9", seg: "ROBÓTICA 6º-9º", ter: "ROBÓTICA 6º-9º", qua: "ROBÓTICA 6º-9º", qui: "ROBÓTICA 6º-9º", sex: "ROBÓTICA 6º-9º" },
+      { bloco: 1, andar: 1, serie: "7ºE", sala: "10", seg: "AEE EXATAS", ter: "AEE", qua: "AEE EXATAS", qui: "AEE EXATAS", sex: "AEE EXATAS" },
+      { bloco: 1, andar: 2, serie: "7ºH", sala: "11", seg: "", ter: "NIV. ING.", qua: "NIV. ING.", qui: "", sex: "FISCAIS" },
+      { bloco: 1, andar: 2, serie: "7ºC", sala: "12", seg: "NIV. LP", ter: "NIV. LP", qua: "", qui: "ARENÃO LP/ING (14h15 – 15h45)", sex: "ARENÃO LP/ING (14h15 – 15h45)" },
+      { bloco: 1, andar: 2, serie: "7ºA", sala: "13", seg: "NIV. MAT", ter: "NIV. MAT", qua: "NIV. MAT", qui: "", sex: "NIV. MAT" },
+      { bloco: 1, andar: 2, serie: "Sala", sala: "14", seg: "DANÇA (16h10 – 16h55)", ter: "", qua: "DANÇA (16h10 – 16h55)", qui: "MEDITAÇÃO (14h15 – 15h45)", sex: "MEDITAÇÃO (14h15 – 15h45)" },
+      { bloco: 1, andar: 2, serie: "Sala", sala: "15", seg: "", ter: "", qua: "", qui: "", sex: "FEDERADOS" },
+      { bloco: 1, andar: 2, serie: "8ºG", sala: "16", seg: "Monitoria (14h15 – 15h45)", ter: "Monitoria (15h – 16h55)", qua: "", qui: "", sex: "PROVA/Monitoria (16h55 – 17h40)" },
+      { bloco: 1, andar: 2, serie: "Sala", sala: "17", seg: "TEATRO (16h10 – 17h40)", ter: "", qua: "TEATRO (14h15 – 17h40)", qui: "TEATRO (16h55 – 18h25)", sex: "" },
+      { bloco: 1, andar: 2, serie: "Tatame", sala: "18", seg: "JUDÔ/JIU-JUTSU (15h – 15h45 / 17h40 – 18h25)", ter: "", qua: "FUNCIONAL (16h10 – 16h55)", qui: "JUDÔ (17h40 – 18h25)", sex: "JIU-JITSU" },
+      { bloco: 1, andar: 2, serie: "8ºH", sala: "19", seg: "ED. FINANC. (14h15 – 17h40)", ter: "EAGLE (16h55 – 17h40)", qua: "ARENAMUN (16h10 – 17h40)", qui: "EAGLE (14h15 – 15h)", sex: "PROVA" },
+      { bloco: 4, andar: 1, serie: "8ºE", sala: "32", seg: "PL. RED. 7º", ter: "PL. RED. 6º", qua: "PL. RED. 9º", qui: "", sex: "PROVA" },
+      { bloco: 4, andar: 1, serie: "8ºF", sala: "33", seg: "PL. RED. 8º", ter: "", qua: "", qui: "", sex: "PROVA" },
+      { bloco: 2, andar: "T", serie: "8ºD", sala: "20", seg: "S. ESTUDOS (6º/7º)", ter: "S. ESTUDOS (6º/7º)", qua: "S. ESTUDOS (6º/7º)", qui: "PROVA", sex: "PROVA" },
+      { bloco: 2, andar: "T", serie: "8ºC", sala: "21", seg: "S. ESTUDOS (8º/9º)", ter: "S. ESTUDOS (8º/9º)", qua: "S. ESTUDOS (8º/9º)", qui: "S. ESTUDOS", sex: "PROVA" },
+      { bloco: 2, andar: "T", serie: "8ºB", sala: "22", seg: "ARENÃO Física (14h15 – 15h45)", ter: "AGRO ARENA – TURMA A (16h10 – 16h55)", qua: "", qui: "FISCAIS", sex: "PROVA" },
+      { bloco: 2, andar: "T", serie: "8ºA", sala: "23", seg: "ARENÃO Geografia (15h – 16h55)", ter: "AGRO ARENA – TURMA B (16h55 – 17h40)", qua: "", qui: "FEDERADOS", sex: "PROVA" },
+      { bloco: 1, andar: 1, serie: "9ºA", sala: "24", seg: "ARENÃO Debate (16h10 – 17h40)", ter: "", qua: "ARENÃO Mat (16h10 – 18h25)", qui: "PROVA", sex: "PROVA" },
+      { bloco: 1, andar: 1, serie: "9ºB", sala: "25", seg: "", ter: "ARENÃO Mat 6º/7º (14h15 – 15h45)", qua: "ARENÃO Biologia (14h15 – 16h55)", qui: "PROVA", sex: "PROVA" },
+      { bloco: 1, andar: 1, serie: "9ºC", sala: "26", seg: "", ter: "ARENÃO Mat 8º/9º (14h15 – 15h45)", qua: "ARENÃO Quimica (14h15 – 15h45)", qui: "PROVA", sex: "PROVA" },
+      { bloco: 1, andar: 1, serie: "9ºD", sala: "27", seg: "", ter: "", qua: "ARENÃO História (16h55 – 18h25)", qui: "PROVA", sex: "PROVA" },
+      { bloco: 2, andar: 2, serie: "9ºE", sala: "28", seg: "CAMBRIDGE", ter: "", qua: "CAMBRIDGE", qui: "PROVA", sex: "PROVA" },
+      { bloco: 2, andar: 2, serie: "9ºF", sala: "29", seg: "CAMBRIDGE", ter: "", qua: "CAMBRIDGE", qui: "PROVA", sex: "PROVA" },
+      { bloco: 2, andar: 2, serie: "9ºG", sala: "30", seg: "CAMBRIDGE", ter: "", qua: "CAMBRIDGE", qui: "PROVA", sex: "PROVA" },
+      { bloco: 2, andar: 2, serie: "9ºH", sala: "31", seg: "", ter: "", qua: "", qui: "PROVA", sex: "PROVA" }
+    ];
+
+    let reservasSalasList = [];
+
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('dataAtualSistema').textContent = new Date().toLocaleDateString('pt-BR');
+      document.getElementById('reservaData').value = new Date().toISOString().split('T')[0];
+      carregarDados();
+    });
+
+    function carregarDados() {
+      if (usaNuvem) {
+        db.ref('escola_arena_salas/reservas').on('value', (snapshot) => {
+          reservasSalasList = snapshot.val() || [];
+          renderizarTabelaSalas();
+          renderizarReservasExtras();
+        });
+      } else {
+        reservasSalasList = JSON.parse(localStorage.getItem('escola_reservas_salas') || '[]');
+        renderizarTabelaSalas();
+        renderizarReservasExtras();
+      }
+    }
+
+    function salvarReservaSala(e) {
+      e.preventDefault();
+      const item = {
+        id: Date.now(),
+        sala: document.getElementById('reservaSalaNum').value,
+        data: document.getElementById('reservaData').value,
+        horario: document.getElementById('reservaHorario').value,
+        responsavel: document.getElementById('reservaResponsavel').value.trim(),
+        atividade: document.getElementById('reservaAtividade').value.trim()
+      };
+
+      reservasSalasList.unshift(item);
+      
+      if (usaNuvem) {
+        db.ref('escola_arena_salas/reservas').set(reservasSalasList);
+      }
+      localStorage.setItem('escola_reservas_salas', JSON.stringify(reservasSalasList));
+
+      e.target.reset();
+      document.getElementById('reservaData').value = new Date().toISOString().split('T')[0];
+      renderizarReservasExtras();
+      alert('Sala reservada com sucesso!');
+    }
+
+    function renderizarTabelaSalas() {
+      const tbody = document.getElementById('tabelaSalasFiskTbody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      DADOS_SALAS_FIXAS.forEach(s => {
+        tbody.innerHTML += `
+          <tr class="border-b hover:bg-gray-50">
+            <td class="p-2 border text-center font-bold">${s.bloco}</td>
+            <td class="p-2 border text-center">${s.andar}</td>
+            <td class="p-2 border text-center font-semibold">${s.serie}</td>
+            <td class="p-2 border text-center font-bold text-[#1b4332]">${s.sala}</td>
+            <td class="p-2 border">${s.seg || '—'}</td>
+            <td class="p-2 border">${s.ter || '—'}</td>
+            <td class="p-2 border">${s.qua || '—'}</td>
+            <td class="p-2 border">${s.qui || '—'}</td>
+            <td class="p-2 border">${s.sex || '—'}</td>
+          </tr>
+        `;
+      });
+    }
+
+    function renderizarReservasExtras() {
+      const container = document.getElementById('listaReservasExtras');
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (reservasSalasList.length === 0) {
+        container.innerHTML = `<p class="text-xs text-gray-500 italic">Nenhuma reserva extra cadastrada.</p>`;
+        return;
+      }
+
+      reservasSalasList.forEach(r => {
+        container.innerHTML += `
+          <div class="border p-3 rounded bg-emerald-50/40 text-xs flex justify-between items-center">
+            <div>
+              <p class="font-bold text-[#1b4332]">🏫 ${r.sala} — Data: ${r.data} (${r.horario})</p>
+              <p><strong>Atividade:</strong> ${r.atividade} <span class="text-gray-500">| Resp: ${r.responsavel}</span></p>
+            </div>
+            <button onclick="excluirReservaSala(${r.id})" class="text-red-600 font-bold hover:underline">Cancelar</button>
+          </div>
+        `;
+      });
+    }
+
+    function excluirReservaSala(id) {
+      if (confirm('Deseja cancelar esta reserva?')) {
+        reservasSalasList = reservasSalasList.filter(r => r.id !== id);
+        if (usaNuvem) {
+          db.ref('escola_arena_salas/reservas').set(reservasSalasList);
+        }
+        localStorage.setItem('escola_reservas_salas', JSON.stringify(reservasSalasList));
+        renderizarReservasExtras();
+      }
+    }
+  </script>
+</body>
+</html>
