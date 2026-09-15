@@ -50,9 +50,7 @@
               <th class="p-2 border">6º Feira</th>
             </tr>
           </thead>
-          <tbody id="corpoTabelaSalas">
-            <!-- As linhas serão inseridas aqui automaticamente -->
-          </tbody>
+          <tbody id="corpoTabelaSalas"></tbody>
         </table>
       </div>
     </div>
@@ -146,7 +144,7 @@
       console.warn("Erro ao iniciar Firebase:", err);
     }
 
-    // MAPA DE SALAS FIXAS[cite: 6]
+    // LISTA COMPLETA DAS ATIVIDADES FIXAS POR SALA
     const DADOS_SALAS_FIXAS = [
       { bloco: 1, andar: 1, serie: "7ºB", sala: "3", seg: "AEE LINGUAGUENS", ter: "AEE", qua: "AEE LINGUAGUENS", qui: "AEE CIÊNCIAS", sex: "AEE CIÊNCIAS" },
       { bloco: 1, andar: 1, serie: "7ºD", sala: "4", seg: "AEE CIÊNCIAS", ter: "AEE", qua: "AEE CIÊNCIAS", qui: "AEE LINGUAGENS E HUMANIDADES", sex: "AEE" },
@@ -181,12 +179,33 @@
 
     let reservasSalasList = [];
 
-    // EXECUTA IMEDIATAMENTE AO CARREGAR A PÁGINA
+    // GARANTE A EXECUÇÃO IMEDIATA DA TABELA
+    function preencherTabela() {
+      const tbody = document.getElementById('corpoTabelaSalas');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      DADOS_SALAS_FIXAS.forEach(s => {
+        tbody.innerHTML += `
+          <tr class="border-b hover:bg-gray-50">
+            <td class="p-2 border text-center font-bold">${s.bloco}</td>
+            <td class="p-2 border text-center">${s.andar}</td>
+            <td class="p-2 border text-center font-semibold">${s.serie}</td>
+            <td class="p-2 border text-center font-bold text-[#1b4332]">${s.sala}</td>
+            <td class="p-2 border">${s.seg || '—'}</td>
+            <td class="p-2 border">${s.ter || '—'}</td>
+            <td class="p-2 border">${s.qua || '—'}</td>
+            <td class="p-2 border">${s.qui || '—'}</td>
+            <td class="p-2 border">${s.sex || '—'}</td>
+          </tr>
+        `;
+      });
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       document.getElementById('dataAtualSistema').textContent = new Date().toLocaleDateString('pt-BR');
       document.getElementById('reservaData').value = new Date().toISOString().split('T')[0];
-      
-      renderizarTabelaSalas();
+      preencherTabela();
       carregarDados();
     });
 
@@ -224,28 +243,6 @@
       document.getElementById('reservaData').value = new Date().toISOString().split('T')[0];
       renderizarReservasExtras();
       alert('Sala reservada com sucesso!');
-    }
-
-    function renderizarTabelaSalas() {
-      const tbody = document.getElementById('corpoTabelaSalas');
-      if (!tbody) return;
-      tbody.innerHTML = '';
-
-      DADOS_SALAS_FIXAS.forEach(s => {
-        tbody.innerHTML += `
-          <tr class="border-b hover:bg-gray-50">
-            <td class="p-2 border text-center font-bold">${s.bloco}</td>
-            <td class="p-2 border text-center">${s.andar}</td>
-            <td class="p-2 border text-center font-semibold">${s.serie}</td>
-            <td class="p-2 border text-center font-bold text-[#1b4332]">${s.sala}</td>
-            <td class="p-2 border">${s.seg || '—'}</td>
-            <td class="p-2 border">${s.ter || '—'}</td>
-            <td class="p-2 border">${s.qua || '—'}</td>
-            <td class="p-2 border">${s.qui || '—'}</td>
-            <td class="p-2 border">${s.sex || '—'}</td>
-          </tr>
-        `;
-      });
     }
 
     function renderizarReservasExtras() {
