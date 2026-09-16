@@ -11,20 +11,22 @@
   <style>
     @media print {
       body * {
-        visibility: hidden;
+        visibility: hidden !important;
       }
       #secaoMapaImpressao, #secaoMapaImpressao * {
-        visibility: visible;
+        visibility: visible !important;
       }
       #secaoMapaImpressao {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        margin: 0;
-        padding: 0;
-        box-shadow: none;
-        border: none;
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        max-height: none !important;
+        overflow: visible !important;
+        box-shadow: none !important;
+        border: none !important;
+        margin: 0 !important;
+        padding: 10px !important;
       }
       .nao-imprimir {
         display: none !important;
@@ -34,7 +36,7 @@
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex flex-col">
 
-  <header class="bg-[#1b4332] text-white px-6 py-4 shadow flex justify-between items-center">
+  <header class="bg-[#1b4332] text-white px-6 py-4 shadow flex justify-between items-center nao-imprimir">
     <div>
       <h1 class="text-lg font-bold flex items-center gap-2">
         <span>🏫</span> Colégio Arena — Reserva de Salas
@@ -49,7 +51,7 @@
   <main class="p-6 max-w-7xl w-full mx-auto flex-1 space-y-6">
 
     <!-- BUSCA DE DISPONIBILIDADE -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 nao-imprimir">
       <h2 class="text-sm font-bold text-[#1b4332] mb-3 uppercase tracking-wider">🔍 1. Consultar Salas Disponíveis</h2>
       
       <div class="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
@@ -80,6 +82,19 @@
       </div>
     </div>
 
+    <!-- MODAL PARA ESCOLHER O DIA DO MAPA -->
+    <div id="modalSalasDoDia" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center hidden nao-imprimir">
+      <div class="bg-white rounded-lg p-6 max-w-sm w-full shadow-xl space-y-4">
+        <h3 class="text-sm font-bold text-[#1b4332] uppercase">📅 Escolher Dia para o Mapa</h3>
+        <p class="text-xs text-gray-600">Selecione a data que deseja gerar a imagem ou PDF do mapa:</p>
+        <input type="date" id="modalDataInput" class="w-full border rounded px-3 py-2 text-xs" />
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="fecharModalData()" class="bg-gray-300 text-gray-700 px-3 py-1.5 rounded text-xs font-semibold">Cancelar</button>
+          <button type="button" onclick="confirmarGerarMapaDoDia()" class="bg-[#1b4332] text-white px-4 py-1.5 rounded text-xs font-bold hover:bg-emerald-900">Gerar Mapa do Dia</button>
+        </div>
+      </div>
+    </div>
+
     <!-- MAPA GERAL DE LOCALIZAÇÃO DAS SALAS E ATIVIDADES (COM RESERVAS DINÂMICAS) -->
     <div id="secaoMapaImpressao" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-2">
@@ -88,7 +103,7 @@
           <p class="text-[11px] text-gray-500">Exibindo reservas cadastradas no mapa para a data de referência: <span id="labelDataMapa" class="font-bold text-emerald-800"></span></p>
         </div>
         <div class="flex items-center gap-2">
-          <button onclick="solicitarDiaParaMapa()" class="nao-imprimir bg-emerald-700 text-white px-3 py-1.5 rounded text-xs font-bold hover:bg-emerald-800 shadow flex items-center gap-1">
+          <button onclick="abrirModalData()" class="nao-imprimir bg-emerald-700 text-white px-3 py-1.5 rounded text-xs font-bold hover:bg-emerald-800 shadow flex items-center gap-1">
             📷 Salas do Dia (Gerar Imagem/PDF)
           </button>
           <div class="text-xs bg-emerald-50 border border-emerald-300 text-emerald-900 px-3 py-1.5 rounded font-semibold flex items-center gap-2 nao-imprimir">
@@ -97,9 +112,9 @@
         </div>
       </div>
       
-      <div class="overflow-x-auto">
+      <div>
         <table class="w-full text-center text-xs border-collapse border border-gray-300">
-          <thead class="bg-[#1b4332] text-white font-semibold sticky top-0 z-10">
+          <thead class="bg-[#1b4332] text-white font-semibold">
             <tr>
               <th class="p-2 border">Bloco</th>
               <th class="p-2 border">Andar</th>
@@ -275,16 +290,28 @@
       renderizarMapaSalas();
     }
 
-    function solicitarDiaParaMapa() {
+    function abrirModalData() {
       const dataAtualBusca = document.getElementById('buscaData').value;
-      const dataEscolhida = prompt("Digite ou confirme a data que deseja gerar a imagem/PDF do mapa (AAAA-MM-DD):", dataAtualBusca);
-      if (dataEscolhida) {
-        document.getElementById('buscaData').value = dataEscolhida;
-        renderizarMapaSalas();
-        setTimeout(() => {
-          window.print();
-        }, 300);
+      document.getElementById('modalDataInput').value = dataAtualBusca;
+      document.getElementById('modalSalasDoDia').classList.remove('hidden');
+    }
+
+    function fecharModalData() {
+      document.getElementById('modalSalasDoDia').classList.add('hidden');
+    }
+
+    function confirmarGerarMapaDoDia() {
+      const dataEscolhida = document.getElementById('modalDataInput').value;
+      if (!dataEscolhida) {
+        alert('Por favor, selecione uma data.');
+        return;
       }
+      document.getElementById('buscaData').value = dataEscolhida;
+      renderizarMapaSalas();
+      fecharModalData();
+      setTimeout(() => {
+        window.print();
+      }, 300);
     }
 
     function renderizarMapaSalas() {
