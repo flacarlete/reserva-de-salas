@@ -5,9 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Reserva de Salas — Colégio Arena</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex flex-col">
 
@@ -83,7 +80,7 @@
     <!-- TABELA COMPLETA DE RESERVAS CADASTRADAS -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <div class="flex justify-between items-center mb-4">
-        <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider">📋 Tabela Completa de Reservas Extras / Avulsas (Nuvem)</h3>
+        <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider">📋 Tabela Completa de Reservas Extras / Avulsas</h3>
         <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black">🖨️ Imprimir Tabela</button>
       </div>
       
@@ -107,29 +104,6 @@
   </main>
 
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyByKHMqBOnJh19EKeRZ16auYdkXccVMUV0",
-      authDomain: "contraturno-arena.firebaseapp.com",
-      databaseURL: "https://contraturno-arena-default-rtdb.firebaseio.com",
-      projectId: "contraturno-arena",
-      storageBucket: "contraturno-arena.firebasestorage.app",
-      messagingSenderId: "852932695112",
-      appId: "1:852932695112:web:9432fb710979d30480747d",
-      measurementId: "G-M2MKTFB6EP"
-    };
-
-    let db = null;
-    let usaNuvem = false;
-    try {
-      if (firebaseConfig.apiKey) {
-        firebase.initializeApp(firebaseConfig);
-        db = firebase.database();
-        usaNuvem = true;
-      }
-    } catch(err) {
-      console.warn("Erro ao iniciar Firebase:", err);
-    }
-
     const TODAS_AS_SALAS = [
       "Sala 3 (AEE)", "Sala 4 (AEE)", "Sala 7 (AEE)", "Sala 8 (AEE)", 
       "Sala 9 (Maker/Robótica)", "Sala 10 (AEE)", "Sala 11", "Sala 12", 
@@ -174,15 +148,8 @@
     });
 
     function carregarDados() {
-      if (usaNuvem) {
-        db.ref('escola_arena_salas/reservas').on('value', (snapshot) => {
-          reservasSalasList = snapshot.val() || [];
-          renderizarReservasExtras();
-        });
-      } else {
-        reservasSalasList = JSON.parse(localStorage.getItem('escola_reservas_salas') || '[]');
-        renderizarReservasExtras();
-      }
+      reservasSalasList = JSON.parse(localStorage.getItem('escola_reservas_salas_local') || '[]');
+      renderizarReservasExtras();
     }
 
     function verificarDisponibilidade() {
@@ -267,15 +234,12 @@
       };
 
       reservasSalasList.unshift(item);
-      
-      if (usaNuvem) {
-        db.ref('escola_arena_salas/reservas').set(reservasSalasList);
-      }
-      localStorage.setItem('escola_reservas_salas', JSON.stringify(reservasSalasList));
+      localStorage.setItem('escola_reservas_salas_local', JSON.stringify(reservasSalasList));
 
       e.target.reset();
       document.getElementById('containerFormReserva').classList.add('hidden');
       renderizarReservasExtras();
+      verificarDisponibilidade();
       alert('Sala reservada com sucesso!');
     }
 
@@ -311,10 +275,7 @@
     function excluirReservaSala(id) {
       if (confirm('Deseja cancelar esta reserva?')) {
         reservasSalasList = reservasSalasList.filter(r => r.id !== id);
-        if (usaNuvem) {
-          db.ref('escola_arena_salas/reservas').set(reservasSalasList);
-        }
-        localStorage.setItem('escola_reservas_salas', JSON.stringify(reservasSalasList));
+        localStorage.setItem('escola_reservas_salas_local', JSON.stringify(reservasSalasList));
         renderizarReservasExtras();
       }
     }
