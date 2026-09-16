@@ -275,7 +275,7 @@
 
       e.target.reset();
       document.getElementById('containerFormReserva').classList.add('hidden');
-      verificarDisponibilidade();
+      renderizarReservasExtras();
       alert('Sala reservada com sucesso!');
     }
 
@@ -284,7 +284,7 @@
       if (!tbody) return;
       tbody.innerHTML = '';
 
-      if (reservasSalasList.length === 0) {
+      if (!reservasSalasList || reservasSalasList.length === 0) {
         tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-xs text-gray-500 italic">Nenhuma reserva extra cadastrada.</td></tr>`;
         return;
       }
