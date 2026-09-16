@@ -47,10 +47,13 @@
         </div>
       </div>
 
-      <!-- RESULTADO DA BUSCA -->
+      <!-- RESULTADO DA BUSCA COM SELEÇÃO MÚLTIPLA -->
       <div id="containerResultadoBusca" class="mt-5 hidden border-t pt-4">
-        <h3 class="text-xs font-bold text-gray-700 mb-2 uppercase">Salas Livres Encontradas (Clique para Reservar):</h3>
-        <div id="listaSalasDisponiveis" class="grid grid-cols-2 md:grid-cols-4 gap-2"></div>
+        <div class="flex justify-between items-center mb-2">
+          <h3 class="text-xs font-bold text-gray-700 uppercase">Selecione uma ou mais salas livres:</h3>
+          <button type="button" onclick="avancarParaFormularioMultiplo()" class="bg-emerald-600 text-white px-3 py-1 rounded text-xs font-bold hover:bg-emerald-700 shadow">Continuar com as Selecionadas ➔</button>
+        </div>
+        <div id="listaSalasDisponiveis" class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2"></div>
       </div>
     </div>
 
@@ -60,7 +63,7 @@
       
       <form onsubmit="salvarReservaSala(event)" class="space-y-4">
         <input type="hidden" id="reservaEditId" />
-        <input type="hidden" id="reservaSalaNum" />
+        <input type="hidden" id="reservaSalasMultiplas" />
         <input type="hidden" id="reservaData" />
         <input type="hidden" id="reservaHorario" />
 
@@ -202,8 +205,6 @@
         return;
       }
 
-      const horarioStr = `${horaInicio} às ${horaTermino}`;
-
       const [ano, mes, dia] = dataStr.split('-');
       const dataObj = new Date(ano, mes - 1, dia);
       const diaSemanaNum = dataObj.getDay();
@@ -239,22 +240,35 @@
 
       salasLivres.forEach(sala => {
         container.innerHTML += `
-          <button onclick="selecionarSalaParaReserva('${sala}', '${dataStr}', '${horarioStr}')" class="bg-emerald-50 border border-emerald-300 text-[#1b4332] p-2 rounded text-xs font-bold hover:bg-[#1b4332] hover:text-white transition text-center shadow-sm">
-            ✅ ${sala}
-          </button>
+          <label class="flex items-center gap-2 bg-emerald-50 border border-emerald-300 text-[#1b4332] p-2 rounded text-xs font-bold hover:bg-emerald-100 cursor-pointer shadow-sm">
+            <input type="checkbox" name="salaCheckbox" value="${sala}" class="w-4 h-4 accent-[#1b4332]" />
+            <span>${sala}</span>
+          </label>
         `;
       });
     }
 
-    function selecionarSalaParaReserva(sala, data, horario) {
-      document.getElementById('reservaEditId').value = '';
-      document.getElementById('tituloModoForm').textContent = 'Confirmar Reserva';
-      document.getElementById('btnSalvarTexto').textContent = 'Concluir Reserva';
+    function avancarParaFormularioMultiplo() {
+      const checkboxes = document.querySelectorAll('input[name="salaCheckbox"]:checked');
+      if (checkboxes.length === 0) {
+        alert('Selecione pelo menos uma sala na lista acima.');
+        return;
+      }
 
-      document.getElementById('reservaSalaNum').value = sala;
-      document.getElementById('reservaData').value = data;
-      document.getElementById('reservaHorario').value = horario;
-      document.getElementById('labelSalaSelecionada').textContent = `${sala} (${data} — ${horario})`;
+      const salasSelecionadas = Array.from(checkboxes).map(cb => cb.value);
+      const dataStr = document.getElementById('buscaData').value;
+      const horaInicio = document.getElementById('buscaHoraInicio').value;
+      const horaTermino = document.getElementById('buscaHoraTermino').value;
+      const horarioStr = `${horaInicio} às ${horaTermino}`;
+
+      document.getElementById('reservaEditId').value = '';
+      document.getElementById('tituloModoForm').textContent = 'Confirmar Reserva Múltipla';
+      document.getElementById('btnSalvarTexto').textContent = 'Concluir Reservas';
+
+      document.getElementById('reservaSalasMultiplas').value = JSON.stringify(salasSelecionadas);
+      document.getElementById('reservaData').value = dataStr;
+      document.getElementById('reservaHorario').value = horarioStr;
+      document.getElementById('labelSalaSelecionada').textContent = `${salasSelecionadas.join(', ')} (${dataStr} — ${horarioStr})`;
       
       document.getElementById('containerFormReserva').classList.remove('hidden');
       document.getElementById('containerFormReserva').scrollIntoView({ behavior: 'smooth' });
@@ -265,7 +279,7 @@
       if (!item) return;
 
       document.getElementById('reservaEditId').value = item.id;
-      document.getElementById('reservaSalaNum').value = item.sala;
+      document.getElementById('reservaSalasMultiplas').value = JSON.stringify([item.sala]);
       document.getElementById('reservaData').value = item.data;
       document.getElementById('reservaHorario').value = item.horario;
       document.getElementById('reservaResponsavel').value = item.responsavel;
@@ -287,32 +301,38 @@
     function salvarReservaSala(e) {
       e.preventDefault();
       const editId = document.getElementById('reservaEditId').value;
-      const salaNum = document.getElementById('reservaSalaNum').value;
+      const salasArr = JSON.parse(document.getElementById('reservaSalasMultiplas').value || '[]');
       const dataVal = document.getElementById('reservaData').value;
       const horarioVal = document.getElementById('reservaHorario').value;
       const respVal = document.getElementById('reservaResponsavel').value.trim();
       const ativVal = document.getElementById('reservaAtividade').value.trim();
 
       if (editId) {
+        // Editando uma única reserva existente
+        const salaUnica = salasArr[0];
         reservasSalasList = reservasSalasList.map(r => {
           if (r.id == editId) {
-            return { ...r, sala: salaNum, data: dataVal, horario: horarioVal, responsavel: respVal, atividade: ativVal };
+            return { ...r, sala: salaUnica, data: dataVal, horario: horarioVal, responsavel: respVal, atividade: ativVal };
           }
           return r;
         });
         ultimoIdReservado = Number(editId);
       } else {
-        const novoId = Date.now();
-        ultimoIdReservado = novoId;
-        const item = {
-          id: novoId,
-          sala: salaNum,
-          data: dataVal,
-          horario: horarioVal,
-          responsavel: respVal,
-          atividade: ativVal
-        };
-        reservasSalasList.unshift(item);
+        // Criando uma ou mais reservas novas de uma vez
+        const primeiroNovoId = Date.now();
+        ultimoIdReservado = primeiroNovoId;
+
+        salasArr.forEach((salaNome, index) => {
+          const item = {
+            id: primeiroNovoId + index,
+            sala: salaNome,
+            data: dataVal,
+            horario: horarioVal,
+            responsavel: respVal,
+            atividade: ativVal
+          };
+          reservasSalasList.unshift(item);
+        });
       }
 
       if (usaNuvem) {
@@ -324,7 +344,8 @@
       document.getElementById('containerFormReserva').classList.add('hidden');
       document.getElementById('reservaEditId').value = '';
       renderizarReservasExtras();
-      alert(editId ? 'Reserva atualizada com sucesso!' : 'Sala reservada com sucesso!');
+      verificarDisponibilidade();
+      alert(editId ? 'Reserva atualizada com sucesso!' : 'Salas reservadas com sucesso!');
     }
 
     function renderizarReservasExtras() {
