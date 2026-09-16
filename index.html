@@ -84,9 +84,7 @@
               <th class="p-2 border">6ª Feira</th>
             </tr>
           </thead>
-          <tbody id="corpoMapaSalas" class="divide-y divide-gray-200 text-gray-700">
-            <!-- Gerado dinamicamente via JavaScript para injetar reservas na coluna do dia correspondente -->
-          </tbody>
+          <tbody id="corpoMapaSalas" class="divide-y divide-gray-200 text-gray-700"></tbody>
         </table>
       </div>
     </div>
@@ -175,9 +173,9 @@
     }
 
     const TODAS_AS_SALAS = [
-      "Sala 3 (AEE)", "Sala 4 (AEE)", "Sala 7 (AEE)", "Sala 8 (AEE)", 
+      "Sala 1", "Sala 2", "Sala 3 (AEE)", "Sala 4 (AEE)", "Sala 5", "Sala 7 (AEE)", "Sala 8 (AEE)", 
       "Sala 9 (Maker/Robótica)", "Sala 10 (AEE)", "Sala 11", "Sala 12", 
-      "Sala 13", "Sala 14 (Dança/Meditação)", "Sala 15", "Sala 16 (Monitoria)", 
+      "Sala 13 (Dança/Meditação)", "Sala 14", "Sala 15", "Sala 16 (Monitoria)", 
       "Sala 17 (Teatro)", "Sala 18 (Tatame)", "Sala 19", "Sala 20 (Sala Estudos)", 
       "Sala 21 (Sala Estudos)", "Sala 22", "Sala 23", "Salas 24 a 27 (Arena)", 
       "Salas 28 a 31 (Cambridge)", "Sala 32/33 (Pl. Redação)"
@@ -196,8 +194,8 @@
       { bloco: "Bloco 1", andar: "2º Andar", serie: "7ºE", numero: "Sala 10 (AEE)", seg: "AEE EXATAS", ter: "AEE", qua: "AEE EXATAS", qui: "AEE EXATAS", sex: "AEE EXATAS" },
       { bloco: "Bloco 1", andar: "2º Andar", serie: "7ºH", numero: "Sala 11", seg: "", ter: "NIV. ING.", qua: "NIV. ING.", qui: "", sex: "FISCAIS" },
       { bloco: "Bloco 1", andar: "2º Andar", serie: "7ºC", numero: "Sala 12", seg: "NIV. LP", ter: "NIV. LP", qua: "", qui: "ARENÃO LP/ING<br><span class='text-[10px] font-bold text-blue-700'>(14h15–15h45)</span>", sex: "ARENÃO LP/ING<br><span class='text-[10px] font-bold text-blue-700'>(14h15–15h45)</span>" },
-      { bloco: "Bloco 1", andar: "2º Andar", serie: "7ºA", numero: "Sala 13", seg: "NIV. MAT", ter: "NIV. MAT", qua: "NIV. MAT", qui: "", sex: "NIV. MAT" },
-      { bloco: "Bloco 1", andar: "2º Andar", serie: "SALA", numero: "Sala 14 (Dança/Meditação)", seg: "DANÇA<br><span class='text-[10px] font-bold text-blue-700'>(16h10–16h55)</span>", ter: "", qua: "DANÇA<br><span class='text-[10px] font-bold text-blue-700'>(16h10–16h55)</span>", qui: "MEDITAÇÃO<br><span class='text-[10px] font-bold text-blue-700'>(14h15–15h45)</span>", sex: "MEDITAÇÃO<br><span class='text-[10px] font-bold text-blue-700'>(14h15–15h45)</span>" },
+      { bloco: "Bloco 1", andar: "2º Andar", serie: "7ºA", numero: "Sala 13 (Dança/Meditação)", seg: "DANÇA<br><span class='text-[10px] font-bold text-blue-700'>(16h10–16h55)</span>", ter: "", qua: "DANÇA<br><span class='text-[10px] font-bold text-blue-700'>(16h10–16h55)</span>", qui: "MEDITAÇÃO<br><span class='text-[10px] font-bold text-blue-700'>(14h15–15h45)</span>", sex: "MEDITAÇÃO<br><span class='text-[10px] font-bold text-blue-700'>(14h15–15h45)</span>" },
+      { bloco: "Bloco 1", andar: "2º Andar", serie: "SALA", numero: "Sala 14", seg: "NIV. MAT", ter: "NIV. MAT", qua: "NIV. MAT", qui: "", sex: "NIV. MAT" },
       { bloco: "Bloco 1", andar: "2º Andar", serie: "SALA", numero: "Sala 15", seg: "", ter: "", qua: "", qui: "", sex: "FEDERADOS" },
       { bloco: "Bloco 1", andar: "2º Andar", serie: "8ºG", numero: "Sala 16 (Monitoria)", seg: "Monitoria<br><span class='text-[10px] font-bold text-blue-700'>(14h15–15h45)</span>", ter: "Monitoria<br><span class='text-[10px] font-bold text-blue-700'>(15h–16h55)</span>", qua: "", qui: "", sex: "PROVA / Monitoria<br><span class='text-[10px] font-bold text-blue-700'>(16h55–17h40)</span>" },
       { bloco: "Bloco 1", andar: "2º Andar", serie: "SALA", numero: "Sala 17 (Teatro)", seg: "TEATRO<br><span class='text-[10px] font-bold text-blue-700'>(16h10–17h40)</span>", ter: "", qua: "TEATRO<br><span class='text-[10px] font-bold text-blue-700'>(14h15–17h40)</span>", qui: "TEATRO<br><span class='text-[10px] font-bold text-blue-700'>(16h55–18h25)</span>", sex: "" },
@@ -221,31 +219,6 @@
       { bloco: "Bloco 2", andar: "2º Andar", serie: "9ºF", numero: "Salas 28 a 31 (Cambridge)", seg: "CAMBRIDGE", ter: "", qua: "CAMBRIDGE", qui: "PROVA", sex: "PROVA" },
       { bloco: "Bloco 2", andar: "2º Andar", serie: "9ºG", numero: "Salas 28 a 31 (Cambridge)", seg: "CAMBRIDGE", ter: "", qua: "CAMBRIDGE", qui: "PROVA", sex: "PROVA" },
       { bloco: "Bloco 2", andar: "2º Andar", serie: "9ºH", numero: "Salas 28 a 31 (Cambridge)", seg: "", ter: "", qua: "", qui: "PROVA", sex: "PROVA" }
-    ];
-
-    const DADOS_SALAS_FIXAS = [
-      { sala: "Sala 3 (AEE)", seg: "AEE LINGUAGUENS", ter: "AEE", qua: "AEE LINGUAGUENS", qui: "AEE CIÊNCIAS", sex: "AEE CIÊNCIAS" },
-      { sala: "Sala 4 (AEE)", seg: "AEE CIÊNCIAS", ter: "AEE", qua: "AEE CIÊNCIAS", qui: "AEE LINGUAGENS E HUMANIDADES", sex: "AEE" },
-      { sala: "Sala 7 (AEE)", seg: "AEE", ter: "AEE", qua: "AEE", qui: "", sex: "PROVA" },
-      { sala: "Sala 8 (AEE)", seg: "AEE HUMANIDADES", ter: "AEE", qua: "AEE HUMANIDADES", qui: "", sex: "PROVA" },
-      { sala: "Sala 9 (Maker/Robótica)", seg: "ROBÓTICA 6º-9º", ter: "ROBÓTICA 6º-9º", qua: "ROBÓTICA 6º-9º", qui: "ROBÓTICA 6º-9º", sex: "ROBÓTICA 6º-9º" },
-      { sala: "Sala 10 (AEE)", seg: "AEE EXATAS", ter: "AEE", qua: "AEE EXATAS", qui: "AEE EXATAS", sex: "AEE EXATAS" },
-      { sala: "Sala 11", seg: "", ter: "NIV. ING.", qua: "NIV. ING.", qui: "", sex: "FISCAIS" },
-      { sala: "Sala 12", seg: "NIV. LP", ter: "NIV. LP", qua: "", qui: "ARENÃO LP/ING", sex: "ARENÃO LP/ING" },
-      { sala: "Sala 13", seg: "NIV. MAT", ter: "NIV. MAT", qua: "NIV. MAT", qui: "", sex: "NIV. MAT" },
-      { sala: "Sala 14 (Dança/Meditação)", seg: "DANÇA", ter: "", qua: "DANÇA", qui: "MEDITAÇÃO", sex: "MEDITAÇÃO" },
-      { sala: "Sala 15", seg: "", ter: "", qua: "", qui: "", sex: "FEDERADOS" },
-      { sala: "Sala 16 (Monitoria)", seg: "Monitoria", ter: "Monitoria", qua: "", qui: "", sex: "PROVA" },
-      { sala: "Sala 17 (Teatro)", seg: "TEATRO", ter: "", qua: "TEATRO", qui: "TEATRO", sex: "" },
-      { sala: "Sala 18 (Tatame)", seg: "JUDÔ/JIU-JUTSU", ter: "", qua: "FUNCIONAL", qui: "JUDÔ", sex: "JIU-JITSU" },
-      { sala: "Sala 19", seg: "ED. FINANC.", ter: "EAGLE", qua: "ARENAMUN", qui: "EAGLE", sex: "PROVA" },
-      { sala: "Sala 32/33 (Pl. Redação)", seg: "PL. RED.", ter: "PL. RED.", qua: "PL. RED.", qui: "", sex: "PROVA" },
-      { sala: "Sala 20 (Sala Estudos)", seg: "S. ESTUDOS", ter: "S. ESTUDOS", qua: "S. ESTUDOS", qui: "PROVA", sex: "PROVA" },
-      { sala: "Sala 21 (Sala Estudos)", seg: "S. ESTUDOS", ter: "S. ESTUDOS", qua: "S. ESTUDOS", qui: "S. ESTUDOS", sex: "PROVA" },
-      { sala: "Sala 22", seg: "ARENÃO Física", ter: "AGRO ARENA", qua: "", qui: "FISCAIS", sex: "PROVA" },
-      { sala: "Sala 23", seg: "ARENÃO Geografia", ter: "AGRO ARENA", qua: "", qui: "FEDERADOS", sex: "PROVA" },
-      { sala: "Salas 24 a 27 (Arena)", seg: "ARENÃO Debate", ter: "", qua: "ARENÃO Mat", qui: "PROVA", sex: "PROVA" },
-      { sala: "Salas 28 a 31 (Cambridge)", seg: "CAMBRIDGE", ter: "", qua: "CAMBRIDGE", qui: "PROVA", sex: "PROVA" }
     ];
 
     let reservasSalasList = [];
@@ -283,7 +256,6 @@
       if (!tbody) return;
       tbody.innerHTML = '';
 
-      // Descobrir qual dia da semana é a data selecionada (1=seg, 2=ter, 3=qua, 4=qui, 5=sex)
       let chaveDia = '';
       if (dataStr) {
         const [ano, mes, dia] = dataStr.split('-');
@@ -294,14 +266,12 @@
       }
 
       MAPA_ESTRUTURA.forEach(linha => {
-        // Verificar se há reserva dinâmica para esta sala nesta exata data
         const reservaEncontrada = reservasSalasList.find(r => r.data === dataStr && r.sala === linha.numero);
 
         let celulaDiaDinamica = '';
         if (chaveDia) {
           const conteudoOriginal = linha[chaveDia] || '';
           if (reservaEncontrada) {
-            // Exibir atividade fixa (se houver) + Reserva do Professor em destaque verde
             celulaDiaDinamica = `
               ${conteudoOriginal ? conteudoOriginal + '<br>' : ''}
               <div class="mt-1 bg-emerald-100 border border-emerald-500 text-emerald-900 p-1 rounded font-bold text-[11px] shadow-sm">
@@ -332,7 +302,7 @@
     }
 
     function verificarDisponibilidade() {
-      renderizarMapaSalas(); // Atualiza o mapa para a nova data escolhida
+      renderizarMapaSalas();
 
       const dataStr = document.getElementById('buscaData').value;
       const horaInicio = document.getElementById('buscaHoraInicio').value;
@@ -352,9 +322,9 @@
 
       let salasOcupadasFixas = [];
       if (chaveDia) {
-        DADOS_SALAS_FIXAS.forEach(item => {
+        MAPA_ESTRUTURA.forEach(item => {
           if (item[chaveDia] && item[chaveDia].trim() !== '') {
-            salasOcupadasFixas.push(item.sala);
+            salasOcupadasFixas.push(item.numero);
           }
         });
       }
@@ -480,6 +450,7 @@
       document.getElementById('containerFormReserva').classList.add('hidden');
       document.getElementById('reservaEditId').value = '';
       renderizarTudo();
+      verificarDisponibilidade();
       alert(editId ? 'Reserva atualizada com sucesso!' : 'Salas reservadas com sucesso!');
     }
 
