@@ -1,5 +1,4 @@
-<!DOCTYPE html> <!-- Atualizado -->
-<html lang="pt-BR">
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
@@ -17,27 +16,31 @@
       <h1 class="text-lg font-bold flex items-center gap-2">
         <span>🏫</span> Colégio Arena — Reserva de Salas
       </h1>
-      <p class="text-xs text-emerald-200 mt-0.5">Selecione data e horário para consultar a disponibilidade</p>
+      <p class="text-xs text-emerald-200 mt-0.5">Consulta de Disponibilidade e Tabela Geral de Agendamentos</p>
     </div>
     <div class="text-right text-xs text-emerald-100">
       <span id="dataAtualSistema"></span>
     </div>
   </header>
 
-  <main class="p-6 max-w-4xl w-full mx-auto flex-1 space-y-6">
+  <main class="p-6 max-w-6xl w-full mx-auto flex-1 space-y-6">
 
     <!-- BUSCA DE DISPONIBILIDADE -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <h2 class="text-sm font-bold text-[#1b4332] mb-3 uppercase tracking-wider">🔍 1. Consultar Salas Disponíveis</h2>
       
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
         <div>
           <label class="block text-xs font-medium text-gray-700 mb-1">Data Desejada</label>
           <input type="date" id="buscaData" class="w-full border rounded px-3 py-2 text-xs" onchange="verificarDisponibilidade()" />
         </div>
         <div>
-          <label class="block text-xs font-medium text-gray-700 mb-1">Horário Desejado</label>
-          <input type="text" id="buscaHorario" placeholder="Ex: 15h00 – 15h45" class="w-full border rounded px-3 py-2 text-xs" />
+          <label class="block text-xs font-medium text-gray-700 mb-1">Horário Início</label>
+          <input type="time" id="buscaHoraInicio" class="w-full border rounded px-3 py-2 text-xs" />
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-700 mb-1">Horário Término</label>
+          <input type="time" id="buscaHoraTermino" class="w-full border rounded px-3 py-2 text-xs" />
         </div>
         <div>
           <button onclick="verificarDisponibilidade()" class="w-full bg-[#1b4332] text-white px-4 py-2 rounded text-xs font-semibold hover:bg-emerald-950 transition">Ver Salas Livres</button>
@@ -77,10 +80,28 @@
       </form>
     </div>
 
-    <!-- LISTA DE RESERVAS EXTRAS CADASTRADAS -->
+    <!-- TABELA COMPLETA DE RESERVAS CADASTRADAS (Com destaque para o mais recente) -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-      <h3 class="text-xs font-bold text-gray-700 mb-3 uppercase">📅 Reservas Extras / Avulsas Agendadas na Nuvem</h3>
-      <div id="listaReservasExtras" class="space-y-2"></div>
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider">📋 Tabela Completa de Reservas Extras / Avulsas (Nuvem)</h3>
+        <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black">🖨️ Imprimir Tabela</button>
+      </div>
+      
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs border border-gray-300">
+          <thead class="bg-gray-100 font-semibold text-gray-700">
+            <tr>
+              <th class="p-2 border text-center">Data</th>
+              <th class="p-2 border text-center">Horário</th>
+              <th class="p-2 border text-center">Sala</th>
+              <th class="p-2 border">Responsável</th>
+              <th class="p-2 border">Atividade</th>
+              <th class="p-2 border text-center">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="corpoTabelaReservasExtras"></tbody>
+        </table>
+      </div>
     </div>
 
   </main>
@@ -144,6 +165,7 @@
     ];
 
     let reservasSalasList = [];
+    let ultimoIdReservado = null;
 
     window.addEventListener('DOMContentLoaded', () => {
       document.getElementById('dataAtualSistema').textContent = new Date().toLocaleDateString('pt-BR');
@@ -165,12 +187,15 @@
 
     function verificarDisponibilidade() {
       const dataStr = document.getElementById('buscaData').value;
-      const horarioStr = document.getElementById('buscaHorario').value.trim();
+      const horaInicio = document.getElementById('buscaHoraInicio').value;
+      const horaTermino = document.getElementById('buscaHoraTermino').value;
 
-      if (!dataStr || !horarioStr) {
-        alert('Por favor, informe a data e o horário desejado.');
+      if (!dataStr || !horaInicio || !horaTermino) {
+        alert('Por favor, informe a data, o horário de início e o horário de término.');
         return;
       }
+
+      const horarioStr = `${horaInicio} às ${horaTermino}`;
 
       const [ano, mes, dia] = dataStr.split('-');
       const dataObj = new Date(ano, mes - 1, dia);
@@ -217,7 +242,7 @@
       document.getElementById('reservaSalaNum').value = sala;
       document.getElementById('reservaData').value = data;
       document.getElementById('reservaHorario').value = horario;
-      document.getElementById('labelSalaSelecionada').textContent = `${sala} (${data} às ${horario})`;
+      document.getElementById('labelSalaSelecionada').textContent = `${sala} (${data} — ${horario})`;
       
       document.getElementById('containerFormReserva').classList.remove('hidden');
       document.getElementById('containerFormReserva').scrollIntoView({ behavior: 'smooth' });
@@ -229,8 +254,11 @@
 
     function salvarReservaSala(e) {
       e.preventDefault();
+      const novoId = Date.now();
+      ultimoIdReservado = novoId;
+
       const item = {
-        id: Date.now(),
+        id: novoId,
         sala: document.getElementById('reservaSalaNum').value,
         data: document.getElementById('reservaData').value,
         horario: document.getElementById('reservaHorario').value,
@@ -252,24 +280,30 @@
     }
 
     function renderizarReservasExtras() {
-      const container = document.getElementById('listaReservasExtras');
-      if (!container) return;
-      container.innerHTML = '';
+      const tbody = document.getElementById('corpoTabelaReservasExtras');
+      if (!tbody) return;
+      tbody.innerHTML = '';
 
       if (reservasSalasList.length === 0) {
-        container.innerHTML = `<p class="text-xs text-gray-500 italic">Nenhuma reserva extra cadastrada.</p>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-xs text-gray-500 italic">Nenhuma reserva extra cadastrada.</td></tr>`;
         return;
       }
 
       reservasSalasList.forEach(r => {
-        container.innerHTML += `
-          <div class="border p-3 rounded bg-emerald-50/40 text-xs flex justify-between items-center">
-            <div>
-              <p class="font-bold text-[#1b4332]">🏫 ${r.sala} — Data: ${r.data} (${r.horario})</p>
-              <p><strong>Atividade:</strong> ${r.atividade} <span class="text-gray-500">| Resp: ${r.responsavel}</span></p>
-            </div>
-            <button onclick="excluirReservaSala(${r.id})" class="text-red-600 font-bold hover:underline">Cancelar</button>
-          </div>
+        const isRecemReservado = r.id === ultimoIdReservado;
+        const linhaCor = isRecemReservado ? 'bg-amber-100 font-semibold border-amber-300' : 'hover:bg-gray-50';
+
+        tbody.innerHTML += `
+          <tr class="border-b ${linhaCor}">
+            <td class="p-2 border text-center">${r.data}</td>
+            <td class="p-2 border text-center text-emerald-900">${r.horario}</td>
+            <td class="p-2 border text-center font-bold">${r.sala}</td>
+            <td class="p-2 border">${r.responsavel}</td>
+            <td class="p-2 border">${r.atividade} ${isRecemReservado ? '<span class="ml-2 bg-amber-500 text-white text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider font-bold">Novo</span>' : ''}</td>
+            <td class="p-2 border text-center">
+              <button onclick="excluirReservaSala(${r.id})" class="text-red-600 font-bold hover:underline text-xs">Excluir</button>
+            </td>
+          </tr>
         `;
       });
     }
