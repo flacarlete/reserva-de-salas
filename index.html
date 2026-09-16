@@ -255,36 +255,45 @@
       if (!tbody) return;
       tbody.innerHTML = '';
 
-      let chaveDia = '';
+      // Descobrir qual o dia da semana da data consultada no campo de busca
+      let chaveDiaConsulta = '';
       if (dataStr) {
         const [ano, mes, dia] = dataStr.split('-');
         const dataObj = new Date(ano, mes - 1, dia);
         const diaSemanaNum = dataObj.getDay();
         const diasMap = { 1: 'seg', 2: 'ter', 3: 'qua', 4: 'qui', 5: 'sex' };
-        chaveDia = diasMap[diaSemanaNum] || '';
+        chaveDiaConsulta = diasMap[diaSemanaNum] || '';
       }
 
       MAPA_ESTRUTURA.forEach(linha => {
-        // Buscar todas as reservas para esta sala específica (independente da data selecionada na busca para exibir no mapa)
-        const reservasDaSala = reservasSalasList.filter(r => r.sala === linha.numero);
+        // Filtrar reservas que caem EXATAMENTE nesta sala e cuja data coincida com a data consultada
+        const reservasDaSala = reservasSalasList.filter(r => r.sala === linha.numero && r.data === dataStr);
 
-        let celulaDiaDinamica = '';
-        if (chaveDia) {
-          const conteudoOriginal = linha[chaveDia] || '';
-          celulaDiaDinamica = formatarTextoAtividade(conteudoOriginal);
+        let htmlSeg = formatarTextoAtividade(linha.seg);
+        let htmlTer = formatarTextoAtividade(linha.ter);
+        let htmlQua = formatarTextoAtividade(linha.qua);
+        let htmlQui = formatarTextoAtividade(linha.qui);
+        let htmlSex = formatarTextoAtividade(linha.sex);
+
+        // Se houver reservas extras para esta sala na data consultada, injetar na coluna do dia correspondente
+        if (reservasDaSala.length > 0 && chaveDiaConsulta) {
+          let htmlReservaBox = '';
+          reservasDaSala.forEach(res => {
+            const dataFormatada = res.data ? res.data.split('-').reverse().join('/') : '';
+            htmlReservaBox += `
+              <div class="mt-1 bg-emerald-100 border border-emerald-500 text-emerald-900 p-1.5 rounded font-bold text-[11px] shadow-sm text-left">
+                📌 ${res.responsavel} <span class="text-[9px] text-emerald-700 bg-white px-1 rounded border border-emerald-300">📅 ${dataFormatada}</span><br>
+                <span class="text-[10px] font-normal text-emerald-800">${res.atividade} (${res.horario})</span>
+              </div>
+            `;
+          });
+
+          if (chaveDiaConsulta === 'seg') htmlSeg = (htmlSeg ? htmlSeg + '<br>' : '') + htmlReservaBox;
+          if (chaveDiaConsulta === 'ter') htmlTer = (htmlTer ? htmlTer + '<br>' : '') + htmlReservaBox;
+          if (chaveDiaConsulta === 'qua') htmlQua = (htmlQua ? htmlQua + '<br>' : '') + htmlReservaBox;
+          if (chaveDiaConsulta === 'qui') htmlQui = (htmlQui ? htmlQui + '<br>' : '') + htmlReservaBox;
+          if (chaveDiaConsulta === 'sex') htmlSex = (htmlSex ? htmlSex + '<br>' : '') + htmlReservaBox;
         }
-
-        // Adicionar todas as reservas programadas para esta sala com a identificação do dia/data
-        let htmlReservasExtras = '';
-        reservasDaSala.forEach(res => {
-          const dataFormatada = res.data ? res.data.split('-').reverse().join('/') : '';
-          htmlReservasExtras += `
-            <div class="mt-1 bg-emerald-100 border border-emerald-500 text-emerald-900 p-1.5 rounded font-bold text-[11px] shadow-sm">
-              📌 ${res.responsavel} <span class="text-[10px] text-emerald-700 bg-white px-1 rounded border border-emerald-300">📅 ${dataFormatada}</span><br>
-              <span class="text-[10px] font-normal text-emerald-800">${res.atividade} (${res.horario})</span>
-            </div>
-          `;
-        });
 
         tbody.innerHTML += `
           <tr class="border-b border-b-gray-300 hover:bg-gray-50">
@@ -292,11 +301,11 @@
             <td class="p-2 border-r-2 border-r-gray-400 font-semibold bg-gray-50">${linha.andar}</td>
             <td class="p-2 border font-medium">${linha.serie}</td>
             <td class="p-2 border font-bold text-[#1b4332]">${linha.numero}</td>
-            <td class="p-2 border">${chaveDia === 'seg' ? (celulaDiaDinamica + htmlReservasExtras) : formatarTextoAtividade(linha.seg || '')}</td>
-            <td class="p-2 border">${chaveDia === 'ter' ? (celulaDiaDinamica + htmlReservasExtras) : formatarTextoAtividade(linha.ter || '')}</td>
-            <td class="p-2 border">${chaveDia === 'qua' ? (celulaDiaDinamica + htmlReservasExtras) : formatarTextoAtividade(linha.qua || '')}</td>
-            <td class="p-2 border">${chaveDia === 'qui' ? (celulaDiaDinamica + htmlReservasExtras) : formatarTextoAtividade(linha.qui || '')}</td>
-            <td class="p-2 border">${chaveDia === 'sex' ? (celulaDiaDinamica + htmlReservasExtras) : formatarTextoAtividade(linha.sex || '')}</td>
+            <td class="p-2 border">${htmlSeg}</td>
+            <td class="p-2 border">${htmlTer}</td>
+            <td class="p-2 border">${htmlQua}</td>
+            <td class="p-2 border">${htmlQui}</td>
+            <td class="p-2 border">${htmlSex}</td>
           </tr>
         `;
       });
