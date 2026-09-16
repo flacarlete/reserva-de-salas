@@ -23,7 +23,7 @@
     </div>
   </header>
 
-  <main class="p-6 max-w-6xl w-full mx-auto flex-1 space-y-6">
+  <main class="p-6 max-w-7xl w-full mx-auto flex-1 space-y-6">
 
     <!-- BUSCA DE DISPONIBILIDADE -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
@@ -57,83 +57,230 @@
       </div>
     </div>
 
-    <!-- MAPA GERAL DE LOCALIZAÇÃO DAS SALAS (PERMANENTE) -->
+    <!-- MAPA GERAL DE LOCALIZAÇÃO DAS SALAS E ATIVIDADES (PERMANENTE) -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-      <h3 class="text-xs font-bold text-[#1b4332] uppercase tracking-wider mb-2">🗺️ Guia / Mapa de Localização das Salas (Bloco / Andar / Série)</h3>
-      <p class="text-[11px] text-gray-500 mb-4">Consulte abaixo a localização física de cada sala para orientar suas reservas:</p>
+      <h3 class="text-xs font-bold text-[#1b4332] uppercase tracking-wider mb-2">🗺️ Guia de Salas e Grade de Atividades (Segunda a Sexta)</h3>
+      <p class="text-[11px] text-gray-500 mb-4">Consulte abaixo a grade fixa de horários e atividades de cada sala para orientar suas reservas:</p>
       
-      <div class="overflow-x-auto max-h-96">
+      <div class="overflow-x-auto max-h-[500px]">
         <table class="w-full text-center text-xs border border-gray-300">
           <thead class="bg-[#1b4332] text-white font-semibold sticky top-0">
             <tr>
               <th class="p-2 border">Bloco</th>
               <th class="p-2 border">Andar</th>
               <th class="p-2 border">Série / Identificação</th>
-              <th class="p-2 border">Nº da Sala</th>
+              <th class="p-2 border">Nº</th>
+              <th class="p-2 border">2ª Feira</th>
+              <th class="p-2 border">3ª Feira</th>
+              <th class="p-2 border">4ª Feira</th>
+              <th class="p-2 border">5ª Feira</th>
+              <th class="p-2 border">6ª Feira</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200 text-gray-700">
             <!-- BLOCO 1 - 1º ANDAR -->
             <tr>
-              <td class="p-2 border font-bold bg-gray-50" rowspan="8">Bloco 1</td>
-              <td class="p-2 border font-semibold bg-gray-50" rowspan="8">1º Andar</td>
+              <td class="p-2 border font-bold bg-gray-50" rowspan="8">1</td>
+              <td class="p-2 border font-semibold bg-gray-50" rowspan="8">1</td>
               <td class="p-2 border">—</td>
               <td class="p-2 border font-bold">1</td>
+              <td class="p-2 border"></td><td class="p-2 border"></td><td class="p-2 border"></td><td class="p-2 border"></td><td class="p-2 border"></td>
             </tr>
-            <tr><td class="p-2 border">—</td><td class="p-2 border font-bold">2</td></tr>
-            <tr><td class="p-2 border">7ºB</td><td class="p-2 border font-bold">3</td></tr>
-            <tr><td class="p-2 border">7ºD</td><td class="p-2 border font-bold">4</td></tr>
-            <tr><td class="p-2 border">MAT</td><td class="p-2 border font-bold">5</td></tr>
-            <tr><td class="p-2 border">7ºG</td><td class="p-2 border font-bold">7</td></tr>
-            <tr><td class="p-2 border">7ºF</td><td class="p-2 border font-bold">8</td></tr>
-            <tr><td class="p-2 border">MAKER</td><td class="p-2 border font-bold">9</td></tr>
+            <tr>
+              <td class="p-2 border">—</td>
+              <td class="p-2 border font-bold">2</td>
+              <td class="p-2 border"></td><td class="p-2 border"></td><td class="p-2 border"></td><td class="p-2 border"></td><td class="p-2 border"></td>
+            </tr>
+            <tr>
+              <td class="p-2 border">7ºB</td>
+              <td class="p-2 border font-bold">3</td>
+              <td class="p-2 border">AEE LINGUAGUENS</td><td class="p-2 border">AEE</td><td class="p-2 border">AEE LINGUAGUENS</td><td class="p-2 border">AEE CIÊNCIAS</td><td class="p-2 border">AEE CIÊNCIAS</td>
+            </tr>
+            <tr>
+              <td class="p-2 border">7ºD</td>
+              <td class="p-2 border font-bold">4</td>
+              <td class="p-2 border">AEE CIÊNCIAS</td><td class="p-2 border">AEE</td><td class="p-2 border">AEE CIÊNCIAS</td><td class="p-2 border">AEE LING. E HUMANIDADES</td><td class="p-2 border">AEE</td>
+            </tr>
+            <tr>
+              <td class="p-2 border">MAT</td>
+              <td class="p-2 border font-bold">5</td>
+              <td class="p-2 border"></td><td class="p-2 border"></td><td class="p-2 border"></td><td class="p-2 border"></td><td class="p-2 border"></td>
+            </tr>
+            <tr>
+              <td class="p-2 border">7ºG</td>
+              <td class="p-2 border font-bold">7</td>
+              <td class="p-2 border">AEE</td><td class="p-2 border">AEE</td><td class="p-2 border">AEE</td><td class="p-2 border"></td><td class="p-2 border">PROVA</td>
+            </tr>
+            <tr>
+              <td class="p-2 border">7ºF</td>
+              <td class="p-2 border font-bold">8</td>
+              <td class="p-2 border">AEE HUMANIDADES</td><td class="p-2 border">AEE</td><td class="p-2 border">AEE HUMANIDADES</td><td class="p-2 border"></td><td class="p-2 border">PROVA</td>
+            </tr>
+            <tr>
+              <td class="p-2 border">MAKER</td>
+              <td class="p-2 border font-bold">9</td>
+              <td class="p-2 border">ROBÓTICA 6º-9º</td><td class="p-2 border">ROBÓTICA 6º-9º</td><td class="p-2 border">ROBÓTICA 6º-9º</td><td class="p-2 border">ROBÓTICA 6º-9º</td><td class="p-2 border">ROBÓTICA 6º-9º</td>
+            </tr>
             
             <!-- BLOCO 1 - 2º ANDAR -->
             <tr>
-              <td class="p-2 border font-bold bg-gray-50" rowspan="10">Bloco 1</td>
-              <td class="p-2 border font-semibold bg-gray-50" rowspan="10">2º Andar</td>
-              <td class="p-2 border">7ºE</td><td class="p-2 border font-bold">10</td></tr>
-            <tr><td class="p-2 border">7ºH</td><td class="p-2 border font-bold">11</td></tr>
-            <tr><td class="p-2 border">7ºC</td><td class="p-2 border font-bold">12</td></tr>
-            <tr><td class="p-2 border">7ºA</td><td class="p-2 border font-bold">13</td></tr>
-            <tr><td class="p-2 border">SALA</td><td class="p-2 border font-bold">14</td></tr>
-            <tr><td class="p-2 border">SALA</td><td class="p-2 border font-bold">15</td></tr>
-            <tr><td class="p-2 border">8ºG</td><td class="p-2 border font-bold">16</td></tr>
-            <tr><td class="p-2 border">SALA</td><td class="p-2 border font-bold">17</td></tr>
-            <tr><td class="p-2 border">TATAME</td><td class="p-2 border font-bold">18</td></tr>
-            <tr><td class="p-2 border">8ºH</td><td class="p-2 border font-bold">19</td></tr>
+              <td class="p-2 border font-bold bg-gray-50" rowspan="10">1</td>
+              <td class="p-2 border font-semibold bg-gray-50" rowspan="10">2</td>
+              <td class="p-2 border">7ºE</td>
+              <td class="p-2 border font-bold">10</td>
+              <td class="p-2 border">AEE EXATAS</td><td class="p-2 border">AEE</td><td class="p-2 border">AEE EXATAS</td><td class="p-2 border">AEE EXATAS</td><td class="p-2 border">AEE EXATAS</td>
+            </tr>
+            <tr>
+              <td class="p-2 border">7ºH</td>
+              <td class="p-2 border font-bold">11</td>
+              <td class="p-2 border"></td><td class="p-2 border">NIV. ING.</td><td class="p-2 border">NIV. ING.</td><td class="p-2 border"></td><td class="p-2 border">FISCAIS</td>
+            </tr>
+            <tr>
+              <td class="p-2 border">7ºC</td>
+              <td class="p-2 border font-bold">12</td>
+              <td class="p-2 border">NIV. LP</td><td class="p-2 border">NIV. LP</td><td class="p-2 border"></td><td class="p-2 border">ARENÃO LP/ING<br>(14h15 – 15h45)</td><td class="p-2 border">ARENÃO LP/ING<br>(14h15 – 15h45)</td>
+            </tr>
+            <tr>
+              <td class="p-2 border">7ºA</td>
+              <td class="p-2 border font-bold">13</td>
+              <td class="p-2 border">NIV. MAT</td><td class="p-2 border">NIV. MAT</td><td class="p-2 border">NIV. MAT</td><td class="p-2 border"></td><td class="p-2 border">NIV. MAT</td>
+            </tr>
+            <tr>
+              <td class="p-2 border">SALA</td>
+              <td class="p-2 border font-bold">14</td>
+              <td class="p-2 border">DANÇA<br>(16h10 – 16h55)</td><td class="p-2 border"></td><td class="p-2 border">DANÇA<br>(16h10 – 16h55)</td><td class="p-2 border">MEDITAÇÃO<br>(14h15 – 15h45)</td><td class="p-2 border">MEDITAÇÃO<br>(14h15 – 15h45)</td>
+            </tr>
+            <tr>
+              <td class="p-2 border">SALA</td>
+              <td class="p-2 border font-bold">15</td>
+              <td class="p-2 border"></td><td class="p-2 border"></td><td class="p-2 border"></td><td class="p-2 border"></td><td class="p-2 border">FEDERADOS</td>
+            </tr>
+            <tr>
+              <td class="p-2 border">8ºG</td>
+              <td class="p-2 border font-bold">16</td>
+              <td class="p-2 border">Monitoria<br>(14h15 – 15h45)</td><td class="p-2 border">Monitoria<br>(15h – 16h55)</td><td class="p-2 border"></td><td class="p-2 border"></td><td class="p-2 border">PROVA / Monitoria<br>(16h55 – 17h40)</td>
+            </tr>
+            <tr>
+              <td class="p-2 border">SALA</td>
+              <td class="p-2 border font-bold">17</td>
+              <td class="p-2 border">TEATRO<br>(16h10 – 17h40)</td><td class="p-2 border"></td><td class="p-2 border">TEATRO<br>(14h15 – 17h40)</td><td class="p-2 border">TEATRO<br>(16h55 – 18h25)</td><td class="p-2 border"></td>
+            </tr>
+            <tr>
+              <td class="p-2 border">TATAME</td>
+              <td class="p-2 border font-bold">18</td>
+              <td class="p-2 border">JUDÔ/JIU-JUTSU<br>(15h-15h45 / 17h40-18h25)</td><td class="p-2 border"></td><td class="p-2 border">FUNCIONAL<br>(16h10 – 16h55)</td><td class="p-2 border">JUDÔ<br>(17h40 – 18h25)</td><td class="p-2 border">JIU-JITSU</td>
+            </tr>
+            <tr>
+              <td class="p-2 border">8ºH</td>
+              <td class="p-2 border font-bold">19</td>
+              <td class="p-2 border">ED. FINANC.<br>(14h15 – 17h40)</td><td class="p-2 border">EAGLE<br>(16h55 – 17h40)</td><td class="p-2 border">ARENAMUN<br>(16h10 – 17h40)</td><td class="p-2 border">EAGLE<br>(14h15 – 15h)</td><td class="p-2 border">PROVA</td>
+            </tr>
 
             <!-- BLOCO 4 - 1º ANDAR -->
             <tr>
-              <td class="p-2 border font-bold bg-gray-50" rowspan="2">Bloco 4</td>
-              <td class="p-2 border font-semibold bg-gray-50" rowspan="2">1º Andar</td>
-              <td class="p-2 border">8ºE</td><td class="p-2 border font-bold">32</td></tr>
-            <tr><td class="p-2 border">8ºF</td><td class="p-2 border font-bold">33</td></tr>
+              <td class="p-2 border font-bold bg-gray-50" rowspan="2">4</td>
+              <td class="p-2 border font-semibold bg-gray-50" rowspan="2">1</td>
+              <td class="p-2 border">8ºE</td>
+              <td class="p-2 border font-bold">32</td>
+              <td class="p-2 border">PL. RED. 7º</td><td class="p-2 border">PL. RED. 6º</td><td class="p-2 border">PL. RED. 9º</td><td class="p-2 border"></td><td class="p-2 border">PROVA</td>
+            </tr>
+            <tr>
+              <td class="p-2 border">8ºF</td>
+              <td class="p-2 border font-bold">33</td>
+              <td class="p-2 border">PL. RED. 8º</td><td class="p-2 border"></td><td class="p-2 border"></td><td class="p-2 border"></td><td class="p-2 border">PROVA</td>
+            </tr>
 
             <!-- BLOCO 2 - TÉRREO (T) -->
             <tr>
-              <td class="p-2 border font-bold bg-gray-50" rowspan="12">Bloco 2</td>
-              <td class="p-2 border font-semibold bg-gray-50" rowspan="4">Térreo (T)</td>
-              <td class="p-2 border">8ºD</td><td class="p-2 border font-bold">20</td></tr>
-            <tr><td class="p-2 border">8ºC</td><td class="p-2 border font-bold">21</td></tr>
-            <tr><td class="p-2 border">8ºB</td><td class="p-2 border font-bold">22</td></tr>
-            <tr><td class="p-2 border">8ºA</td><td class="p-2 border font-bold">23</td></tr>
+              <td class="p-2 border font-bold bg-gray-50" rowspan="12">2</td>
+              <td class="p-2 border font-semibold bg-gray-50" rowspan="4">T</td>
+              <td class="p-2 border">8ºD</td>
+              <td class="p-2 border font-bold">20</td>
+              <td class="p-2 border">S. ESTUDOS (6º/7º)</td><td class="p-2 border">S. ESTUDOS (6º/7º)</td><td class="p-2 border">S. ESTUDOS (6º/7º)</td><td class="p-2 border">PROVA</td><td class="p-2 border">PROVA</td>
+            </tr>
+            <tr>
+              <td class="p-2 border">8ºC</td>
+              <td class="p-2 border font-bold">21</td>
+              <td class="p-2 border">S. ESTUDOS (8º/9º)</td><td class="p-2 border">S. ESTUDOS (8º/9º)</td><td class="p-2 border">S. ESTUDOS (8º/9º)</td><td class="p-2 border">S. ESTUDOS</td><td class="p-2 border">PROVA</td>
+            </tr>
+            <tr>
+              <td class="p-2 border">8ºB</td>
+              <td class="p-2 border font-bold">22</td>
+              <td class="p-2 border">ARENÃO Física<br>(14h15 – 15h45)</td><td class="p-2 border">AGRO ARENA A<br>(16h10 – 16h55)</td><td class="p-2 border"></td><td class="p-2 border">FISCAIS</td><td class="p-2 border">PROVA</td>
+            </tr>
+            <tr>
+              <td class="p-2 border">8ºA</td>
+              <td class="p-2 border font-bold">23</td>
+              <td class="p-2 border">ARENÃO Geografia<br>(15h – 16h55)</td><td class="p-2 border">AGRO ARENA B<br>(16h55 – 17h40)</td><td class="p-2 border"></td><td class="p-2 border">FEDERADOS</td><td class="p-2 border">PROVA</td>
+            </tr>
 
             <!-- BLOCO 2 - 1º ANDAR -->
             <tr>
-              <td class="p-2 border font-semibold bg-gray-50" rowspan="4">1º Andar</td>
-              <td class="p-2 border">9ºA</td><td class="p-2 border font-bold">24</td></tr>
-            <tr><td class="p-2 border">9ºB</td><td class="p-2 border font-bold">25</td></tr>
-            <tr><td class="p-2 border">9ºC</td><td class="p-2 border font-bold">26</td></tr>
-            <tr><td class="p-2 border">9ºD</td><td class="p-2 border font-bold">27</td></tr>
+              <td class="p-2 border font-semibold bg-gray-50" rowspan="4">1</td>
+              <td class="p-2 border">9ºA</td>
+              <td class="p-2 border font-bold">24</td>
+              <td class="p-2 border">ARENÃO Debate<br>(16h10 – 17h40)</td><td class="p-2 border"></td><td class="p-2 border">ARENÃO Mat<br>(16h10 – 18h25)</td><td class="p-2 border">PROVA</td><td class="p-2 border">PROVA</td>
+            </tr>
+            <tr>
+              <td class="p-2 border">9ºB</td>
+              <td class="p-2 border font-bold">25</td>
+              <td class="p-2 border"></td><td class="p-2 border">ARENÃO Mat 6º/7º<br>(14h15 – 15h45)</td><td class="p-2 border">ARENÃO Biologia<br>(14h15 – 16h55)</td><td class="p-2 border">PROVA</td><td class="p-2 border">PROVA</td>
+            </tr>
+            <tr>
+              <td class="p-2 border">9ºC</td>
+              <td class="p-2 border font-bold">26</td>
+              <td class="p-2 border"></td><td class="p-2 border">ARENÃO Mat 8º/9º<br>(14h15 – 15h45)</td><td class="p-2 border">ARENÃO Quimica<br>(14h15 – 15h45)</td><td class="p-2 border">PROVA</td><td class="p-2 border">PROVA</td>
+            </tr>
+            <tr>
+              <td class="p-2 border">9ºD</td>
+              <td class="p-2 border font-bold">27</td>
+              <td class="p-2 border"></td><td class="p-2 border"></td><td class="p-2 border">ARENÃO História<br>(16h55 – 18h25)</td><td class="p-2 border">PROVA</td><td class="p-2 border">PROVA</td>
+            </tr>
 
             <!-- BLOCO 2 - 2º ANDAR -->
             <tr>
-              <td class="p-2 border font-semibold bg-gray-50" rowspan="4">2º Andar</td>
-              <td class="p-2 border">9ºE</td><td class="p-2 border font-bold">28</td></tr>
-            <tr><td class="p-2 border">9ºF</td><td class="p-2 border font-bold">29</td></tr>
-            <tr><td class="p-2 border">9ºG</td><td class="p-2 border font-bold">30</td></tr>
-            <tr><td class="p-2 border">9ºH</td><td class="p-2 border font-bold">31</td></tr>
+              <td class="p-2 border font-semibold bg-gray-50" rowspan="4">2</td>
+              <td class="p-2 border">9ºE</td>
+              <td class="p-2 border font-bold">28</td>
+              <td class="p-2 border">CAMBRIDGE</td><td class="p-2 border"></td><td class="p-2 border">CAMBRIDGE</td><td class="p-2 border">PROVA</td><td class="p-2 border">PROVA</td>
+            </tr>
+            <tr>
+              <td class="p-2 border">9ºF</td>
+              <td class="p-2 border font-bold">29</td>
+              <td class="p-2 border">CAMBRIDGE</td><td class="p-2 border"></td><td class="p-2 border">CAMBRIDGE</td><td class="p-2 border">PROVA</td><td class="p-2 border">PROVA</td>
+            </tr>
+            <tr>
+              <td class="p-2 border">9ºG</td>
+              <td class="p-2 border font-bold">30</td>
+              <td class="p-2 border">CAMBRIDGE</td><td class="p-2 border"></td><td class="p-2 border">CAMBRIDGE</td><td class="p-2 border">PROVA</td><td class="p-2 border">PROVA</td>
+            </tr>
+            <tr>
+              <td class="p-2 border">9ºH</td>
+              <td class="p-2 border font-bold">31</td>
+              <td class="p-2 border"></td><td class="p-2 border"></td><td class="p-2 border"></td><td class="p-2 border">PROVA</td><td class="p-2 border">PROVA</td>
+            </tr>
+
+            <!-- ÁREAS EXTRAS (PÁTIO E QUADRAS) -->
+            <tr>
+              <td class="p-2 border font-bold bg-gray-50" colspan="3">PÁTIO</td>
+              <td class="p-2 border font-bold">—</td>
+              <td class="p-2 border"></td><td class="p-2 border"></td><td class="p-2 border"></td><td class="p-2 border"></td><td class="p-2 border">S. ESTUDOS</td>
+            </tr>
+            <tr>
+              <td class="p-2 border font-bold bg-gray-50" colspan="3">QUADRA 1</td>
+              <td class="p-2 border font-bold">F1</td>
+              <td class="p-2 border"></td><td class="p-2 border"></td><td class="p-2 border">T3 – FUTSAL 6°/7º</td><td class="p-2 border"></td><td class="p-2 border"></td>
+            </tr>
+            <tr>
+              <td class="p-2 border font-bold bg-gray-50" colspan="3">QUADRA 2</td>
+              <td class="p-2 border font-bold">F2</td>
+              <td class="p-2 border">T1 – FUTSAL 8º/9°<br>T3 – ED. FÍSICA</td><td class="p-2 border">T1 – Vôlei 6º/7º<br>T2 – Vôlei 6º/7º</td><td class="p-2 border">T. Handball<br>T3 – Vôlei 6º/7º</td><td class="p-2 border">T1 – Vôlei 8º/9°<br>T2 – Vôlei 8º/9°</td><td class="p-2 border"></td>
+            </tr>
+            <tr>
+              <td class="p-2 border font-bold bg-gray-50" colspan="3">QUADRA 3</td>
+              <td class="p-2 border font-bold">F2</td>
+              <td class="p-2 border">T1 – BASQ 8º/9º<br>T1 – FUTSAL 6º/7º</td><td class="p-2 border">T1 – ED. FÍSICA<br>T1 – BASQ 6º/7º</td><td class="p-2 border">T2 – ED. FÍSICA</td><td class="p-2 border">Handball 8º/9°<br>T2 – BASQ 8º/9º</td><td class="p-2 border">Handball 6°/7º<br>T1 – FUTSAL 6°/7º</td>
+            </tr>
           </tbody>
         </table>
       </div>
