@@ -54,11 +54,12 @@
       </div>
     </div>
 
-    <!-- FORMULÁRIO DE RESERVA -->
+    <!-- FORMULÁRIO DE RESERVA / EDIÇÃO -->
     <div id="containerFormReserva" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hidden border-l-4 border-l-emerald-600">
-      <h2 class="text-sm font-bold text-[#1b4332] mb-3 uppercase tracking-wider">➕ Confirmar Reserva para: <span id="labelSalaSelecionada" class="text-emerald-700"></span></h2>
+      <h2 class="text-sm font-bold text-[#1b4332] mb-3 uppercase tracking-wider">➕ <span id="tituloModoForm">Confirmar Reserva</span> para: <span id="labelSalaSelecionada" class="text-emerald-700"></span></h2>
       
       <form onsubmit="salvarReservaSala(event)" class="space-y-4">
+        <input type="hidden" id="reservaEditId" />
         <input type="hidden" id="reservaSalaNum" />
         <input type="hidden" id="reservaData" />
         <input type="hidden" id="reservaHorario" />
@@ -75,7 +76,7 @@
         </div>
         <div class="flex justify-end gap-2">
           <button type="button" onclick="cancelarSelecao()" class="bg-gray-300 text-gray-700 px-4 py-2 rounded text-xs font-semibold">Cancelar</button>
-          <button type="submit" class="bg-[#1b4332] text-white px-5 py-2 rounded text-xs font-semibold hover:bg-emerald-900">Concluir Reserva</button>
+          <button type="submit" id="btnSalvarTexto" class="bg-[#1b4332] text-white px-5 py-2 rounded text-xs font-semibold hover:bg-emerald-900">Concluir Reserva</button>
         </div>
       </form>
     </div>
@@ -87,7 +88,10 @@
           <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider">📋 Tabela Geral de Reservas (Sincronizada na Nuvem)</h3>
           <p class="text-[11px] text-gray-500">Exibindo todos os agendamentos registrados para a escola inteira</p>
         </div>
-        <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black">🖨️ Imprimir Tabela</button>
+        <div class="flex gap-2">
+          <button onclick="zerarTodasReservas()" class="bg-red-700 text-white px-3 py-1.5 rounded text-xs hover:bg-red-800 font-semibold">🗑️ Zerar Reservas</button>
+          <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black">🖨️ Imprimir Tabela</button>
+        </div>
       </div>
       
       <div class="overflow-x-auto">
@@ -216,8 +220,9 @@
         });
       }
 
+      const editIdAtual = document.getElementById('reservaEditId').value;
       let salasOcupadasExtras = reservasSalasList
-        .filter(r => r.data === dataStr)
+        .filter(r => r.data === dataStr && r.id != editIdAtual)
         .map(r => r.sala);
 
       const todasOcupadas = [...new Set([...salasOcupadasFixas, ...salasOcupadasExtras])];
@@ -242,6 +247,10 @@
     }
 
     function selecionarSalaParaReserva(sala, data, horario) {
+      document.getElementById('reservaEditId').value = '';
+      document.getElementById('tituloModoForm').textContent = 'Confirmar Reserva';
+      document.getElementById('btnSalvarTexto').textContent = 'Concluir Reserva';
+
       document.getElementById('reservaSalaNum').value = sala;
       document.getElementById('reservaData').value = data;
       document.getElementById('reservaHorario').value = horario;
@@ -251,25 +260,62 @@
       document.getElementById('containerFormReserva').scrollIntoView({ behavior: 'smooth' });
     }
 
+    function editarReserva(id) {
+      const item = reservasSalasList.find(r => r.id === id);
+      if (!item) return;
+
+      document.getElementById('reservaEditId').value = item.id;
+      document.getElementById('reservaSalaNum').value = item.sala;
+      document.getElementById('reservaData').value = item.data;
+      document.getElementById('reservaHorario').value = item.horario;
+      document.getElementById('reservaResponsavel').value = item.responsavel;
+      document.getElementById('reservaAtividade').value = item.atividade;
+
+      document.getElementById('tituloModoForm').textContent = 'Editar Reserva';
+      document.getElementById('btnSalvarTexto').textContent = 'Salvar Alterações';
+      document.getElementById('labelSalaSelecionada').textContent = `${item.sala} (${item.data} — ${item.horario})`;
+
+      document.getElementById('containerFormReserva').classList.remove('hidden');
+      document.getElementById('containerFormReserva').scrollIntoView({ behavior: 'smooth' });
+    }
+
     function cancelarSelecao() {
       document.getElementById('containerFormReserva').classList.add('hidden');
+      document.getElementById('reservaEditId').value = '';
     }
 
     function salvarReservaSala(e) {
       e.preventDefault();
-      const novoId = Date.now();
-      ultimoIdReservado = novoId;
+      const editId = document.getElementById('reservaEditId').value;
+      const salaNum = document.getElementById('reservaSalaNum').value;
+      const dataVal = document.getElementById('reservaData').value;
+      const horarioVal = document.getElementById('reservaHorario').value;
+      const respVal = document.getElementById('reservaResponsavel').value.trim();
+      const ativVal = document.getElementById('reservaAtividade').value.trim();
 
-      const item = {
-        id: novoId,
-        sala: document.getElementById('reservaSalaNum').value,
-        data: document.getElementById('reservaData').value,
-        horario: document.getElementById('reservaHorario').value,
-        responsavel: document.getElementById('reservaResponsavel').value.trim(),
-        atividade: document.getElementById('reservaAtividade').value.trim()
-      };
-
-      reservasSalasList.unshift(item);
+      if (editId) {
+        // Editando existente
+        reservasSalasList = reservasSalasList.map(r => {
+          if (r.id == editId) {
+            return { ...r, sala: salaNum, data: dataVal, horario: horarioVal, responsavel: respVal, atividade: ativVal };
+          }
+          return r;
+        });
+        ultimoIdReservado = Number(editId);
+      } else {
+        // Nova reserva
+        const novoId = Date.now();
+        ultimoIdReservado = novoId;
+        const item = {
+          id: novoId,
+          sala: salaNum,
+          data: dataVal,
+          horario: horarioVal,
+          responsavel: respVal,
+          atividade: ativVal
+        };
+        reservasSalasList.unshift(item);
+      }
 
       if (usaNuvem) {
         db.ref('escola_arena_salas/reservas').set(reservasSalasList);
@@ -278,8 +324,9 @@
 
       e.target.reset();
       document.getElementById('containerFormReserva').classList.add('hidden');
+      document.getElementById('reservaEditId').value = '';
       renderizarReservasExtras();
-      alert('Sala reservada com sucesso!');
+      alert(editId ? 'Reserva atualizada com sucesso!' : 'Sala reservada com sucesso!');
     }
 
     function renderizarReservasExtras() {
@@ -303,7 +350,8 @@
             <td class="p-2 border text-center font-bold">${r.sala}</td>
             <td class="p-2 border">${r.responsavel}</td>
             <td class="p-2 border">${r.atividade} ${isRecemReservado ? '<span class="ml-2 bg-amber-500 text-white text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider font-bold">Novo</span>' : ''}</td>
-            <td class="p-2 border text-center">
+            <td class="p-2 border text-center space-x-2">
+              <button onclick="editarReserva(${r.id})" class="text-blue-600 font-bold hover:underline text-xs">Editar</button>
               <button onclick="excluirReservaSala(${r.id})" class="text-red-600 font-bold hover:underline text-xs">Excluir</button>
             </td>
           </tr>
@@ -319,6 +367,19 @@
         }
         localStorage.setItem('escola_reservas_salas_local', JSON.stringify(reservasSalasList));
         renderizarReservasExtras();
+      }
+    }
+
+    function zerarTodasReservas() {
+      if (confirm('ATENÇÃO: Deseja realmente apagar TODAS as reservas cadastradas na nuvem? Esta ação não pode ser desfeita.')) {
+        reservasSalasList = [];
+        if (usaNuvem) {
+          db.ref('escola_arena_salas/reservas').set(null);
+        }
+        localStorage.setItem('escola_reservas_salas_local', JSON.stringify([]));
+        renderizarReservasExtras();
+        document.getElementById('containerFormReserva').classList.add('hidden');
+        alert('Todas as reservas foram zeradas.');
       }
     }
   </script>
