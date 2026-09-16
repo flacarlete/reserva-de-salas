@@ -312,7 +312,8 @@
 
     function extrairHorarios(texto) {
       if (!texto) return [];
-      const regex = /\((\d{2}:\d{2})\s*–\s*(\d{2}:\d{2})\)/g;
+      // Extrai horários simples (HH:MM – HH:MM) ou múltiplos separados por barra (/ ou ou)
+      const regex = /(\d{2}:\d{2})\s*–\s*(\d{2}:\d{2})/g;
       let matches = [];
       let match;
       while ((match = regex.exec(texto)) !== null) {
@@ -350,14 +351,14 @@
           if (textoAtividade.trim() !== '') {
             const intervalos = extrairHorarios(textoAtividade);
             if (intervalos.length === 0) {
-              // Sem horário entre parênteses = Ocupada a tarde toda
+              // Se tem texto mas NÃO tem horário entre parênteses, ocupa o período todo
               salasOcupadasFixas.push(item.numero);
             } else {
-              // Com horários específicos = Verificar se o horário buscado colide com algum intervalo ocupado
+              // Se tem horários entre parênteses, verifica se o horário pesquisado bate com algum intervalo
               let temConflito = false;
               intervalos.forEach(iv => {
                 if (!(buscaTermino <= iv.inicio || buscaInicio >= iv.termino)) {
-                  temConflito = true; // Colidiu com a atividade fixa
+                  temConflito = true;
                 }
               });
               if (temConflito) {
@@ -373,7 +374,6 @@
       reservasSalasList
         .filter(r => r.data === dataStr && r.id != editIdAtual)
         .forEach(r => {
-          // As reservas manuais possuem formato "HH:MM às HH:MM"
           const partes = r.horario.split(' às ');
           if (partes.length === 2) {
             const rInicio = converterHoraParaMinutos(partes[0]);
