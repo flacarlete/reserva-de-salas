@@ -79,7 +79,7 @@
         </div>
         <div class="flex justify-end gap-2">
           <button type="button" onclick="cancelarSelecao()" class="bg-gray-300 text-gray-700 px-4 py-2 rounded text-xs font-semibold">Cancelar</button>
-          <button type="submit" id="btnSalvarTexto" class="bg-[#1b4332] text-white px-5 py-2 rounded text-xs font-semibold hover:bg-emerald-900">Concluir Reserva</button>
+          <button type="submit" id="btnSalvarTexto" class="bg-[#1b4332] text-white px-5 py-2 rounded text-xs font-semibold hover:bg-emerald-900">Concluir Reservas</button>
         </div>
       </form>
     </div>
@@ -110,6 +110,87 @@
             </tr>
           </thead>
           <tbody id="corpoTabelaReservasExtras"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- MAPA GERAL DE LOCALIZAÇÃO DAS SALAS -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-4">🗺️ Mapa Geral de Localização das Salas (Bloco / Andar / Série)</h3>
+      
+      <div class="overflow-x-auto">
+        <table class="w-full text-center text-xs border border-gray-300">
+          <thead class="bg-[#1b4332] text-white font-semibold">
+            <tr>
+              <th class="p-2 border">Bloco</th>
+              <th class="p-2 border">Andar</th>
+              <th class="p-2 border">Série / Identificação</th>
+              <th class="p-2 border">Nº da Sala</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 text-gray-700">
+            <!-- BLOCO 1 - 1º ANDAR -->
+            <tr>
+              <td class="p-2 border font-bold bg-gray-50" rowspan="8">Bloco 1</td>
+              <td class="p-2 border font-semibold bg-gray-50" rowspan="8">1º Andar</td>
+              <td class="p-2 border">—</td>
+              <td class="p-2 border font-bold">1</td>
+            </tr>
+            <tr><td class="p-2 border">—</td><td class="p-2 border font-bold">2</td></tr>
+            <tr><td class="p-2 border">7ºB</td><td class="p-2 border font-bold">3</td></tr>
+            <tr><td class="p-2 border">7ºD</td><td class="p-2 border font-bold">4</td></tr>
+            <tr><td class="p-2 border">MAT</td><td class="p-2 border font-bold">5</td></tr>
+            <tr><td class="p-2 border">7ºG</td><td class="p-2 border font-bold">7</td></tr>
+            <tr><td class="p-2 border">7ºF</td><td class="p-2 border font-bold">8</td></tr>
+            <tr><td class="p-2 border">MAKER</td><td class="p-2 border font-bold">9</td></tr>
+            
+            <!-- BLOCO 1 - 2º ANDAR -->
+            <tr>
+              <td class="p-2 border font-bold bg-gray-50" rowspan="10">Bloco 1</td>
+              <td class="p-2 border font-semibold bg-gray-50" rowspan="10">2º Andar</td>
+              <td class="p-2 border">7ºE</td><td class="p-2 border font-bold">10</td></tr>
+            <tr><td class="p-2 border">7ºH</td><td class="p-2 border font-bold">11</td></tr>
+            <tr><td class="p-2 border">7ºC</td><td class="p-2 border font-bold">12</td></tr>
+            <tr><td class="p-2 border">7ºA</td><td class="p-2 border font-bold">13</td></tr>
+            <tr><td class="p-2 border">SALA</td><td class="p-2 border font-bold">14</td></tr>
+            <tr><td class="p-2 border">SALA</td><td class="p-2 border font-bold">15</td></tr>
+            <tr><td class="p-2 border">8ºG</td><td class="p-2 border font-bold">16</td></tr>
+            <tr><td class="p-2 border">SALA</td><td class="p-2 border font-bold">17</td></tr>
+            <tr><td class="p-2 border">TATAME</td><td class="p-2 border font-bold">18</td></tr>
+            <tr><td class="p-2 border">8ºH</td><td class="p-2 border font-bold">19</td></tr>
+
+            <!-- BLOCO 4 - 1º ANDAR -->
+            <tr>
+              <td class="p-2 border font-bold bg-gray-50" rowspan="2">Bloco 4</td>
+              <td class="p-2 border font-semibold bg-gray-50" rowspan="2">1º Andar</td>
+              <td class="p-2 border">8ºE</td><td class="p-2 border font-bold">32</td></tr>
+            <tr><td class="p-2 border">8ºF</td><td class="p-2 border font-bold">33</td></tr>
+
+            <!-- BLOCO 2 - TÉRREO (T) -->
+            <tr>
+              <td class="p-2 border font-bold bg-gray-50" rowspan="12">Bloco 2</td>
+              <td class="p-2 border font-semibold bg-gray-50" rowspan="4">Térreo (T)</td>
+              <td class="p-2 border">8ºD</td><td class="p-2 border font-bold">20</td></tr>
+            <tr><td class="p-2 border">8ºC</td><td class="p-2 border font-bold">21</td></tr>
+            <tr><td class="p-2 border">8ºB</td><td class="p-2 border font-bold">22</td></tr>
+            <tr><td class="p-2 border">8ºA</td><td class="p-2 border font-bold">23</td></tr>
+
+            <!-- BLOCO 2 - 1º ANDAR -->
+            <tr>
+              <td class="p-2 border font-semibold bg-gray-50" rowspan="4">1º Andar</td>
+              <td class="p-2 border">9ºA</td><td class="p-2 border font-bold">24</td></tr>
+            <tr><td class="p-2 border">9ºB</td><td class="p-2 border font-bold">25</td></tr>
+            <tr><td class="p-2 border">9ºC</td><td class="p-2 border font-bold">26</td></tr>
+            <tr><td class="p-2 border">9ºD</td><td class="p-2 border font-bold">27</td></tr>
+
+            <!-- BLOCO 2 - 2º ANDAR -->
+            <tr>
+              <td class="p-2 border font-semibold bg-gray-50" rowspan="4">2º Andar</td>
+              <td class="p-2 border">9ºE</td><td class="p-2 border font-bold">28</td></tr>
+            <tr><td class="p-2 border">9ºF</td><td class="p-2 border font-bold">29</td></tr>
+            <tr><td class="p-2 border">9ºG</td><td class="p-2 border font-bold">30</td></tr>
+            <tr><td class="p-2 border">9ºH</td><td class="p-2 border font-bold">31</td></tr>
+          </tbody>
         </table>
       </div>
     </div>
@@ -308,7 +389,6 @@
       const ativVal = document.getElementById('reservaAtividade').value.trim();
 
       if (editId) {
-        // Editando uma única reserva existente
         const salaUnica = salasArr[0];
         reservasSalasList = reservasSalasList.map(r => {
           if (r.id == editId) {
@@ -318,7 +398,6 @@
         });
         ultimoIdReservado = Number(editId);
       } else {
-        // Criando uma ou mais reservas novas de uma vez
         const primeiroNovoId = Date.now();
         ultimoIdReservado = primeiroNovoId;
 
