@@ -294,7 +294,6 @@
       const ativVal = document.getElementById('reservaAtividade').value.trim();
 
       if (editId) {
-        // Editando existente
         reservasSalasList = reservasSalasList.map(r => {
           if (r.id == editId) {
             return { ...r, sala: salaNum, data: dataVal, horario: horarioVal, responsavel: respVal, atividade: ativVal };
@@ -303,7 +302,6 @@
         });
         ultimoIdReservado = Number(editId);
       } else {
-        // Nova reserva
         const novoId = Date.now();
         ultimoIdReservado = novoId;
         const item = {
