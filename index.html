@@ -245,8 +245,16 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       document.getElementById('dataAtualSistema').textContent = new Date().toLocaleDateString('pt-BR');
-      const hojeStr = new Date().toISOString().split('T')[0];
-      document.getElementById('buscaData').value = hojeStr;
+      
+      // Se houver reservas salvas, define a data da busca automaticamente para a data da primeira reserva encontrada
+      const reservasSalvasTemp = JSON.parse(localStorage.getItem('escola_reservas_salas_local') || '[]');
+      if (reservasSalvasTemp.length > 0 && reservasSalvasTemp[0].data) {
+        document.getElementById('buscaData').value = reservasSalvasTemp[0].data;
+      } else {
+        const hojeStr = new Date().toISOString().split('T')[0];
+        document.getElementById('buscaData').value = hojeStr;
+      }
+
       carregarDados();
     });
 
@@ -254,6 +262,10 @@
       if (usaNuvem) {
         db.ref('escola_arena_salas/reservas').on('value', (snapshot) => {
           reservasSalasList = snapshot.val() || [];
+          // Atualiza a data da busca para a primeira reserva se necessário
+          if (reservasSalasList.length > 0 && reservasSalasList[0].data && !document.getElementById('buscaData').value) {
+            document.getElementById('buscaData').value = reservasSalasList[0].data;
+          }
           renderizarTudo();
         });
       } else {
