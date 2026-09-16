@@ -88,7 +88,7 @@
           <p class="text-[11px] text-gray-500">Exibindo reservas cadastradas no mapa para a data de referência: <span id="labelDataMapa" class="font-bold text-emerald-800"></span></p>
         </div>
         <div class="flex items-center gap-2">
-          <button onclick="gerarSalasDoDia()" class="nao-imprimir bg-emerald-700 text-white px-3 py-1.5 rounded text-xs font-bold hover:bg-emerald-800 shadow flex items-center gap-1">
+          <button onclick="solicitarDiaParaMapa()" class="nao-imprimir bg-emerald-700 text-white px-3 py-1.5 rounded text-xs font-bold hover:bg-emerald-800 shadow flex items-center gap-1">
             📷 Salas do Dia (Gerar Imagem/PDF)
           </button>
           <div class="text-xs bg-emerald-50 border border-emerald-300 text-emerald-900 px-3 py-1.5 rounded font-semibold flex items-center gap-2 nao-imprimir">
@@ -97,7 +97,7 @@
         </div>
       </div>
       
-      <div class="overflow-x-auto max-h-[550px]">
+      <div class="overflow-x-auto">
         <table class="w-full text-center text-xs border-collapse border border-gray-300">
           <thead class="bg-[#1b4332] text-white font-semibold sticky top-0 z-10">
             <tr>
@@ -275,8 +275,16 @@
       renderizarMapaSalas();
     }
 
-    function gerarSalasDoDia() {
-      window.print();
+    function solicitarDiaParaMapa() {
+      const dataAtualBusca = document.getElementById('buscaData').value;
+      const dataEscolhida = prompt("Digite ou confirme a data que deseja gerar a imagem/PDF do mapa (AAAA-MM-DD):", dataAtualBusca);
+      if (dataEscolhida) {
+        document.getElementById('buscaData').value = dataEscolhida;
+        renderizarMapaSalas();
+        setTimeout(() => {
+          window.print();
+        }, 300);
+      }
     }
 
     function renderizarMapaSalas() {
