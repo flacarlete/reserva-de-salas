@@ -62,10 +62,10 @@
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-2">
         <div>
           <h3 class="text-xs font-bold text-[#1b4332] uppercase tracking-wider">🗺️ Guia de Salas e Grade de Atividades (Com Reservas em Tempo Real)</h3>
-          <p class="text-[11px] text-gray-500">O mapa reflete as reservas feitas para a data consultada acima (<span id="labelDataMapa" class="font-bold text-emerald-800"></span>).</p>
+          <p class="text-[11px] text-gray-500">Exibindo reservas cadastradas no mapa para a data de referência: <span id="labelDataMapa" class="font-bold text-emerald-800"></span></p>
         </div>
         <div class="text-xs bg-emerald-50 border border-emerald-300 text-emerald-900 px-3 py-1.5 rounded font-semibold flex items-center gap-2">
-          <span class="w-3 h-3 bg-emerald-200 border border-emerald-600 inline-block rounded-sm"></span> Reservas de Professores em destaque verde
+          <span class="w-3 h-3 bg-emerald-200 border border-emerald-600 inline-block rounded-sm"></span> Reservas de Professores em destaque verde com a data
         </div>
       </div>
       
@@ -265,24 +265,26 @@
       }
 
       MAPA_ESTRUTURA.forEach(linha => {
-        const reservaEncontrada = reservasSalasList.find(r => r.data === dataStr && r.sala === linha.numero);
+        // Buscar todas as reservas para esta sala específica (independente da data selecionada na busca para exibir no mapa)
+        const reservasDaSala = reservasSalasList.filter(r => r.sala === linha.numero);
 
         let celulaDiaDinamica = '';
         if (chaveDia) {
           const conteudoOriginal = linha[chaveDia] || '';
-          if (reservaEncontrada) {
-            celulaDiaDinamica = `
-              ${conteudoOriginal ? formatarTextoAtividade(conteudoOriginal) + '<br>' : ''}
-              <div class="mt-1 bg-emerald-100 border border-emerald-500 text-emerald-900 p-1 rounded font-bold text-[11px] shadow-sm">
-                📌 ${reservaEncontrada.responsavel}<br><span class="text-[10px] font-normal text-emerald-800">${reservaEncontrada.atividade} (${reservaEncontrada.horario})</span>
-              </div>
-            `;
-          } else {
-            celulaDiaDinamica = formatarTextoAtividade(conteudoOriginal);
-          }
-        } else {
-          celulaDiaDinamica = formatarTextoAtividade(linha[chaveDia] || '');
+          celulaDiaDinamica = formatarTextoAtividade(conteudoOriginal);
         }
+
+        // Adicionar todas as reservas programadas para esta sala com a identificação do dia/data
+        let htmlReservasExtras = '';
+        reservasDaSala.forEach(res => {
+          const dataFormatada = res.data ? res.data.split('-').reverse().join('/') : '';
+          htmlReservasExtras += `
+            <div class="mt-1 bg-emerald-100 border border-emerald-500 text-emerald-900 p-1.5 rounded font-bold text-[11px] shadow-sm">
+              📌 ${res.responsavel} <span class="text-[10px] text-emerald-700 bg-white px-1 rounded border border-emerald-300">📅 ${dataFormatada}</span><br>
+              <span class="text-[10px] font-normal text-emerald-800">${res.atividade} (${res.horario})</span>
+            </div>
+          `;
+        });
 
         tbody.innerHTML += `
           <tr class="border-b border-b-gray-300 hover:bg-gray-50">
@@ -290,11 +292,11 @@
             <td class="p-2 border-r-2 border-r-gray-400 font-semibold bg-gray-50">${linha.andar}</td>
             <td class="p-2 border font-medium">${linha.serie}</td>
             <td class="p-2 border font-bold text-[#1b4332]">${linha.numero}</td>
-            <td class="p-2 border">${chaveDia === 'seg' ? celulaDiaDinamica : formatarTextoAtividade(linha.seg || '')}</td>
-            <td class="p-2 border">${chaveDia === 'ter' ? celulaDiaDinamica : formatarTextoAtividade(linha.ter || '')}</td>
-            <td class="p-2 border">${chaveDia === 'qua' ? celulaDiaDinamica : formatarTextoAtividade(linha.qua || '')}</td>
-            <td class="p-2 border">${chaveDia === 'qui' ? celulaDiaDinamica : formatarTextoAtividade(linha.qui || '')}</td>
-            <td class="p-2 border">${chaveDia === 'sex' ? celulaDiaDinamica : formatarTextoAtividade(linha.sex || '')}</td>
+            <td class="p-2 border">${chaveDia === 'seg' ? (celulaDiaDinamica + htmlReservasExtras) : formatarTextoAtividade(linha.seg || '')}</td>
+            <td class="p-2 border">${chaveDia === 'ter' ? (celulaDiaDinamica + htmlReservasExtras) : formatarTextoAtividade(linha.ter || '')}</td>
+            <td class="p-2 border">${chaveDia === 'qua' ? (celulaDiaDinamica + htmlReservasExtras) : formatarTextoAtividade(linha.qua || '')}</td>
+            <td class="p-2 border">${chaveDia === 'qui' ? (celulaDiaDinamica + htmlReservasExtras) : formatarTextoAtividade(linha.qui || '')}</td>
+            <td class="p-2 border">${chaveDia === 'sex' ? (celulaDiaDinamica + htmlReservasExtras) : formatarTextoAtividade(linha.sex || '')}</td>
           </tr>
         `;
       });
