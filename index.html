@@ -76,7 +76,7 @@
               <th class="p-2 border">Bloco</th>
               <th class="p-2 border">Andar</th>
               <th class="p-2 border">Série / Identificação</th>
-              <th class="p-2 border">Nº da Sala / Ref</th>
+              <th class="p-2 border">Nº da Sala</th>
               <th class="p-2 border">2ª Feira</th>
               <th class="p-2 border">3ª Feira</th>
               <th class="p-2 border">4ª Feira</th>
@@ -173,52 +173,50 @@
     }
 
     const TODAS_AS_SALAS = [
-      "Sala 1", "Sala 2", "Sala 3 (AEE)", "Sala 4 (AEE)", "Sala 5", "Sala 7 (AEE)", "Sala 8 (AEE)", 
-      "Sala 9 (Maker/Robótica)", "Sala 10 (AEE)", "Sala 11", "Sala 12", 
-      "Sala 13 (Dança/Meditação)", "Sala 14", "Sala 15", "Sala 16 (Monitoria)", 
-      "Sala 17 (Teatro)", "Sala 18 (Tatame)", "Sala 19", "Sala 20 (Sala Estudos)", 
-      "Sala 21 (Sala Estudos)", "Sala 22", "Sala 23", "Salas 24 a 27 (Arena)", 
-      "Salas 28 a 31 (Cambridge)", "Sala 32/33 (Pl. Redação)"
+      "Sala 1", "Sala 2", "Sala 3", "Sala 4", "Sala 5", "Sala 7", "Sala 8", 
+      "Sala 9", "Sala 10", "Sala 11", "Sala 12", "Sala 13", "Sala 14", "Sala 15", 
+      "Sala 16", "Sala 17", "Sala 18", "Sala 19", "Sala 20", "Sala 21", "Sala 22", 
+      "Sala 23", "Salas 24 a 27", "Salas 28 a 31", "Sala 32/33"
     ];
 
     const MAPA_ESTRUTURA = [
       { bloco: "Bloco 1", andar: "1º Andar", serie: "—", numero: "Sala 1", seg: "", ter: "", qua: "", qui: "", sex: "" },
       { bloco: "Bloco 1", andar: "1º Andar", serie: "—", numero: "Sala 2", seg: "", ter: "", qua: "", qui: "", sex: "" },
-      { bloco: "Bloco 1", andar: "1º Andar", serie: "7ºB", numero: "Sala 3 (AEE)", seg: "AEE LINGUAGUENS", ter: "AEE", qua: "AEE LINGUAGUENS", qui: "AEE CIÊNCIAS", sex: "AEE CIÊNCIAS" },
-      { bloco: "Bloco 1", andar: "1º Andar", serie: "7ºD", numero: "Sala 4 (AEE)", seg: "AEE CIÊNCIAS", ter: "AEE", qua: "AEE CIÊNCIAS", qui: "AEE LING. E HUMANIDADES", sex: "AEE" },
+      { bloco: "Bloco 1", andar: "1º Andar", serie: "7ºB", numero: "Sala 3", seg: "AEE LINGUAGUENS", ter: "AEE", qua: "AEE LINGUAGUENS", qui: "AEE CIÊNCIAS", sex: "AEE CIÊNCIAS" },
+      { bloco: "Bloco 1", andar: "1º Andar", serie: "7ºD", numero: "Sala 4", seg: "AEE CIÊNCIAS", ter: "AEE", qua: "AEE CIÊNCIAS", qui: "AEE LING. E HUMANIDADES", sex: "AEE" },
       { bloco: "Bloco 1", andar: "1º Andar", serie: "MAT", numero: "Sala 5", seg: "", ter: "", qua: "", qui: "", sex: "" },
-      { bloco: "Bloco 1", andar: "1º Andar", serie: "7ºG", numero: "Sala 7 (AEE)", seg: "AEE", ter: "AEE", qua: "AEE", qui: "", sex: "PROVA" },
-      { bloco: "Bloco 1", andar: "1º Andar", serie: "7ºF", numero: "Sala 8 (AEE)", seg: "AEE HUMANIDADES", ter: "AEE", qua: "AEE HUMANIDADES", qui: "", sex: "PROVA" },
-      { bloco: "Bloco 1", andar: "1º Andar", serie: "MAKER", numero: "Sala 9 (Maker/Robótica)", seg: "ROBÓTICA 6º-9º", ter: "ROBÓTICA 6º-9º", qua: "ROBÓTICA 6º-9º", qui: "ROBÓTICA 6º-9º", sex: "ROBÓTICA 6º-9º" },
+      { bloco: "Bloco 1", andar: "1º Andar", serie: "7ºG", numero: "Sala 7", seg: "AEE", ter: "AEE", qua: "AEE", qui: "", sex: "PROVA" },
+      { bloco: "Bloco 1", andar: "1º Andar", serie: "7ºF", numero: "Sala 8", seg: "AEE HUMANIDADES", ter: "AEE", qua: "AEE HUMANIDADES", qui: "", sex: "PROVA" },
+      { bloco: "Bloco 1", andar: "1º Andar", serie: "MAKER", numero: "Sala 9", seg: "ROBÓTICA 6º-9º", ter: "ROBÓTICA 6º-9º", qua: "ROBÓTICA 6º-9º", qui: "ROBÓTICA 6º-9º", sex: "ROBÓTICA 6º-9º" },
       
-      { bloco: "Bloco 1", andar: "2º Andar", serie: "7ºE", numero: "Sala 10 (AEE)", seg: "AEE EXATAS", ter: "AEE", qua: "AEE EXATAS", qui: "AEE EXATAS", sex: "AEE EXATAS" },
-      { bloco: "Bloco 1", andar: "2º Andar", serie: "7ºH", numero: "Sala 11", seg: "", ter: "NIV. ING.", qua: "NIV. ING.", qui: "", sex: "FISCAIS" },
-      { bloco: "Bloco 1", andar: "2º Andar", serie: "7ºC", numero: "Sala 12", seg: "NIV. LP", ter: "NIV. LP", qua: "", qui: "ARENÃO LP/ING<br><span class='text-[10px] font-bold text-blue-700'>(14h15–15h45)</span>", sex: "ARENÃO LP/ING<br><span class='text-[10px] font-bold text-blue-700'>(14h15–15h45)</span>" },
-      { bloco: "Bloco 1", andar: "2º Andar", serie: "7ºA", numero: "Sala 13 (Dança/Meditação)", seg: "DANÇA<br><span class='text-[10px] font-bold text-blue-700'>(16h10–16h55)</span>", ter: "", qua: "DANÇA<br><span class='text-[10px] font-bold text-blue-700'>(16h10–16h55)</span>", qui: "MEDITAÇÃO<br><span class='text-[10px] font-bold text-blue-700'>(14h15–15h45)</span>", sex: "MEDITAÇÃO<br><span class='text-[10px] font-bold text-blue-700'>(14h15–15h45)</span>" },
+      { bloco: "Bloco 1", andar: "2º Andar", serie: "7ºE", numero: "Sala 10", seg: "AEE EXATAS", ter: "AEE", qua: "AEE EXATAS", qui: "AEE EXATAS", sex: "AEE EXATAS" },
+      { bloco: "Bloco 1", andar: "2º Andar", serie: "7ºH", numero: "Sala 11", seg: "", ter: "NIV. ING. (14h15 – 16h55)", qua: "NIV. ING. (14h15 – 16h55)", qui: "", sex: "FISCAIS" },
+      { bloco: "Bloco 1", andar: "2º Andar", serie: "7ºC", numero: "Sala 12", seg: "NIV. LP", ter: "NIV. LP", qua: "", qui: "ARENÃO LP/ING (14h15 – 15h45)", sex: "ARENÃO LP/ING (14h15 – 15h45)" },
+      { bloco: "Bloco 1", andar: "2º Andar", serie: "7ºA", numero: "Sala 13", seg: "DANÇA (16h10 – 16h55)", ter: "", qua: "DANÇA (16h10 – 16h55)", qui: "MEDITAÇÃO (14h15 – 15h45)", sex: "MEDITAÇÃO (14h15 – 15h45)" },
       { bloco: "Bloco 1", andar: "2º Andar", serie: "SALA", numero: "Sala 14", seg: "NIV. MAT", ter: "NIV. MAT", qua: "NIV. MAT", qui: "", sex: "NIV. MAT" },
       { bloco: "Bloco 1", andar: "2º Andar", serie: "SALA", numero: "Sala 15", seg: "", ter: "", qua: "", qui: "", sex: "FEDERADOS" },
-      { bloco: "Bloco 1", andar: "2º Andar", serie: "8ºG", numero: "Sala 16 (Monitoria)", seg: "Monitoria<br><span class='text-[10px] font-bold text-blue-700'>(14h15–15h45)</span>", ter: "Monitoria<br><span class='text-[10px] font-bold text-blue-700'>(15h–16h55)</span>", qua: "", qui: "", sex: "PROVA / Monitoria<br><span class='text-[10px] font-bold text-blue-700'>(16h55–17h40)</span>" },
-      { bloco: "Bloco 1", andar: "2º Andar", serie: "SALA", numero: "Sala 17 (Teatro)", seg: "TEATRO<br><span class='text-[10px] font-bold text-blue-700'>(16h10–17h40)</span>", ter: "", qua: "TEATRO<br><span class='text-[10px] font-bold text-blue-700'>(14h15–17h40)</span>", qui: "TEATRO<br><span class='text-[10px] font-bold text-blue-700'>(16h55–18h25)</span>", sex: "" },
-      { bloco: "Bloco 1", andar: "2º Andar", serie: "TATAME", numero: "Sala 18 (Tatame)", seg: "JUDÔ/JIU-JUTSU<br><span class='text-[10px] font-bold text-blue-700'>(15h-15h45 / 17h40-18h25)</span>", ter: "", qua: "FUNCIONAL<br><span class='text-[10px] font-bold text-blue-700'>(16h10–16h55)</span>", qui: "JUDÔ<br><span class='text-[10px] font-bold text-blue-700'>(17h40–18h25)</span>", sex: "JIU-JITSU" },
-      { bloco: "Bloco 1", andar: "2º Andar", serie: "8ºH", numero: "Sala 19", seg: "ED. FINANC.<br><span class='text-[10px] font-bold text-blue-700'>(14h15–17h40)</span>", ter: "EAGLE<br><span class='text-[10px] font-bold text-blue-700'>(16h55–17h40)</span>", qua: "ARENAMUN<br><span class='text-[10px] font-bold text-blue-700'>(16h10–17h40)</span>", qui: "EAGLE<br><span class='text-[10px] font-bold text-blue-700'>(14h15–15h)</span>", sex: "PROVA" },
+      { bloco: "Bloco 1", andar: "2º Andar", serie: "8ºG", numero: "Sala 16", seg: "Monitoria (14h15 – 15h45)", ter: "Monitoria (15h – 16h55)", qua: "", qui: "", sex: "PROVA/Monitoria (16h55 – 17h40)" },
+      { bloco: "Bloco 1", andar: "2º Andar", serie: "SALA", numero: "Sala 17", seg: "TEATRO (16h10 – 17h40)", ter: "", qua: "TEATRO (14h15 – 17h40)", qui: "TEATRO (16h55 – 18h25)", sex: "" },
+      { bloco: "Bloco 1", andar: "2º Andar", serie: "TATAME", numero: "Sala 18", seg: "JUDÔ/JIU-JUTSU (15h – 15h45 / 17h40 – 18h25)", ter: "", qua: "FUNCIONAL (16h10 – 16h55)", qui: "JUDÔ (17h40 – 18h25)", sex: "JIU-JITSU" },
+      { bloco: "Bloco 1", andar: "2º Andar", serie: "8ºH", numero: "Sala 19", seg: "ED. FINANC. (14h15 – 17h40)", ter: "EAGLE (16h55 – 17h40)", qua: "ARENAMUN (16h10 – 17h40)", qui: "EAGLE (14h15 – 15h)", sex: "PROVA" },
 
-      { bloco: "Bloco 4", andar: "1º Andar", serie: "8ºE", numero: "Sala 32/33 (Pl. Redação)", seg: "PL. RED. 7º", ter: "PL. RED. 6º", qua: "PL. RED. 9º", qui: "", sex: "PROVA" },
-      { bloco: "Bloco 4", andar: "1º Andar", serie: "8ºF", numero: "Sala 32/33 (Pl. Redação)", seg: "PL. RED. 8º", ter: "", qua: "", qui: "", sex: "PROVA" },
+      { bloco: "Bloco 4", andar: "1º Andar", serie: "8ºE", numero: "Sala 32/33", seg: "PL. RED. 7º", ter: "PL. RED. 6º", qua: "PL. RED. 9º", qui: "", sex: "PROVA" },
+      { bloco: "Bloco 4", andar: "1º Andar", serie: "8ºF", numero: "Sala 32/33", seg: "PL. RED. 8º", ter: "", qua: "", qui: "", sex: "PROVA" },
 
-      { bloco: "Bloco 2", andar: "Térreo", serie: "8ºD", numero: "Sala 20 (Sala Estudos)", seg: "S. ESTUDOS (6º/7º)", ter: "S. ESTUDOS (6º/7º)", qua: "S. ESTUDOS (6º/7º)", qui: "PROVA", sex: "PROVA" },
-      { bloco: "Bloco 2", andar: "Térreo", serie: "8ºC", numero: "Sala 21 (Sala Estudos)", seg: "S. ESTUDOS (8º/9º)", ter: "S. ESTUDOS (8º/9º)", qua: "S. ESTUDOS (8º/9º)", qui: "S. ESTUDOS", sex: "PROVA" },
-      { bloco: "Bloco 2", andar: "Térreo", serie: "8ºB", numero: "Sala 22", seg: "ARENÃO Física<br><span class='text-[10px] font-bold text-blue-700'>(14h15–15h45)</span>", ter: "AGRO ARENA A<br><span class='text-[10px] font-bold text-blue-700'>(16h10–16h55)</span>", qua: "", qui: "FISCAIS", sex: "PROVA" },
-      { bloco: "Bloco 2", andar: "Térreo", serie: "8ºA", numero: "Sala 23", seg: "ARENÃO Geografia<br><span class='text-[10px] font-bold text-blue-700'>(15h–16h55)</span>", ter: "AGRO ARENA B<br><span class='text-[10px] font-bold text-blue-700'>(16h55–17h40)</span>", qua: "", qui: "FEDERADOS", sex: "PROVA" },
+      { bloco: "Bloco 2", andar: "Térreo", serie: "8ºD", numero: "Sala 20", seg: "S. ESTUDOS (6º/7º)", ter: "S. ESTUDOS (6º/7º)", qua: "S. ESTUDOS (6º/7º)", qui: "PROVA", sex: "PROVA" },
+      { bloco: "Bloco 2", andar: "Térreo", serie: "8ºC", numero: "Sala 21", seg: "S. ESTUDOS (8º/9º)", ter: "S. ESTUDOS (8º/9º)", qua: "S. ESTUDOS (8º/9º)", qui: "S. ESTUDOS", sex: "PROVA" },
+      { bloco: "Bloco 2", andar: "Térreo", serie: "8ºB", numero: "Sala 22", seg: "ARENÃO Física (14h15 – 15h45)", ter: "AGRO ARENA – TURMA A (16h10 – 16h55)", qua: "", qui: "FISCAIS", sex: "PROVA" },
+      { bloco: "Bloco 2", andar: "Térreo", serie: "8ºA", numero: "Sala 23", seg: "ARENÃO Geografia (15h – 16h55)", ter: "AGRO ARENA – TURMA B (16h55 – 17h40)", qua: "", qui: "FEDERADOS", sex: "PROVA" },
 
-      { bloco: "Bloco 2", andar: "1º Andar", serie: "9ºA", numero: "Salas 24 a 27 (Arena)", seg: "ARENÃO Debate<br><span class='text-[10px] font-bold text-blue-700'>(16h10–17h40)</span>", ter: "", qua: "ARENÃO Mat<br><span class='text-[10px] font-bold text-blue-700'>(16h10–18h25)</span>", qui: "PROVA", sex: "PROVA" },
-      { bloco: "Bloco 2", andar: "1º Andar", serie: "9ºB", numero: "Salas 24 a 27 (Arena)", seg: "", ter: "ARENÃO Mat 6º/7º<br><span class='text-[10px] font-bold text-blue-700'>(14h15–15h45)</span>", qua: "ARENÃO Biologia<br><span class='text-[10px] font-bold text-blue-700'>(14h15–16h55)</span>", qui: "PROVA", sex: "PROVA" },
-      { bloco: "Bloco 2", andar: "1º Andar", serie: "9ºC", numero: "Salas 24 a 27 (Arena)", seg: "", ter: "ARENÃO Mat 8º/9º<br><span class='text-[10px] font-bold text-blue-700'>(14h15–15h45)</span>", qua: "ARENÃO Quimica<br><span class='text-[10px] font-bold text-blue-700'>(14h15–15h45)</span>", qui: "PROVA", sex: "PROVA" },
-      { bloco: "Bloco 2", andar: "1º Andar", serie: "9ºD", numero: "Salas 24 a 27 (Arena)", seg: "", ter: "", qua: "ARENÃO História<br><span class='text-[10px] font-bold text-blue-700'>(16h55–18h25)</span>", qui: "PROVA", sex: "PROVA" },
+      { bloco: "Bloco 2", andar: "1º Andar", serie: "9ºA", numero: "Salas 24 a 27", seg: "ARENÃO Debate (16h10 – 17h40)", ter: "", qua: "ARENÃO Mat (16h10 – 18h25)", qui: "PROVA", sex: "PROVA" },
+      { bloco: "Bloco 2", andar: "1º Andar", serie: "9ºB", numero: "Salas 24 a 27", seg: "", ter: "ARENÃO Mat 6º/7º (14h15 – 15h45)", qua: "ARENÃO Biologia (14h15 – 16h55)", qui: "PROVA", sex: "PROVA" },
+      { bloco: "Bloco 2", andar: "1º Andar", serie: "9ºC", numero: "Salas 24 a 27", seg: "", ter: "ARENÃO Mat 8º/9º (14h15 – 15h45)", qua: "ARENÃO Quimica (14h15 – 15h45)", qui: "PROVA", sex: "PROVA" },
+      { bloco: "Bloco 2", andar: "1º Andar", serie: "9ºD", numero: "Salas 24 a 27", seg: "", ter: "", qua: "ARENÃO História (16h55 – 18h25)", qui: "PROVA", sex: "PROVA" },
 
-      { bloco: "Bloco 2", andar: "2º Andar", serie: "9ºE", numero: "Salas 28 a 31 (Cambridge)", seg: "CAMBRIDGE", ter: "", qua: "CAMBRIDGE", qui: "PROVA", sex: "PROVA" },
-      { bloco: "Bloco 2", andar: "2º Andar", serie: "9ºF", numero: "Salas 28 a 31 (Cambridge)", seg: "CAMBRIDGE", ter: "", qua: "CAMBRIDGE", qui: "PROVA", sex: "PROVA" },
-      { bloco: "Bloco 2", andar: "2º Andar", serie: "9ºG", numero: "Salas 28 a 31 (Cambridge)", seg: "CAMBRIDGE", ter: "", qua: "CAMBRIDGE", qui: "PROVA", sex: "PROVA" },
-      { bloco: "Bloco 2", andar: "2º Andar", serie: "9ºH", numero: "Salas 28 a 31 (Cambridge)", seg: "", ter: "", qua: "", qui: "PROVA", sex: "PROVA" }
+      { bloco: "Bloco 2", andar: "2º Andar", serie: "9ºE", numero: "Salas 28 a 31", seg: "CAMBRIDGE", ter: "", qua: "CAMBRIDGE", qui: "PROVA", sex: "PROVA" },
+      { bloco: "Bloco 2", andar: "2º Andar", serie: "9ºF", numero: "Salas 28 a 31", seg: "CAMBRIDGE", ter: "", qua: "CAMBRIDGE", qui: "PROVA", sex: "PROVA" },
+      { bloco: "Bloco 2", andar: "2º Andar", serie: "9ºG", numero: "Salas 28 a 31", seg: "CAMBRIDGE", ter: "", qua: "CAMBRIDGE", qui: "PROVA", sex: "PROVA" },
+      { bloco: "Bloco 2", andar: "2º Andar", serie: "9ºH", numero: "Salas 28 a 31", seg: "", ter: "", qua: "", qui: "PROVA", sex: "PROVA" }
     ];
 
     let reservasSalasList = [];
@@ -273,16 +271,16 @@
           const conteudoOriginal = linha[chaveDia] || '';
           if (reservaEncontrada) {
             celulaDiaDinamica = `
-              ${conteudoOriginal ? conteudoOriginal + '<br>' : ''}
+              ${conteudoOriginal ? formatarTextoAtividade(conteudoOriginal) + '<br>' : ''}
               <div class="mt-1 bg-emerald-100 border border-emerald-500 text-emerald-900 p-1 rounded font-bold text-[11px] shadow-sm">
                 📌 ${reservaEncontrada.responsavel}<br><span class="text-[10px] font-normal text-emerald-800">${reservaEncontrada.atividade} (${reservaEncontrada.horario})</span>
               </div>
             `;
           } else {
-            celulaDiaDinamica = conteudoOriginal;
+            celulaDiaDinamica = formatarTextoAtividade(conteudoOriginal);
           }
         } else {
-          celulaDiaDinamica = linha[chaveDia] || '';
+          celulaDiaDinamica = formatarTextoAtividade(linha[chaveDia] || '');
         }
 
         tbody.innerHTML += `
@@ -291,27 +289,52 @@
             <td class="p-2 border-r-2 border-r-gray-400 font-semibold bg-gray-50">${linha.andar}</td>
             <td class="p-2 border font-medium">${linha.serie}</td>
             <td class="p-2 border font-bold text-[#1b4332]">${linha.numero}</td>
-            <td class="p-2 border">${chaveDia === 'seg' ? celulaDiaDinamica : (linha.seg || '')}</td>
-            <td class="p-2 border">${chaveDia === 'ter' ? celulaDiaDinamica : (linha.ter || '')}</td>
-            <td class="p-2 border">${chaveDia === 'qua' ? celulaDiaDinamica : (linha.qua || '')}</td>
-            <td class="p-2 border">${chaveDia === 'qui' ? celulaDiaDinamica : (linha.qui || '')}</td>
-            <td class="p-2 border">${chaveDia === 'sex' ? celulaDiaDinamica : (linha.sex || '')}</td>
+            <td class="p-2 border">${chaveDia === 'seg' ? celulaDiaDinamica : formatarTextoAtividade(linha.seg || '')}</td>
+            <td class="p-2 border">${chaveDia === 'ter' ? celulaDiaDinamica : formatarTextoAtividade(linha.ter || '')}</td>
+            <td class="p-2 border">${chaveDia === 'qua' ? celulaDiaDinamica : formatarTextoAtividade(linha.qua || '')}</td>
+            <td class="p-2 border">${chaveDia === 'qui' ? celulaDiaDinamica : formatarTextoAtividade(linha.qui || '')}</td>
+            <td class="p-2 border">${chaveDia === 'sex' ? celulaDiaDinamica : formatarTextoAtividade(linha.sex || '')}</td>
           </tr>
         `;
       });
+    }
+
+    function formatarTextoAtividade(texto) {
+      if (!texto) return '';
+      return texto.replace(/\((.*?)\)/g, '<br><span class="text-[10px] font-bold text-blue-700">($1)</span>');
+    }
+
+    function converterHoraParaMinutos(horaStr) {
+      if (!horaStr) return 0;
+      const [h, m] = horaStr.split(':').map(Number);
+      return h * 60 + m;
+    }
+
+    function extrairHorarios(texto) {
+      if (!texto) return [];
+      const regex = /\((\d{2}:\d{2})\s*–\s*(\d{2}:\d{2})\)/g;
+      let matches = [];
+      let match;
+      while ((match = regex.exec(texto)) !== null) {
+        matches.push({ inicio: converterHoraParaMinutos(match[1]), termino: converterHoraParaMinutos(match[2]) });
+      }
+      return matches;
     }
 
     function verificarDisponibilidade() {
       renderizarMapaSalas();
 
       const dataStr = document.getElementById('buscaData').value;
-      const horaInicio = document.getElementById('buscaHoraInicio').value;
-      const horaTermino = document.getElementById('buscaHoraTermino').value;
+      const horaInicioStr = document.getElementById('buscaHoraInicio').value;
+      const horaTerminoStr = document.getElementById('buscaHoraTermino').value;
 
-      if (!dataStr || !horaInicio || !horaTermino) {
+      if (!dataStr || !horaInicioStr || !horaTerminoStr) {
         alert('Por favor, informe a data, o horário de início e o horário de término.');
         return;
       }
+
+      const buscaInicio = converterHoraParaMinutos(horaInicioStr);
+      const buscaTermino = converterHoraParaMinutos(horaTerminoStr);
 
       const [ano, mes, dia] = dataStr.split('-');
       const dataObj = new Date(ano, mes - 1, dia);
@@ -323,16 +346,45 @@
       let salasOcupadasFixas = [];
       if (chaveDia) {
         MAPA_ESTRUTURA.forEach(item => {
-          if (item[chaveDia] && item[chaveDia].trim() !== '') {
-            salasOcupadasFixas.push(item.numero);
+          const textoAtividade = item[chaveDia] || '';
+          if (textoAtividade.trim() !== '') {
+            const intervalos = extrairHorarios(textoAtividade);
+            if (intervalos.length === 0) {
+              // Sem horário entre parênteses = Ocupada a tarde toda
+              salasOcupadasFixas.push(item.numero);
+            } else {
+              // Com horários específicos = Verificar se o horário buscado colide com algum intervalo ocupado
+              let temConflito = false;
+              intervalos.forEach(iv => {
+                if (!(buscaTermino <= iv.inicio || buscaInicio >= iv.termino)) {
+                  temConflito = true; // Colidiu com a atividade fixa
+                }
+              });
+              if (temConflito) {
+                salasOcupadasFixas.push(item.numero);
+              }
+            }
           }
         });
       }
 
       const editIdAtual = document.getElementById('reservaEditId').value;
-      let salasOcupadasExtras = reservasSalasList
+      let salasOcupadasExtras = [];
+      reservasSalasList
         .filter(r => r.data === dataStr && r.id != editIdAtual)
-        .map(r => r.sala);
+        .forEach(r => {
+          // As reservas manuais possuem formato "HH:MM às HH:MM"
+          const partes = r.horario.split(' às ');
+          if (partes.length === 2) {
+            const rInicio = converterHoraParaMinutos(partes[0]);
+            const rTermino = converterHoraParaMinutos(partes[1]);
+            if (!(buscaTermino <= rInicio || buscaInicio >= rTermino)) {
+              salasOcupadasExtras.push(r.sala);
+            }
+          } else {
+            salasOcupadasExtras.push(r.sala);
+          }
+        });
 
       const todasOcupadas = [...new Set([...salasOcupadasFixas, ...salasOcupadasExtras])];
       const salasLivres = TODAS_AS_SALAS.filter(sala => !todasOcupadas.includes(sala));
