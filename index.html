@@ -176,7 +176,8 @@
       "Sala 1", "Sala 2", "Sala 3", "Sala 4", "Sala 5", "Sala 7", "Sala 8", 
       "Sala 9", "Sala 10", "Sala 11", "Sala 12", "Sala 13", "Sala 14", "Sala 15", 
       "Sala 16", "Sala 17", "Sala 18", "Sala 19", "Sala 20", "Sala 21", "Sala 22", 
-      "Sala 23", "Salas 24 a 27", "Salas 28 a 31", "Sala 32/33"
+      "Sala 23", "Sala 24", "Sala 25", "Sala 26", "Sala 27", "Sala 28", "Sala 29", 
+      "Sala 30", "Sala 31", "Sala 32/33"
     ];
 
     const MAPA_ESTRUTURA = [
@@ -208,15 +209,15 @@
       { bloco: "Bloco 2", andar: "Térreo", serie: "8ºB", numero: "Sala 22", seg: "ARENÃO Física (14h15 – 15h45)", ter: "AGRO ARENA – TURMA A (16h10 – 16h55)", qua: "", qui: "FISCAIS", sex: "PROVA" },
       { bloco: "Bloco 2", andar: "Térreo", serie: "8ºA", numero: "Sala 23", seg: "ARENÃO Geografia (15h – 16h55)", ter: "AGRO ARENA – TURMA B (16h55 – 17h40)", qua: "", qui: "FEDERADOS", sex: "PROVA" },
 
-      { bloco: "Bloco 2", andar: "1º Andar", serie: "9ºA", numero: "Salas 24 a 27", seg: "ARENÃO Debate (16h10 – 17h40)", ter: "", qua: "ARENÃO Mat (16h10 – 18h25)", qui: "PROVA", sex: "PROVA" },
-      { bloco: "Bloco 2", andar: "1º Andar", serie: "9ºB", numero: "Salas 24 a 27", seg: "", ter: "ARENÃO Mat 6º/7º (14h15 – 15h45)", qua: "ARENÃO Biologia (14h15 – 16h55)", qui: "PROVA", sex: "PROVA" },
-      { bloco: "Bloco 2", andar: "1º Andar", serie: "9ºC", numero: "Salas 24 a 27", seg: "", ter: "ARENÃO Mat 8º/9º (14h15 – 15h45)", qua: "ARENÃO Quimica (14h15 – 15h45)", qui: "PROVA", sex: "PROVA" },
-      { bloco: "Bloco 2", andar: "1º Andar", serie: "9ºD", numero: "Salas 24 a 27", seg: "", ter: "", qua: "ARENÃO História (16h55 – 18h25)", qui: "PROVA", sex: "PROVA" },
+      { bloco: "Bloco 2", andar: "1º Andar", serie: "9ºA", numero: "Sala 24", seg: "ARENÃO Debate (16h10 – 17h40)", ter: "", qua: "ARENÃO Mat (16h10 – 18h25)", qui: "PROVA", sex: "PROVA" },
+      { bloco: "Bloco 2", andar: "1º Andar", serie: "9ºB", numero: "Sala 25", seg: "", ter: "ARENÃO Mat 6º/7º (14h15 – 15h45)", qua: "ARENÃO Biologia (14h15 – 16h55)", qui: "PROVA", sex: "PROVA" },
+      { bloco: "Bloco 2", andar: "1º Andar", serie: "9ºC", numero: "Sala 26", seg: "", ter: "ARENÃO Mat 8º/9º (14h15 – 15h45)", qua: "ARENÃO Quimica (14h15 – 15h45)", qui: "PROVA", sex: "PROVA" },
+      { bloco: "Bloco 2", andar: "1º Andar", serie: "9ºD", numero: "Sala 27", seg: "", ter: "", qua: "ARENÃO História (16h55 – 18h25)", qui: "PROVA", sex: "PROVA" },
 
-      { bloco: "Bloco 2", andar: "2º Andar", serie: "9ºE", numero: "Salas 28 a 31", seg: "CAMBRIDGE", ter: "", qua: "CAMBRIDGE", qui: "PROVA", sex: "PROVA" },
-      { bloco: "Bloco 2", andar: "2º Andar", serie: "9ºF", numero: "Salas 28 a 31", seg: "CAMBRIDGE", ter: "", qua: "CAMBRIDGE", qui: "PROVA", sex: "PROVA" },
-      { bloco: "Bloco 2", andar: "2º Andar", serie: "9ºG", numero: "Salas 28 a 31", seg: "CAMBRIDGE", ter: "", qua: "CAMBRIDGE", qui: "PROVA", sex: "PROVA" },
-      { bloco: "Bloco 2", andar: "2º Andar", serie: "9ºH", numero: "Salas 28 a 31", seg: "", ter: "", qua: "", qui: "PROVA", sex: "PROVA" }
+      { bloco: "Bloco 2", andar: "2º Andar", serie: "9ºE", numero: "Sala 28", seg: "CAMBRIDGE", ter: "", qua: "CAMBRIDGE", qui: "PROVA", sex: "PROVA" },
+      { bloco: "Bloco 2", andar: "2º Andar", serie: "9ºF", numero: "Sala 29", seg: "CAMBRIDGE", ter: "", qua: "CAMBRIDGE", qui: "PROVA", sex: "PROVA" },
+      { bloco: "Bloco 2", andar: "2º Andar", serie: "9ºG", numero: "Sala 30", seg: "CAMBRIDGE", ter: "", qua: "CAMBRIDGE", qui: "PROVA", sex: "PROVA" },
+      { bloco: "Bloco 2", andar: "2º Andar", serie: "9ºH", numero: "Sala 31", seg: "", ter: "", qua: "", qui: "PROVA", sex: "PROVA" }
     ];
 
     let reservasSalasList = [];
@@ -312,7 +313,6 @@
 
     function extrairHorarios(texto) {
       if (!texto) return [];
-      // Extrai horários simples (HH:MM – HH:MM) ou múltiplos separados por barra (/ ou ou)
       const regex = /(\d{2}:\d{2})\s*–\s*(\d{2}:\d{2})/g;
       let matches = [];
       let match;
@@ -351,10 +351,8 @@
           if (textoAtividade.trim() !== '') {
             const intervalos = extrairHorarios(textoAtividade);
             if (intervalos.length === 0) {
-              // Se tem texto mas NÃO tem horário entre parênteses, ocupa o período todo
               salasOcupadasFixas.push(item.numero);
             } else {
-              // Se tem horários entre parênteses, verifica se o horário pesquisado bate com algum intervalo
               let temConflito = false;
               intervalos.forEach(iv => {
                 if (!(buscaTermino <= iv.inicio || buscaInicio >= iv.termino)) {
