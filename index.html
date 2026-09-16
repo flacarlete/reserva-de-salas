@@ -8,6 +8,29 @@
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <style>
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #secaoMapaImpressao, #secaoMapaImpressao * {
+        visibility: visible;
+      }
+      #secaoMapaImpressao {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        box-shadow: none;
+        border: none;
+      }
+      .nao-imprimir {
+        display: none !important;
+      }
+    }
+  </style>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex flex-col">
 
@@ -58,14 +81,19 @@
     </div>
 
     <!-- MAPA GERAL DE LOCALIZAÇÃO DAS SALAS E ATIVIDADES (COM RESERVAS DINÂMICAS) -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <div id="secaoMapaImpressao" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-2">
         <div>
           <h3 class="text-xs font-bold text-[#1b4332] uppercase tracking-wider">🗺️ Guia de Salas e Grade de Atividades (Com Reservas em Tempo Real)</h3>
           <p class="text-[11px] text-gray-500">Exibindo reservas cadastradas no mapa para a data de referência: <span id="labelDataMapa" class="font-bold text-emerald-800"></span></p>
         </div>
-        <div class="text-xs bg-emerald-50 border border-emerald-300 text-emerald-900 px-3 py-1.5 rounded font-semibold flex items-center gap-2">
-          <span class="w-3 h-3 bg-emerald-200 border border-emerald-600 inline-block rounded-sm"></span> Reservas de Professores em destaque verde com a data
+        <div class="flex items-center gap-2">
+          <button onclick="gerarSalasDoDia()" class="nao-imprimir bg-emerald-700 text-white px-3 py-1.5 rounded text-xs font-bold hover:bg-emerald-800 shadow flex items-center gap-1">
+            📷 Salas do Dia (Gerar Imagem/PDF)
+          </button>
+          <div class="text-xs bg-emerald-50 border border-emerald-300 text-emerald-900 px-3 py-1.5 rounded font-semibold flex items-center gap-2 nao-imprimir">
+            <span class="w-3 h-3 bg-emerald-200 border border-emerald-600 inline-block rounded-sm"></span> Reservas de Professores em destaque verde
+          </div>
         </div>
       </div>
       
@@ -90,7 +118,7 @@
     </div>
 
     <!-- FORMULÁRIO DE RESERVA / EDIÇÃO -->
-    <div id="containerFormReserva" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hidden border-l-4 border-l-emerald-600">
+    <div id="containerFormReserva" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hidden border-l-4 border-l-emerald-600 nao-imprimir">
       <h2 class="text-sm font-bold text-[#1b4332] mb-3 uppercase tracking-wider">➕ <span id="tituloModoForm">Confirmar Reserva</span> para: <span id="labelSalaSelecionada" class="text-emerald-700"></span></h2>
       
       <form onsubmit="salvarReservaSala(event)" class="space-y-4">
@@ -117,7 +145,7 @@
     </div>
 
     <!-- TABELA DE TODAS AS RESERVAS CADASTRADAS NA NUVEM -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 nao-imprimir">
       <div class="flex justify-between items-center mb-4">
         <div>
           <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider">📋 Tabela Geral de Reservas (Sincronizada na Nuvem)</h3>
@@ -247,6 +275,10 @@
       renderizarMapaSalas();
     }
 
+    function gerarSalasDoDia() {
+      window.print();
+    }
+
     function renderizarMapaSalas() {
       const dataStr = document.getElementById('buscaData').value;
       document.getElementById('labelDataMapa').textContent = dataStr ? dataStr.split('-').reverse().join('/') : 'Nenhuma data';
@@ -255,7 +287,6 @@
       if (!tbody) return;
       tbody.innerHTML = '';
 
-      // Descobrir qual o dia da semana da data consultada no campo de busca
       let chaveDiaConsulta = '';
       if (dataStr) {
         const [ano, mes, dia] = dataStr.split('-');
@@ -266,7 +297,6 @@
       }
 
       MAPA_ESTRUTURA.forEach(linha => {
-        // Filtrar reservas que caem EXATAMENTE nesta sala e cuja data coincida com a data consultada
         const reservasDaSala = reservasSalasList.filter(r => r.sala === linha.numero && r.data === dataStr);
 
         let htmlSeg = formatarTextoAtividade(linha.seg);
@@ -275,7 +305,6 @@
         let htmlQui = formatarTextoAtividade(linha.qui);
         let htmlSex = formatarTextoAtividade(linha.sex);
 
-        // Se houver reservas extras para esta sala na data consultada, injetar na coluna do dia correspondente
         if (reservasDaSala.length > 0 && chaveDiaConsulta) {
           let htmlReservaBox = '';
           reservasDaSala.forEach(res => {
