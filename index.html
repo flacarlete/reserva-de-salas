@@ -72,7 +72,7 @@
       </div>
     </div>
 
-    <!-- MAPA GERAL DE LOCALIZAÇÃO DAS SALAS E ATIVIDADES (COM RESERVAS DINÂMICAS) -->
+    <!-- MAPA GERAL DE LOCALIZAÇÃO DAS SALAS E ATIVIDADES -->
     <div id="secaoMapaImpressao" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-2">
         <div>
@@ -84,7 +84,7 @@
             📄 Salas do Dia (Gerar PDF)
           </button>
           <div class="text-xs bg-emerald-50 border border-emerald-300 text-emerald-900 px-3 py-1.5 rounded font-semibold flex items-center gap-2">
-            <span class="w-3 h-3 bg-emerald-200 border border-emerald-600 inline-block rounded-sm"></span> Reservas de Professores em destaque verde
+            <span class="w-3 h-3 bg-emerald-200 border border-emerald-600 inline-block rounded-sm"></span> Reservas vigentes no dia em destaque verde
           </div>
         </div>
       </div>
@@ -144,6 +144,7 @@
           <p class="text-[11px] text-gray-500">Exibindo todos os agendamentos registrados para a escola inteira</p>
         </div>
         <div class="flex gap-2">
+          <button onclick="removerReservasPassadas()" class="bg-amber-700 text-white px-3 py-1.5 rounded text-xs hover:bg-amber-800 font-semibold">🧹 Limpar Reservas Passadas</button>
           <button onclick="zerarTodasReservas()" class="bg-red-700 text-white px-3 py-1.5 rounded text-xs hover:bg-red-800 font-semibold">🗑️ Zerar Reservas</button>
           <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black">🖨️ Imprimir Tabela</button>
         </div>
@@ -245,15 +246,8 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       document.getElementById('dataAtualSistema').textContent = new Date().toLocaleDateString('pt-BR');
-      
-      const reservasSalvasTemp = JSON.parse(localStorage.getItem('escola_reservas_salas_local') || '[]');
-      if (reservasSalvasTemp.length > 0 && reservasSalvasTemp[0].data) {
-        document.getElementById('buscaData').value = reservasSalvasTemp[0].data;
-      } else {
-        const hojeStr = new Date().toISOString().split('T')[0];
-        document.getElementById('buscaData').value = hojeStr;
-      }
-
+      const hojeStr = new Date().toISOString().split('T')[0];
+      document.getElementById('buscaData').value = hojeStr;
       carregarDados();
     });
 
@@ -261,9 +255,6 @@
       if (usaNuvem) {
         db.ref('escola_arena_salas/reservas').on('value', (snapshot) => {
           reservasSalasList = snapshot.val() || [];
-          if (reservasSalasList.length > 0 && reservasSalasList[0].data && !document.getElementById('buscaData').value) {
-            document.getElementById('buscaData').value = reservasSalasList[0].data;
-          }
           renderizarTudo();
         });
       } else {
@@ -313,7 +304,7 @@
         let hQui = formatarTextoAtividade(linha.qui);
         let hSex = formatarTextoAtividade(linha.sex);
 
-        if (resSala.length > 0 && chaveDiaConsulta) {
+        if (resSala.length > 0) {
           let boxRes = '';
           resSala.forEach(res => {
             boxRes += `
@@ -324,10 +315,11 @@
             `;
           });
           if (chaveDiaConsulta === 'seg') hSeg = (hSeg ? hSeg + '<br>' : '') + boxRes;
-          if (chaveDiaConsulta === 'ter') hTer = (hTer ? hTer + '<br>' : '') + boxRes;
-          if (chaveDiaConsulta === 'qua') hQua = (hQua ? hQua + '<br>' : '') + boxRes;
-          if (chaveDiaConsulta === 'qui') hQui = (hQui ? hQui + '<br>' : '') + boxRes;
-          if (chaveDiaConsulta === 'sex') hSex = (hSex ? hSex + '<br>' : '') + boxRes;
+          else if (chaveDiaConsulta === 'ter') hTer = (hTer ? hTer + '<br>' : '') + boxRes;
+          else if (chaveDiaConsulta === 'qua') hQua = (hQua ? hQua + '<br>' : '') + boxRes;
+          else if (chaveDiaConsulta === 'qui') hQui = (hQui ? hQui + '<br>' : '') + boxRes;
+          else if (chaveDiaConsulta === 'sex') hSex = (hSex ? hSex + '<br>' : '') + boxRes;
+          else hSeg = (hSeg ? hSeg + '<br>' : '') + boxRes;
         }
 
         linhasTabelaHtml += `
@@ -399,8 +391,11 @@
         chaveDiaConsulta = diasMap[diaSemanaNum] || '';
       }
 
+      // EXIBE APENAS AS RESERVAS QUE CORRESPONDEM EXATAMENTE À DATA SELECIONADA NA BUSCA
+      const reservasDaData = dataStr ? reservasSalasList.filter(r => r.data === dataStr) : [];
+
       MAPA_ESTRUTURA.forEach(linha => {
-        const reservasDaSala = reservasSalasList.filter(r => r.sala === linha.numero && r.data === dataStr);
+        const reservasDaSala = reservasDaData.filter(r => r.sala === linha.numero);
 
         let htmlSeg = formatarTextoAtividade(linha.seg);
         let htmlTer = formatarTextoAtividade(linha.ter);
@@ -408,7 +403,7 @@
         let htmlQui = formatarTextoAtividade(linha.qui);
         let htmlSex = formatarTextoAtividade(linha.sex);
 
-        if (reservasDaSala.length > 0 && chaveDiaConsulta) {
+        if (reservasDaSala.length > 0) {
           let htmlReservaBox = '';
           reservasDaSala.forEach(res => {
             const dataFormatada = res.data ? res.data.split('-').reverse().join('/') : '';
@@ -420,12 +415,12 @@
             `;
           });
 
-          // Injeta a reserva exatamente na coluna do dia da semana consultado (ex: segunda-feira)
           if (chaveDiaConsulta === 'seg') htmlSeg = (htmlSeg ? htmlSeg + '<br>' : '') + htmlReservaBox;
-          if (chaveDiaConsulta === 'ter') htmlTer = (htmlTer ? htmlTer + '<br>' : '') + htmlReservaBox;
-          if (chaveDiaConsulta === 'qua') htmlQua = (htmlQua ? htmlQua + '<br>' : '') + htmlReservaBox;
-          if (chaveDiaConsulta === 'qui') htmlQui = (htmlQui ? htmlQui + '<br>' : '') + htmlReservaBox;
-          if (chaveDiaConsulta === 'sex') htmlSex = (htmlSex ? htmlSex + '<br>' : '') + htmlReservaBox;
+          else if (chaveDiaConsulta === 'ter') htmlTer = (htmlTer ? htmlTer + '<br>' : '') + htmlReservaBox;
+          else if (chaveDiaConsulta === 'qua') htmlQua = (htmlQua ? htmlQua + '<br>' : '') + htmlReservaBox;
+          else if (chaveDiaConsulta === 'qui') htmlQui = (htmlQui ? htmlQui + '<br>' : '') + htmlReservaBox;
+          else if (chaveDiaConsulta === 'sex') htmlSex = (htmlSex ? htmlSex + '<br>' : '') + htmlReservaBox;
+          else htmlSeg = (htmlSeg ? htmlSeg + '<br>' : '') + htmlReservaBox;
         }
 
         tbody.innerHTML += `
@@ -684,8 +679,21 @@
         if (usaNuvem) {
           db.ref('escola_arena_salas/reservas').set(reservasSalasList);
         }
-        localStorage.setItem('escola_reservas_salas_local', JSON.stringify([]));
+        localStorage.setItem('escola_reservas_salas_local', JSON.stringify(reservasSalasList));
         renderizarTudo();
+      }
+    }
+
+    function removerReservasPassadas() {
+      const hojeStr = new Date().toISOString().split('T')[0];
+      if (confirm('Deseja remover automaticamente todas as reservas cujas datas já passaram?')) {
+        reservasSalasList = reservasSalasList.filter(r => r.data >= hojeStr);
+        if (usaNuvem) {
+          db.ref('escola_arena_salas/reservas').set(reservasSalasList);
+        }
+        localStorage.setItem('escola_reservas_salas_local', JSON.stringify(reservasSalasList));
+        renderizarTudo();
+        alert('Reservas passadas removidas com sucesso!');
       }
     }
 
