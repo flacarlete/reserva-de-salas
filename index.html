@@ -3,202 +3,156 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Controle de Gestão Escolar — Colégio Arena</title>
+  <title>Reserva de Salas — Colégio Arena</title>
   <style>
     body { font-family: Arial, sans-serif; background-color: #f3f4f6; margin: 0; padding: 0; color: #1f2937; }
     header { background-color: #1b4332; color: white; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
-    nav { background: white; border-bottom: 1px solid #e5e7eb; padding: 12px 24px; display: flex; gap: 8px; flex-wrap: wrap; }
-    nav button { padding: 8px 16px; border: none; background: #f3f4f6; color: #4b5563; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 13px; }
-    nav button.ativo { background-color: #1b4332; color: white; }
-    main { max-width: 1100px; margin: 24px auto; background: white; padding: 24px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-    .secao { display: none; }
-    .secao.ativa { display: block; }
+    main { max-width: 1200px; margin: 24px auto; background: white; padding: 24px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .card-box { background: #f9fafb; border: 1px solid #e5e7eb; padding: 16px; border-radius: 6px; margin-bottom: 20px; }
     .form-group { margin-bottom: 12px; }
     .form-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 4px; color: #374151; }
-    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; box-sizing: border-box; font-size: 13px; }
+    .form-group input, .form-group select { width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; box-sizing: border-box; font-size: 13px; }
     button.btn-submit { background-color: #1b4332; color: white; border: none; padding: 10px 16px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 13px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 12px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 11px; }
     th, td { border: 1px solid #e5e7eb; padding: 8px; text-align: left; }
-    th { background-color: #f9fafb; font-weight: bold; }
+    th { background-color: #1b4332; color: white; font-weight: bold; }
   </style>
 </head>
 <body>
 
   <header>
     <div>
-      <h1 style="margin:0; font-size: 18px;">📋 Colégio Arena — Gestão Escolar & Contraturno</h1>
-      <p style="margin:4px 0 0 0; font-size: 12px; color: #a7f3d0;">Painel Operacional — Coordenação</p>
+      <h1 style="margin:0; font-size: 18px;">🏢 Colégio Arena — Gestão e Reserva de Salas</h1>
+      <p style="margin:4px 0 0 0; font-size: 12px; color: #a7f3d0;">Módulo Independente</p>
     </div>
     <div style="font-size: 12px; background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 4px;">
-      🟢 1.160 Alunos
+      🟢 Sistema Ativo
     </div>
   </header>
 
-  <nav>
-    <button onclick="mudarAba('atrasos')" id="btn-atrasos" class="ativo">⏰ Atrasos</button>
-    <button onclick="mudarAba('sala')" id="btn-sala">📚 Sala de Estudos</button>
-    <button onclick="mudarAba('prof')" id="btn-prof">👨‍🏫 Professores</button>
-    <button onclick="mudarAba('insp')" id="btn-insp">📋 Inspetores</button>
-    <button onclick="mudarAba('atd')" id="btn-atd">📋 Atendimentos</button>
-  </nav>
-
   <main>
-    <!-- 1. ATRASOS -->
-    <section id="sec-atrasos" class="secao ativa">
-      <h2 style="color: #1b4332; font-size: 16px; margin-top: 0;">Registar Atraso</h2>
-      <form onsubmit="salvarAtraso(event)">
-        <div class="form-group">
-          <label>Atividade</label>
-          <select id="atv" required>
-            <option value="">Selecione...</option>
-            <option value="Nivelamento">Nivelamento</option>
-            <option value="AEE">AEE</option>
-            <option value="Arenão">Arenão</option>
-            <option value="Esportes">Esportes</option>
-            <option value="Outra disciplina">Outra disciplina</option>
-            <option value="Sala de estudos/Biblioteca">Sala de estudos/Biblioteca</option>
-          </select>
+    <!-- 1. CONSULTAR SALAS DISPONÍVEIS -->
+    <div class="card-box">
+      <h3 style="margin-top:0; font-size:14px; color:#1b4332;">🔍 1. Consultar Salas Disponíveis</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; align-items: flex-end;">
+        <div class="form-group"><label>Data Desejada</label><input type="date" id="conData"></div>
+        <div class="form-group"><label>Horário Início</label><input type="time" id="conInicio"></div>
+        <div class="form-group"><label>Horário Término</label><input type="time" id="conFim"></div>
+        <button type="button" class="btn-submit" onclick="consultarSalas()">Ver Salas Livres</button>
+      </div>
+      <div id="resultadoConsulta" style="margin-top: 10px; font-size: 12px; font-weight: bold; color: #1b4332;"></div>
+    </div>
+
+    <!-- 2. REGISTAR NOVA RESERVA -->
+    <div class="card-box">
+      <h3 style="margin-top:0; font-size:14px; color:#1b4332;">➕ 2. Registar Nova Reserva</h3>
+      <form onsubmit="salvarReserva(event)">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px;">
+          <div class="form-group"><label>Data</label><input type="date" id="resData" required></div>
+          <div class="form-group"><label>Horário</label><input type="text" id="resHorario" required placeholder="Ex: 14h15 – 15h45"></div>
+          <div class="form-group"><label>Sala / Espaço</label><input type="text" id="resSala" required placeholder="Ex: Sala 3 ou Tatame"></div>
+          <div class="form-group"><label>Responsável</label><input type="text" id="resResp" required placeholder="Nome..."></div>
+          <div class="form-group"><label>Atividade</label><input type="text" id="resAtv" required placeholder="Atividade..."></div>
         </div>
-        <div class="form-group">
-          <label>Nome do Aluno</label>
-          <input type="text" id="aluno" required placeholder="Nome completo...">
-        </div>
-        <div class="form-group">
-          <label>Turma</label>
-          <input type="text" id="turma" required placeholder="Ex: 8ºG">
-        </div>
-        <div class="form-group">
-          <label>Motivo</label>
-          <input type="text" id="motivo" required placeholder="Motivo do atraso...">
-        </div>
-        <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
-          <input type="checkbox" id="lancado" style="width: auto;">
-          <label for="lancado" style="margin:0; display:inline;">Lançado no sistema da escola</label>
-        </div>
-        <button type="submit" class="btn-submit">Registar Atraso</button>
+        <button type="submit" class="btn-submit" style="margin-top: 6px;">Guardar Reserva</button>
       </form>
+    </div>
+
+    <!-- 3. TABELA GERAL DE RESERVAS -->
+    <div class="card-box">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin:0; font-size:14px; color:#1b4332;">📋 3. Tabela Geral de Reservas (Sincronizada na Nuvem / Local)</h3>
+        <div>
+          <button onclick="limparPassadas()" style="background:#d97706; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; font-size:11px; margin-right:5px;">Limpar Passadas</button>
+          <button onclick="zerarReservas()" style="background:#dc2626; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; font-size:11px;">Zerar Reservas</button>
+        </div>
+      </div>
       <table>
         <thead>
-          <tr><th>Aluno</th><th>Turma</th><th>Atividade</th><th>Motivo</th><th style="text-align:center;">Lançado</th><th>Ações</th></tr>
+          <tr><th>Data</th><th>Horário</th><th>Sala</th><th>Responsável</th><th>Atividade</th><th>Ações</th></tr>
         </thead>
-        <tbody id="tabelaAtrasos"></tbody>
+        <tbody id="tabelaReservas"></tbody>
       </table>
-    </section>
-
-    <!-- 2. SALA DE ESTUDOS -->
-    <section id="sec-sala" class="secao">
-      <h2 style="color: #1b4332; font-size: 16px; margin-top: 0;">Sala de Estudos & Biblioteca</h2>
-      <form onsubmit="salvarSala(event)">
-        <div class="form-group"><label>Nome do Aluno</label><input type="text" id="salaAluno" required placeholder="Nome do aluno..."></div>
-        <div class="form-group"><label>Turma</label><input type="text" id="salaTurma" required placeholder="Turma..."></div>
-        <div class="form-group"><label>Ocorrência / Motivo</label><input type="text" id="salaObs" required placeholder="Detalhes..."></div>
-        <button type="submit" class="btn-submit">Registar Ocorrência</button>
-      </form>
-      <table>
-        <thead><tr><th>Aluno</th><th>Turma</th><th>Ocorrência</th><th>Ações</th></tr></thead>
-        <tbody id="tabelaSala"></tbody>
-      </table>
-    </section>
-
-    <!-- 3. PROFESSORES -->
-    <section id="sec-prof" class="secao">
-      <h2 style="color: #1b4332; font-size: 16px; margin-top: 0;">Acompanhamento Docente</h2>
-      <form onsubmit="salvarProf(event)">
-        <div class="form-group"><label>Professor e Matéria</label><input type="text" id="profNome" required placeholder="Nome do professor..."></div>
-        <div class="form-group"><label>Ocorrência / Observação</label><input type="text" id="profObs" required placeholder="Detalhes..."></div>
-        <button type="submit" class="btn-submit">Registar Ocorrência</button>
-      </form>
-      <table>
-        <thead><tr><th>Professor</th><th>Observação</th><th>Ações</th></tr></thead>
-        <tbody id="tabelaProf"></tbody>
-      </table>
-    </section>
-
-    <!-- 4. INSPETORES -->
-    <section id="sec-insp" class="secao">
-      <h2 style="color: #1b4332; font-size: 16px; margin-top: 0;">Orientações de Inspetores</h2>
-      <form onsubmit="salvarInsp(event)">
-        <div class="form-group"><label>Nome do Inspetor</label><input type="text" id="inspNome" required placeholder="Nome..."></div>
-        <div class="form-group"><label>Feedback / Orientação</label><textarea id="inspDesc" rows="2" required placeholder="Relato..."></textarea></div>
-        <button type="submit" class="btn-submit">Guardar Orientação</button>
-      </form>
-      <table>
-        <thead><tr><th>Inspetor</th><th>Feedback</th><th>Ações</th></tr></thead>
-        <tbody id="tabelaInsp"></tbody>
-      </table>
-    </section>
-
-    <!-- 5. ATENDIMENTOS -->
-    <section id="sec-atd" class="secao">
-      <h2 style="color: #1b4332; font-size: 16px; margin-top: 0;">Registo de Atendimentos</h2>
-      <form onsubmit="salvarAtd(event)">
-        <div class="form-group"><label>Nome do Aluno</label><input type="text" id="atdAluno" required placeholder="Aluno..."></div>
-        <div class="form-group"><label>Turma / Responsáveis</label><input type="text" id="atdTurma" required placeholder="Turma e responsáveis..."></div>
-        <div class="form-group"><label>Relato</label><textarea id="atdRelato" rows="2" required placeholder="Relato..."></textarea></div>
-        <button type="submit" class="btn-submit">Guardar Atendimento</button>
-      </form>
-      <table>
-        <thead><tr><th>Aluno</th><th>Turma / Pais</th><th>Relato</th><th>Ações</th></tr></thead>
-        <tbody id="tabelaAtd"></tbody>
-      </table>
-    </section>
+    </div>
   </main>
 
   <script>
-    function mudarAba(id) {
-      var secoes = document.getElementsByClassName('secao');
-      for (var i = 0; i < secoes.length; i++) { secoes[i].classList.remove('ativa'); }
+    var dbReservas = JSON.parse(localStorage.getItem('arena_reservas_salas_indep') || '[]');
 
-      var botoes = document.getElementsByTagName('nav')[0].getElementsByTagName('button');
-      for (var i = 0; i < botoes.length; i++) { botoes[i].classList.remove('ativo'); }
-
-      document.getElementById('sec-' + id).classList.add('ativa');
-      document.getElementById('btn-' + id).classList.add('ativo');
-    }
-
-    var dbAtrasos = JSON.parse(localStorage.getItem('arena_atrasos') || '[]');
-    var dbSala = JSON.parse(localStorage.getItem('arena_sala') || '[]');
-    var dbProf = JSON.parse(localStorage.getItem('arena_prof') || '[]');
-    var dbInsp = JSON.parse(localStorage.getItem('arena_insp') || '[]');
-    var dbAtd = JSON.parse(localStorage.getItem('arena_atd') || '[]');
-
-    function salvarAtraso(e) {
+    function salvarReserva(e) {
       e.preventDefault();
-      dbAtrasos.unshift({
+      dbReservas.unshift({
         id: Date.now(),
-        atv: document.getElementById('atv').value,
-        aluno: document.getElementById('aluno').value.toUpperCase(),
-        turma: document.getElementById('turma').value,
-        motivo: document.getElementById('motivo').value,
-        lancado: document.getElementById('lancado').checked
+        data: document.getElementById('resData').value,
+        horario: document.getElementById('resHorario').value,
+        sala: document.getElementById('resSala').value,
+        resp: document.getElementById('resResp').value,
+        atividade: document.getElementById('resAtv').value
       });
-      localStorage.setItem('arena_atrasos', JSON.stringify(dbAtrasos));
+      localStorage.setItem('arena_reservas_salas_indep', JSON.stringify(dbReservas));
       e.target.reset();
-      renderizarTudo();
+      renderizarReservas();
+      alert('Reserva guardada com sucesso!');
     }
 
-    function toggleLancado(id) {
-      for (var i = 0; i < dbAtrasos.length; i++) {
-        if (dbAtrasos[i].id === id) {
-          dbAtrasos[i].lancado = !dbAtrasos[i].lancado;
-          break;
-        }
+    function apagarReserva(id) {
+      if (confirm('Deseja apagar esta reserva?')) {
+        dbReservas = dbReservas.filter(function(x) { return x.id !== id; });
+        localStorage.setItem('arena_reservas_salas_indep', JSON.stringify(dbReservas));
+        renderizarReservas();
       }
-      localStorage.setItem('arena_atrasos', JSON.stringify(dbAtrasos));
-      renderizarTudo();
     }
 
-    function apagarAtraso(id) {
-      dbAtrasos = dbAtrasos.filter(function(x) { return x.id !== id; });
-      localStorage.setItem('arena_atrasos', JSON.stringify(dbAtrasos));
-      renderizarTudo();
+    function zerarReservas() {
+      if (confirm('Tem certeza que deseja apagar todas as reservas?')) {
+        dbReservas = [];
+        localStorage.removeItem('arena_reservas_salas_indep');
+        renderizarReservas();
+      }
     }
 
-    function salvarSala(e) {
-      e.preventDefault();
-      dbSala.unshift({ id: Date.now(), aluno: document.getElementById('salaAluno').value.toUpperCase(), turma: document.getElementById('salaTurma').value, obs: document.getElementById('salaObs').value });
-      localStorage.setItem('arena_sala', JSON.stringify(dbSala));
-      e.target.reset();
-      renderizarTudo();
+    function limparPassadas() {
+      var hoje = new Date().toISOString().split('T')[0];
+      dbReservas = dbReservas.filter(function(x) { return x.data >= hoje; });
+      localStorage.setItem('arena_reservas_salas_indep', JSON.stringify(dbReservas));
+      renderizarReservas();
+      alert('Reservas passadas limpas com sucesso!');
     }
-    function apagarSala(
+
+    function consultarSalas() {
+      var data = document.getElementById('conData').value;
+      if (!data) {
+        document.getElementById('resultadoConsulta').innerText = 'Por favor, selecione uma data para consultar.';
+        return;
+      }
+      var ocupadas = dbReservas.filter(function(x) { return x.data === data; }).map(function(x) { return x.sala; });
+      if (ocupadas.length === 0) {
+        document.getElementById('resultadoConsulta').innerText = '📅 Para o dia ' + data + ', todas as salas cadastradas encontram-se livres (nenhuma reserva registada para esta data).';
+      } else {
+        document.getElementById('resultadoConsulta').innerText = '⚠️ Salas ocupadas no dia ' + data + ': ' + ocupadas.join(', ');
+      }
+    }
+
+    function renderizarReservas() {
+      var tb = document.getElementById('tabelaReservas');
+      if (!tb) return;
+      tb.innerHTML = '';
+      if (dbReservas.length === 0) {
+        tb.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#6b7280; padding:12px;">Nenhuma reserva registada até o momento.</td></tr>';
+        return;
+      }
+      for (var i = 0; i < dbReservas.length; i++) {
+        var r = dbReservas[i];
+        tb.innerHTML += '<tr><td>' + r.data + '</td><td>' + r.horario + '</td><td><strong>' + r.sala + '</strong></td><td>' + r.resp + '</td><td>' + r.atividade + '</td><td><button onclick="apagarReserva(' + r.id + ')" style="color:red; background:none; border:none; cursor:pointer; font-weight:bold;">Apagar</button></td></tr>';
+      }
+    }
+
+    window.onload = function() {
+      var hoje = new Date().toISOString().split('T')[0];
+      if(document.getElementById('resData')) document.getElementById('resData').value = hoje;
+      if(document.getElementById('conData')) document.getElementById('conData').value = hoje;
+      renderizarReservas();
+    };
+  </script>
+</body>
+</html>
