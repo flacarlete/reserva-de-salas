@@ -35,7 +35,7 @@
     <div class="card-box" style="border: 2px solid #1b4332;">
       <h3 style="margin-top:0; font-size:15px; color:#1b4332;">🗺️ Quadro Oficial de Salas e Atividades (7º a 9º ano)</h3>
       <div style="overflow-x: auto; max-height: 450px;">
-        <table>
+        <table id="tabelaQuadroOficial">
           <thead>
             <tr>
               <th>Bloco</th>
@@ -97,7 +97,7 @@
         <div class="form-group"><label>Horário Término</label><input type="time" id="conFim"></div>
         <button type="button" class="btn-submit" onclick="consultarSalas()">Ver Salas Livres</button>
       </div>
-      <div id="resultadoConsulta" style="margin-top: 12px; font-size: 13px; font-weight: bold; color: #1b4332; background: #e6f4ea; padding: 10px; border-radius: 4px; display: none;"></div>
+      <div id="resultadoConsulta" style="margin-top: 12px; font-size: 13px; color: #1b4332; background: #e6f4ea; padding: 10px; border-radius: 4px; display: none;"></div>
     </div>
 
     <!-- 3. REGISTAR NOVA RESERVA -->
@@ -177,24 +177,54 @@
     }
 
     function consultarSalas() {
-      var data = document.getElementById('conData').value;
-      var inicio = document.getElementById('conInicio').value;
-      var fim = document.getElementById('conFim').value;
-      
+      var dataStr = document.getElementById('conData').value;
       var resDiv = document.getElementById('resultadoConsulta');
       resDiv.style.display = 'block';
 
-      if (!data) {
+      if (!dataStr) {
         resDiv.innerText = '⚠️ Por favor, selecione uma data para consultar.';
         return;
       }
 
-      var ocupadas = dbReservas.filter(function(x) { return x.data === data; }).map(function(x) { return x.sala + ' (' + x.horario + ' - ' + x.atividade + ' por ' + x.resp + ')'; });
-      
-      if (ocupadas.length === 0) {
-        resDiv.innerHTML = '📅 Para o dia <strong>' + data + '</strong>, não existem reservas registadas. Todas as salas encontram-se disponíveis.';
+      // Descobrir o dia da semana (0=Domingo, 1=Segunda, ..., 5=Sexta)
+      var partes = dataStr.split('-');
+      var dataObj = new Date(partes[0], partes[1] - 1, partes[2]);
+      var diaSemana = dataObj.getDay(); // 1 a 5 para Seg a Sex
+
+      if (diaSemana === 0 || diaSemana === 6) {
+        resDiv.innerHTML = '📅 A data selecionada (' + dataStr + ') cai num fim de semana. Não há atividades regulares programadas na grade fixa.';
+        return;
+      }
+
+      // Mapear coluna da tabela (Segunda = índice 4, Terça = 5, etc.)
+      var colIndex = diaSemana + 3; 
+
+      var ocupadasOficiais = [];
+      var linhas = document.querySelectorAll('#tabelaQuadroOficial tbody tr');
+      for (var i = 0; i < linhas.length; i++) {
+        var cols = linhas[i].querySelectorAll('td');
+        if (cols.length > colIndex) {
+          var salaNum = cols[3].innerText.trim();
+          var serie = cols[2].innerText.trim();
+          var atividade = cols[colIndex].innerText.trim();
+          
+          if (atividade && atividade !== '—') {
+            ocupadasOficiais.push('Sala ' + salaNum + ' (' + (serie ? serie + ' - ' : '') + atividade + ')');
+          }
+        }
+      }
+
+      // Verificar reservas adicionais cadastradas no sistema
+      var pontuais = dbReservas.filter(function(x) { return x.data === dataStr; }).map(function(x) {
+        return 'Sala ' + x.sala + ' (Reserva: ' + x.atividade + ' por ' + x.resp + ', horário: ' + x.horario + ')';
+      });
+
+      var todasOcupadas = ocupadasOficiais.concat(pontuais);
+
+      if (todasOcupadas.length === 0) {
+        resDiv.innerHTML = '📅 Para o dia <strong>' + dataStr + '</strong>, todas as salas encontram-se livres.';
       } else {
-        resDiv.innerHTML = '⚠️ <strong>Salas já reservadas no dia ' + data + ':</strong><br>• ' + ocupadas.join('<br>• ');
+        resDiv.innerHTML = '⚠️ <strong>Salas ocupadas / com atividades programadas no dia ' + dataStr + ':</strong><br>• ' + todasOcupadas.join('<br>• ');
       }
     }
 
