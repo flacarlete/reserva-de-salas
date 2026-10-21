@@ -3,725 +3,423 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Reserva de Salas — Colégio Arena</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-  <!-- html2pdf Library para gerar PDF direto -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <title>Controle de Gestão Escolar — Colégio Arena</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f3f4f6; margin: 0; padding: 0; color: #1f2937; }
+    header { background-color: #1b4332; color: white; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+    nav { background: white; border-bottom: 1px solid #e5e7eb; padding: 8px 24px; display: flex; gap: 8px; flex-wrap: wrap; }
+    nav button { padding: 8px 16px; border: none; background: #f3f4f6; color: #4b5563; font-weight: bold; cursor: pointer; border-radius: 4px; }
+    nav button.ativo { background-color: #1b4332; color: white; }
+    main { max-width: 1100px; margin: 24px auto; background: white; padding: 24px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .secao { display: none; }
+    .secao.ativa { display: block; }
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 4px; color: #374151; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; box-sizing: border-box; font-size: 13px; }
+    button.btn-submit { background-color: #1b4332; color: white; border: none; padding: 10px 16px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 13px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 11px; }
+    th, td { border: 1px solid #e5e7eb; padding: 6px; text-align: left; }
+    th { background-color: #f9fafb; font-weight: bold; }
+  </style>
 </head>
-<body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex flex-col">
+<body>
 
-  <header class="bg-[#1b4332] text-white px-6 py-4 shadow flex justify-between items-center">
+  <header>
     <div>
-      <h1 class="text-lg font-bold flex items-center gap-2">
-        <span>🏫</span> Colégio Arena — Reserva de Salas
-      </h1>
-      <p class="text-xs text-emerald-200 mt-0.5">Consulta de Disponibilidade e Tabela Geral Integrada na Nuvem</p>
+      <h1 style="margin:0; font-size: 18px;">📋 Colégio Arena — Gestão Escolar</h1>
+      <p style="margin:4px 0 0 0; font-size: 12px; color: #a7f3d0;">Painel Operacional Estável</p>
     </div>
-    <div class="text-right text-xs text-emerald-100">
-      <span id="dataAtualSistema"></span>
+    <div style="font-size: 12px; background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 4px;">
+      🟢 1.160 Alunos
     </div>
   </header>
 
-  <main class="p-6 max-w-7xl w-full mx-auto flex-1 space-y-6">
+  <nav>
+    <button onclick="mudarAba('atrasos')" id="btn-atrasos" class="ativo">⏰ Atrasos</button>
+    <button onclick="mudarAba('salas')" id="btn-salas">🏢 Reserva de Salas</button>
+    <button onclick="mudarAba('sala')" id="btn-sala">📚 Sala de Estudos</button>
+    <button onclick="mudarAba('prof')" id="btn-prof">👨‍🏫 Professores</button>
+    <button onclick="mudarAba('insp')" id="btn-insp">📋 Inspetores</button>
+    <button onclick="mudarAba('atd')" id="btn-atd">📋 Atendimentos</button>
+  </nav>
 
-    <!-- BUSCA DE DISPONIBILIDADE -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-      <h2 class="text-sm font-bold text-[#1b4332] mb-3 uppercase tracking-wider">🔍 1. Consultar Salas Disponíveis</h2>
-      
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
-        <div>
-          <label class="block text-xs font-medium text-gray-700 mb-1">Data Desejada</label>
-          <input type="date" id="buscaData" class="w-full border rounded px-3 py-2 text-xs" onchange="verificarDisponibilidade()" />
+  <main>
+    <!-- 1. ATRASOS -->
+    <section id="sec-atrasos" class="secao ativa">
+      <h2 style="color: #1b4332; font-size: 16px; margin-top: 0;">Registar Atraso</h2>
+      <form onsubmit="salvarAtraso(event)">
+        <div class="form-group">
+          <label>Atividade</label>
+          <select id="atv" required>
+            <option value="">Selecione...</option>
+            <option value="Nivelamento">Nivelamento</option>
+            <option value="AEE">AEE</option>
+            <option value="Arenão">Arenão</option>
+            <option value="Esportes">Esportes</option>
+            <option value="Outra disciplina">Outra disciplina</option>
+            <option value="Sala de estudos/Biblioteca">Sala de estudos/Biblioteca</option>
+          </select>
         </div>
-        <div>
-          <label class="block text-xs font-medium text-gray-700 mb-1">Horário Início</label>
-          <input type="time" id="buscaHoraInicio" class="w-full border rounded px-3 py-2 text-xs" />
+        <div class="form-group">
+          <label>Nome do Aluno</label>
+          <input type="text" id="aluno" required placeholder="Nome completo...">
         </div>
-        <div>
-          <label class="block text-xs font-medium text-gray-700 mb-1">Horário Término</label>
-          <input type="time" id="buscaHoraTermino" class="w-full border rounded px-3 py-2 text-xs" />
+        <div class="form-group">
+          <label>Turma</label>
+          <input type="text" id="turma" required placeholder="Ex: 8ºG">
         </div>
-        <div>
-          <button onclick="verificarDisponibilidade()" class="w-full bg-[#1b4332] text-white px-4 py-2 rounded text-xs font-semibold hover:bg-emerald-950 transition">Ver Salas Livres</button>
+        <div class="form-group">
+          <label>Motivo</label>
+          <input type="text" id="motivo" required placeholder="Motivo do atraso...">
         </div>
-      </div>
-
-      <!-- RESULTADO DA BUSCA COM SELEÇÃO MÚLTIPLA -->
-      <div id="containerResultadoBusca" class="mt-5 hidden border-t pt-4">
-        <div class="flex justify-between items-center mb-2">
-          <h3 class="text-xs font-bold text-gray-700 uppercase">Selecione uma ou mais salas livres:</h3>
-          <button type="button" onclick="avancarParaFormularioMultiplo()" class="bg-emerald-600 text-white px-3 py-1 rounded text-xs font-bold hover:bg-emerald-700 shadow">Continuar com as Selecionadas ➔</button>
+        <div class="form-group">
+          <label><input type="checkbox" id="lancado"> Lançado no sistema da escola</label>
         </div>
-        <div id="listaSalasDisponiveis" class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2"></div>
-      </div>
-    </div>
-
-    <!-- MODAL COM CALENDÁRIO PARA ESCOLHER O DIA DO MAPA -->
-    <div id="modalSalasDoDia" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center hidden">
-      <div class="bg-white rounded-lg p-6 max-w-sm w-full shadow-xl space-y-4">
-        <h3 class="text-sm font-bold text-[#1b4332] uppercase">📅 Gerar PDF do Mapa do Dia</h3>
-        <p class="text-xs text-gray-600">Selecione a data desejada para baixar o PDF completo:</p>
-        <input type="date" id="modalDataInput" class="w-full border rounded px-3 py-2 text-xs" />
-        <div class="flex justify-end gap-2 pt-2">
-          <button type="button" onclick="fecharModalData()" class="bg-gray-300 text-gray-700 px-3 py-1.5 rounded text-xs font-semibold">Cancelar</button>
-          <button type="button" onclick="confirmarGerarPdfDoDia()" class="bg-[#1b4332] text-white px-4 py-1.5 rounded text-xs font-bold hover:bg-emerald-900">Baixar PDF</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- MAPA GERAL DE LOCALIZAÇÃO DAS SALAS E ATIVIDADES -->
-    <div id="secaoMapaImpressao" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-      <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-2">
-        <div>
-          <h3 class="text-xs font-bold text-[#1b4332] uppercase tracking-wider">🗺️ Guia de Salas e Grade de Atividades (Com Reservas em Tempo Real)</h3>
-          <p class="text-[11px] text-gray-500">Exibindo reservas cadastradas no mapa para a data de referência: <span id="labelDataMapa" class="font-bold text-emerald-800"></span></p>
-        </div>
-        <div class="flex items-center gap-2">
-          <button onclick="abrirModalData()" class="bg-emerald-700 text-white px-3 py-1.5 rounded text-xs font-bold hover:bg-emerald-800 shadow flex items-center gap-1">
-            📄 Salas do Dia (Gerar PDF)
-          </button>
-          <div class="text-xs bg-emerald-50 border border-emerald-300 text-emerald-900 px-3 py-1.5 rounded font-semibold flex items-center gap-2">
-            <span class="w-3 h-3 bg-emerald-200 border border-emerald-600 inline-block rounded-sm"></span> Reservas vigentes no dia em destaque verde
-          </div>
-        </div>
-      </div>
-      
-      <div>
-        <table class="w-full text-center text-xs border-collapse border border-gray-300">
-          <thead class="bg-[#1b4332] text-white font-semibold">
-            <tr>
-              <th class="p-2 border">Bloco</th>
-              <th class="p-2 border">Andar</th>
-              <th class="p-2 border">Série / Identificação</th>
-              <th class="p-2 border">Nº da Sala</th>
-              <th class="p-2 border">2ª Feira</th>
-              <th class="p-2 border">3ª Feira</th>
-              <th class="p-2 border">4ª Feira</th>
-              <th class="p-2 border">5ª Feira</th>
-              <th class="p-2 border">6ª Feira</th>
-            </tr>
-          </thead>
-          <tbody id="corpoMapaSalas" class="divide-y divide-gray-200 text-gray-700"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- FORMULÁRIO DE RESERVA / EDIÇÃO -->
-    <div id="containerFormReserva" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hidden border-l-4 border-l-emerald-600">
-      <h2 class="text-sm font-bold text-[#1b4332] mb-3 uppercase tracking-wider">➕ <span id="tituloModoForm">Confirmar Reserva</span> para: <span id="labelSalaSelecionada" class="text-emerald-700"></span></h2>
-      
-      <form onsubmit="salvarReservaSala(event)" class="space-y-4">
-        <input type="hidden" id="reservaEditId" />
-        <input type="hidden" id="reservaSalasMultiplas" />
-        <input type="hidden" id="reservaData" />
-        <input type="hidden" id="reservaHorario" />
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-medium text-gray-700 mb-1">Responsável / Solicitante</label>
-            <input type="text" id="reservaResponsavel" placeholder="Seu nome..." class="w-full border rounded px-3 py-2 text-xs" required />
-          </div>
-          <div>
-            <label class="block text-xs font-medium text-gray-700 mb-1">Atividade / Motivo</label>
-            <input type="text" id="reservaAtividade" placeholder="Descreva a atividade..." class="w-full border rounded px-3 py-2 text-xs" required />
-          </div>
-        </div>
-        <div class="flex justify-end gap-2">
-          <button type="button" onclick="cancelarSelecao()" class="bg-gray-300 text-gray-700 px-4 py-2 rounded text-xs font-semibold">Cancelar</button>
-          <button type="submit" id="btnSalvarTexto" class="bg-[#1b4332] text-white px-5 py-2 rounded text-xs font-semibold hover:bg-emerald-900">Concluir Reservas</button>
-        </div>
+        <button type="submit" class="btn-submit">Registar Atraso</button>
       </form>
-    </div>
+      <table>
+        <thead>
+          <tr><th>Aluno</th><th>Turma</th><th>Atividade</th><th>Motivo</th><th style="text-align:center;">Lançado</th><th>Ações</th></tr>
+        </thead>
+        <tbody id="tabelaAtrasos"></tbody>
+      </table>
+    </section>
 
-    <!-- TABELA DE TODAS AS RESERVAS CADASTRADAS NA NUVEM -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-      <div class="flex justify-between items-center mb-4">
-        <div>
-          <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider">📋 Tabela Geral de Reservas (Sincronizada na Nuvem)</h3>
-          <p class="text-[11px] text-gray-500">Exibindo todos os agendamentos registrados para a escola inteira</p>
-        </div>
-        <div class="flex gap-2">
-          <button onclick="removerReservasPassadas()" class="bg-amber-700 text-white px-3 py-1.5 rounded text-xs hover:bg-amber-800 font-semibold">🧹 Limpar Reservas Passadas</button>
-          <button onclick="zerarTodasReservas()" class="bg-red-700 text-white px-3 py-1.5 rounded text-xs hover:bg-red-800 font-semibold">🗑️ Zerar Reservas</button>
-          <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-xs hover:bg-black">🖨️ Imprimir Tabela</button>
-        </div>
-      </div>
+    <!-- 2. RESERVA DE SALAS (NOVO DASHBOARD OFICIAL) -->
+    <section id="sec-salas" class="secao">
+      <h2 style="color: #1b4332; font-size: 16px; margin-top: 0;">🏢 Salas de Aula por Atividade (7º ao 9º Ano)</h2>
+      <p style="font-size: 12px; color: #6b7280; margin-bottom: 12px;">Consulte a alocação oficial por bloco, andar, sala e dia da semana.</p>
       
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs border border-gray-300">
-          <thead class="bg-gray-100 font-semibold text-gray-700">
-            <tr>
-              <th class="p-2 border text-center">Data</th>
-              <th class="p-2 border text-center">Horário</th>
-              <th class="p-2 border text-center">Sala</th>
-              <th class="p-2 border">Responsável</th>
-              <th class="p-2 border">Atividade</th>
-              <th class="p-2 border text-center">Ações</th>
-            </tr>
-          </thead>
-          <tbody id="corpoTabelaReservasExtras"></tbody>
-        </table>
-      </div>
-    </div>
-
-  </main>
-
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCqF5LNFnHjSNPmWYg2zBb0CYJfn04FmEQ",
-      authDomain: "reserva-de-salas-50a48.firebaseapp.com",
-      databaseURL: "https://reserva-de-salas-50a48-default-rtdb.firebaseio.com",
-      projectId: "reserva-de-salas-50a48",
-      storageBucket: "reserva-de-salas-50a48.appspot.com",
-      messagingSenderId: "890750023723",
-      appId: "1:890750023723:web:d560b78a3dad06f060d26e",
-      measurementId: "G-C583XT3583"
-    };
-
-    let db = null;
-    let usaNuvem = false;
-    try {
-      if (firebaseConfig.apiKey) {
-        firebase.initializeApp(firebaseConfig);
-        db = firebase.database();
-        usaNuvem = true;
-      }
-    } catch(err) {
-      console.warn("Erro ao iniciar Firebase:", err);
-    }
-
-    const TODAS_AS_SALAS = [
-      "Sala 1", "Sala 2", "Sala 3", "Sala 4", "Sala 5", "Sala 7", "Sala 8", 
-      "Sala 9", "Sala 10", "Sala 11", "Sala 12", "Sala 13", "Sala 14", "Sala 15", 
-      "Sala 16", "Sala 17", "Sala 18", "Sala 19", "Sala 20", "Sala 21", "Sala 22", 
-      "Sala 23", "Sala 24", "Sala 25", "Sala 26", "Sala 27", "Sala 28", "Sala 29", 
-      "Sala 30", "Sala 31", "Sala 32", "Sala 33", "Sala 37",
-      "Sala 57", "Sala 58", "Sala 59", "Sala 60", "Sala 61", "Sala 62", "Sala 63", "Sala 64"
-    ];
-
-    const MAPA_ESTRUTURA = [
-      // 1. Bloco 1
-      { bloco: "Bloco 1", andar: "1º Andar", serie: "—", numero: "Sala 1", seg: "", ter: "", qua: "", qui: "", sex: "" },
-      { bloco: "Bloco 1", andar: "1º Andar", serie: "—", numero: "Sala 2", seg: "", ter: "", qua: "", qui: "", sex: "" },
-      { bloco: "Bloco 1", andar: "1º Andar", serie: "7ºB", numero: "Sala 3", seg: "AEE LINGUAGUENS", ter: "AEE", qua: "AEE LINGUAGUENS", qui: "AEE CIÊNCIAS", sex: "AEE CIÊNCIAS" },
-      { bloco: "Bloco 1", andar: "1º Andar", serie: "7ºD", numero: "Sala 4", seg: "AEE CIÊNCIAS", ter: "AEE", qua: "AEE CIÊNCIAS", qui: "AEE LING. E HUMANIDADES", sex: "AEE" },
-      { bloco: "Bloco 1", andar: "1º Andar", serie: "MAT", numero: "Sala 5", seg: "", ter: "", qua: "", qui: "", sex: "" },
-      { bloco: "Bloco 1", andar: "1º Andar", serie: "7ºG", numero: "Sala 7", seg: "AEE", ter: "AEE", qua: "AEE", qui: "", sex: "PROVA" },
-      { bloco: "Bloco 1", andar: "1º Andar", serie: "7ºF", numero: "Sala 8", seg: "AEE HUMANIDADES", ter: "AEE", qua: "AEE HUMANIDADES", qui: "", sex: "PROVA" },
-      { bloco: "Bloco 1", andar: "1º Andar", serie: "MAKER", numero: "Sala 9", seg: "ROBÓTICA 6º-9º", ter: "ROBÓTICA 6º-9º", qua: "ROBÓTICA 6º-9º", qui: "ROBÓTICA 6º-9º", sex: "ROBÓTICA 6º-9º" },
-      { bloco: "Bloco 1", andar: "2º Andar", serie: "7ºE", numero: "Sala 10", seg: "AEE EXATAS", ter: "AEE", qua: "AEE EXATAS", qui: "AEE EXATAS", sex: "AEE EXATAS" },
-      { bloco: "Bloco 1", andar: "2º Andar", serie: "7ºH", numero: "Sala 11", seg: "", ter: "NIV. ING. (14h15 – 16h55)", qua: "NIV. ING. (14h15 – 16h55)", qui: "", sex: "FISCAIS" },
-      { bloco: "Bloco 1", andar: "2º Andar", serie: "7ºC", numero: "Sala 12", seg: "NIV. LP", ter: "NIV. LP", qua: "", qui: "ARENÃO LP/ING (14h15 – 15h45)", sex: "ARENÃO LP/ING (14h15 – 15h45)" },
-      { bloco: "Bloco 1", andar: "2º Andar", serie: "7ºA", numero: "Sala 13", seg: "DANÇA (16h10 – 16h55)", ter: "", qua: "DANÇA (16h10 – 16h55)", qui: "MEDITAÇÃO (14h15 – 15h45)", sex: "MEDITAÇÃO (14h15 – 15h45)" },
-      { bloco: "Bloco 1", andar: "2º Andar", serie: "SALA", numero: "Sala 14", seg: "NIV. MAT", ter: "NIV. MAT", qua: "NIV. MAT", qui: "", sex: "NIV. MAT" },
-      { bloco: "Bloco 1", andar: "2º Andar", serie: "SALA", numero: "Sala 15", seg: "", ter: "", qua: "", qui: "", sex: "FEDERADOS" },
-      { bloco: "Bloco 1", andar: "2º Andar", serie: "8ºG", numero: "Sala 16", seg: "Monitoria (14h15 – 15h45)", ter: "Monitoria (15h – 16h55)", qua: "", qui: "", sex: "PROVA/Monitoria (16h55 – 17h40)" },
-      { bloco: "Bloco 1", andar: "2º Andar", serie: "SALA", numero: "Sala 17", seg: "TEATRO (16h10 – 17h40)", ter: "", qua: "TEATRO (14h15 – 17h40)", qui: "TEATRO (16h55 – 18h25)", sex: "" },
-      { bloco: "Bloco 1", andar: "2º Andar", serie: "TATAME", numero: "Sala 18", seg: "JUDÔ/JIU-JUTSU (15h – 15h45 / 17h40 – 18h25)", ter: "", qua: "FUNCIONAL (16h10 – 16h55)", qui: "JUDÔ (17h40 – 18h25)", sex: "JIU-JITSU" },
-      { bloco: "Bloco 1", andar: "2º Andar", serie: "8ºH", numero: "Sala 19", seg: "ED. FINANC. (14h15 – 17h40)", ter: "EAGLE (16h55 – 17h40)", qua: "ARENAMUN (16h10 – 17h40)", qui: "EAGLE (14h15 – 15h)", sex: "PROVA" },
-
-      // 2. Bloco 2
-      { bloco: "Bloco 2", andar: "Térreo", serie: "8ºD", numero: "Sala 20", seg: "S. ESTUDOS (6º/7º)", ter: "S. ESTUDOS (6º/7º)", qua: "S. ESTUDOS (6º/7º)", qui: "PROVA", sex: "PROVA" },
-      { bloco: "Bloco 2", andar: "Térreo", serie: "8ºC", numero: "Sala 21", seg: "S. ESTUDOS (8º/9º)", ter: "S. ESTUDOS (8º/9º)", qua: "S. ESTUDOS (8º/9º)", qui: "S. ESTUDOS", sex: "PROVA" },
-      { bloco: "Bloco 2", andar: "Térreo", serie: "8ºB", numero: "Sala 22", seg: "ARENÃO Física (14h15 – 15h45)", ter: "AGRO ARENA – TURMA A (16h10 – 16h55)", qua: "", qui: "FISCAIS", sex: "PROVA" },
-      { bloco: "Bloco 2", andar: "Térreo", serie: "8ºA", numero: "Sala 23", seg: "ARENÃO Geografia (15h – 16h55)", ter: "AGRO ARENA – TURMA B (16h55 – 17h40)", qua: "", qui: "FEDERADOS", sex: "PROVA" },
-      { bloco: "Bloco 2", andar: "1º Andar", serie: "9ºA", numero: "Sala 24", seg: "ARENÃO Debate (16h10 – 17h40)", ter: "", qua: "ARENÃO Mat (16h10 – 18h25)", qui: "PROVA", sex: "PROVA" },
-      { bloco: "Bloco 2", andar: "1º Andar", serie: "9ºB", numero: "Sala 25", seg: "", ter: "ARENÃO Mat 6º/7º (14h15 – 15h45)", qua: "ARENÃO Biologia (14h15 – 16h55)", qui: "PROVA", sex: "PROVA" },
-      { bloco: "Bloco 2", andar: "1º Andar", serie: "9ºC", numero: "Sala 26", seg: "", ter: "ARENÃO Mat 8º/9º (14h15 – 15h45)", qua: "ARENÃO Quimica (14h15 – 15h45)", qui: "PROVA", sex: "PROVA" },
-      { bloco: "Bloco 2", andar: "1º Andar", serie: "9ºD", numero: "Sala 27", seg: "", ter: "", qua: "ARENÃO História (16h55 – 18h25)", qui: "PROVA", sex: "PROVA" },
-      { bloco: "Bloco 2", andar: "2º Andar", serie: "9ºE", numero: "Sala 28", seg: "CAMBRIDGE", ter: "", qua: "CAMBRIDGE", qui: "PROVA", sex: "PROVA" },
-      { bloco: "Bloco 2", andar: "2º Andar", serie: "9ºF", numero: "Sala 29", seg: "CAMBRIDGE", ter: "", qua: "CAMBRIDGE", qui: "PROVA", sex: "PROVA" },
-      { bloco: "Bloco 2", andar: "2º Andar", serie: "9ºG", numero: "Sala 30", seg: "CAMBRIDGE", ter: "", qua: "CAMBRIDGE", qui: "PROVA", sex: "PROVA" },
-      { bloco: "Bloco 2", andar: "2º Andar", serie: "9ºH", numero: "Sala 31", seg: "", ter: "", qua: "", qui: "PROVA", sex: "PROVA" },
-
-      // 3. Bloco 3
-      { bloco: "Bloco 3", andar: "1º Andar", serie: "8ºE", numero: "Sala 32", seg: "PL. RED. 7º", ter: "PL. RED. 6º", qua: "PL. RED. 9º", qui: "", sex: "PROVA" },
-      { bloco: "Bloco 3", andar: "1º Andar", serie: "8ºF", numero: "Sala 33", seg: "PL. RED. 8º", ter: "", qua: "", qui: "", sex: "PROVA" },
-
-      // 4. Bloco 4
-      { bloco: "Bloco 4", andar: "Térreo", serie: "—", numero: "Sala 37", seg: "", ter: "", qua: "", qui: "", sex: "" },
-
-      // 5. 6º ano
-      { bloco: "6º ano", andar: "—", serie: "6º Ano", numero: "Sala 57", seg: "", ter: "", qua: "", qui: "", sex: "" },
-      { bloco: "6º ano", andar: "—", serie: "6º Ano", numero: "Sala 58", seg: "", ter: "", qua: "", qui: "", sex: "" },
-      { bloco: "6º ano", andar: "—", serie: "6º Ano", numero: "Sala 59", seg: "", ter: "", qua: "", qui: "", sex: "" },
-      { bloco: "6º ano", andar: "—", serie: "6º Ano", numero: "Sala 60", seg: "", ter: "", qua: "", qui: "", sex: "" },
-      { bloco: "6º ano", andar: "—", serie: "6º Ano", numero: "Sala 61", seg: "", ter: "", qua: "", qui: "", sex: "" },
-      { bloco: "6º ano", andar: "—", serie: "6º Ano", numero: "Sala 62", seg: "", ter: "", qua: "", qui: "", sex: "" },
-      { bloco: "6º ano", andar: "—", serie: "6º Ano", numero: "Sala 63", seg: "", ter: "", qua: "", qui: "", sex: "" },
-      { bloco: "6º ano", andar: "—", serie: "6º Ano", numero: "Sala 64", seg: "", ter: "", qua: "", qui: "", sex: "" }
-    ];
-
-    let reservasSalasList = [];
-    let ultimoIdReservado = null;
-
-    window.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('dataAtualSistema').textContent = new Date().toLocaleDateString('pt-BR');
-      const hojeStr = new Date().toISOString().split('T')[0];
-      document.getElementById('buscaData').value = hojeStr;
-      carregarDados();
-    });
-
-    function carregarDados() {
-      if (usaNuvem) {
-        db.ref('escola_arena_salas/reservas').on('value', (snapshot) => {
-          reservasSalasList = snapshot.val() || [];
-          renderizarTudo();
-        });
-      } else {
-        reservasSalasList = JSON.parse(localStorage.getItem('escola_reservas_salas_local') || '[]');
-        renderizarTudo();
-      }
-    }
-
-    function renderizarTudo() {
-      renderizarReservasExtras();
-      renderizarMapaSalas();
-    }
-
-    function abrirModalData() {
-      const dataAtualBusca = document.getElementById('buscaData').value;
-      document.getElementById('modalDataInput').value = dataAtualBusca;
-      document.getElementById('modalSalasDoDia').classList.remove('hidden');
-    }
-
-    function fecharModalData() {
-      document.getElementById('modalSalasDoDia').classList.add('hidden');
-    }
-
-    function confirmarGerarPdfDoDia() {
-      const dataEscolhida = document.getElementById('modalDataInput').value;
-      if (!dataEscolhida) {
-        alert('Por favor, selecione uma data no calendário.');
-        return;
-      }
-      fecharModalData();
-
-      const reservasFiltradas = reservasSalasList.filter(r => r.data === dataEscolhida);
-      const dataFormatadaExibicao = dataEscolhida.split('-').reverse().join('/');
-
-      const [ano, mes, dia] = dataEscolhida.split('-');
-      const dataObj = new Date(ano, mes - 1, dia);
-      const diaSemanaNum = dataObj.getDay();
-      const diasMap = { 1: 'seg', 2: 'ter', 3: 'qua', 4: 'qui', 5: 'sex' };
-      const chaveDiaConsulta = diasMap[diaSemanaNum] || '';
-
-      let linhasTabelaHtml = '';
-      MAPA_ESTRUTURA.forEach(linha => {
-        const resSala = reservasFiltradas.filter(r => r.sala === linha.numero);
-        let hSeg = formatarTextoAtividade(linha.seg);
-        let hTer = formatarTextoAtividade(linha.ter);
-        let hQua = formatarTextoAtividade(linha.qua);
-        let hQui = formatarTextoAtividade(linha.qui);
-        let hSex = formatarTextoAtividade(linha.sex);
-
-        if (resSala.length > 0) {
-          let boxRes = '';
-          resSala.forEach(res => {
-            boxRes += `
-              <div style="margin-top: 4px; background-color: #d1fae5; border: 1px solid #10b981; color: #065f46; padding: 4px; border-radius: 4px; font-weight: bold; font-size: 10px; text-align: left;">
-                📌 ${res.responsavel} <span style="font-size: 8px; background: white; padding: 1px 3px; border-radius: 3px; border: 1px solid #6ee7b7;">📅 ${dataFormatadaExibicao}</span><br>
-                <span style="font-size: 9px; font-weight: normal; color: #047857;">${res.atividade} (${res.horario})</span>
-              </div>
-            `;
-          });
-          if (chaveDiaConsulta === 'seg') hSeg = (hSeg ? hSeg + '<br>' : '') + boxRes;
-          else if (chaveDiaConsulta === 'ter') hTer = (hTer ? hTer + '<br>' : '') + boxRes;
-          else if (chaveDiaConsulta === 'qua') hQua = (hQua ? hQua + '<br>' : '') + boxRes;
-          else if (chaveDiaConsulta === 'qui') hQui = (hQui ? hQui + '<br>' : '') + boxRes;
-          else if (chaveDiaConsulta === 'sex') hSex = (hSex ? hSex + '<br>' : '') + boxRes;
-          else hSeg = (hSeg ? hSeg + '<br>' : '') + boxRes;
-        }
-
-        linhasTabelaHtml += `
-          <tr style="border-bottom: 1px solid #d1d5db;">
-            <td style="padding: 4px; border-right: 2px solid #9ca3af; font-weight: bold; background-color: #f3f4f6; font-size: 10px;">${linha.bloco}</td>
-            <td style="padding: 4px; border-right: 2px solid #9ca3af; font-weight: 600; background-color: #f9fafb; font-size: 10px;">${linha.andar}</td>
-            <td style="padding: 4px; border: 1px solid #d1d5db; font-size: 10px;">${linha.serie}</td>
-            <td style="padding: 4px; border: 1px solid #d1d5db; font-weight: bold; color: #1b4332; font-size: 10px;">${linha.numero}</td>
-            <td style="padding: 4px; border: 1px solid #d1d5db; font-size: 10px;">${hSeg}</td>
-            <td style="padding: 4px; border: 1px solid #d1d5db; font-size: 10px;">${hTer}</td>
-            <td style="padding: 4px; border: 1px solid #d1d5db; font-size: 10px;">${hQua}</td>
-            <td style="padding: 4px; border: 1px solid #d1d5db; font-size: 10px;">${hQui}</td>
-            <td style="padding: 4px; border: 1px solid #d1d5db; font-size: 10px;">${hSex}</td>
-          </tr>
-        `;
-      });
-
-      const elementoTemp = document.createElement('div');
-      elementoTemp.style.padding = '15px';
-      elementoTemp.style.background = '#ffffff';
-      elementoTemp.innerHTML = `
-        <h2 style="color: #1b4332; margin-bottom: 4px; font-size: 16px;">🏫 Colégio Arena — Guia de Salas e Grade de Atividades</h2>
-        <p style="font-size: 11px; color: #666; margin-bottom: 12px;">Mapa Oficial de Ocupação para o dia: <strong>${dataFormatadaExibicao}</strong></p>
-        <table style="width: 100%; border-collapse: collapse; text-align: center;">
+      <div style="overflow-x: auto;">
+        <table>
           <thead>
-            <tr style="background-color: #1b4332; color: white; font-size: 10px;">
-              <th style="padding: 6px; border: 1px solid #ccc;">Bloco</th>
-              <th style="padding: 6px; border: 1px solid #ccc;">Andar</th>
-              <th style="padding: 6px; border: 1px solid #ccc;">Série</th>
-              <th style="padding: 6px; border: 1px solid #ccc;">Sala</th>
-              <th style="padding: 6px; border: 1px solid #ccc;">2ª Feira</th>
-              <th style="padding: 6px; border: 1px solid #ccc;">3ª Feira</th>
-              <th style="padding: 6px; border: 1px solid #ccc;">4ª Feira</th>
-              <th style="padding: 6px; border: 1px solid #ccc;">5ª Feira</th>
-              <th style="padding: 6px; border: 1px solid #ccc;">6ª Feira</th>
+            <tr>
+              <th>Bloco</th>
+              <th>Andar</th>
+              <th>Série</th>
+              <th>Nº Sala</th>
+              <th>2ª Feira</th>
+              <th>3ª Feira</th>
+              <th>4ª Feira</th>
+              <th>5ª Feira</th>
+              <th>6ª Feira</th>
             </tr>
           </thead>
           <tbody>
-            ${linhasTabelaHtml}
+            <tr><td>1</td><td>1</td><td>7ºB</td><td>3</td><td>AEE LINGUAGUENS</td><td>AEE</td><td>AEE LINGUAGUENS</td><td>AEE CIÊNCIAS</td><td>AEE CIÊNCIAS</td></tr>
+            <tr><td>1</td><td>1</td><td>7ºD</td><td>4</td><td>AEE CIÊNCIAS</td><td>AEE</td><td>AEE CIÊNCIAS</td><td>AEE LING. E HUMANIDADES</td><td>AEE</td></tr>
+            <tr><td>1</td><td>1</td><td>MAT</td><td>5</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+            <tr><td>1</td><td>1</td><td>7ºG</td><td>7</td><td>AEE</td><td>AEE</td><td>AEE</td><td>—</td><td>PROVA</td></tr>
+            <tr><td>1</td><td>1</td><td>7ºF</td><td>8</td><td>AEE HUMANIDADES</td><td>AEE</td><td>AEE HUMANIDADES</td><td>—</td><td>PROVA</td></tr>
+            <tr><td>1</td><td>1</td><td>MAKER</td><td>9</td><td>ROBÓTICA 6º-9º</td><td>ROBÓTICA 6º-9º</td><td>ROBÓTICA 6º-9º</td><td>ROBÓTICA 6º-9º</td><td>ROBÓTICA 6º-9º</td></tr>
+            <tr><td>1</td><td>1</td><td>7ºE</td><td>10</td><td>AEE EXATAS</td><td>AEE</td><td>AEE EXATAS</td><td>AEE EXATAS</td><td>AEE EXATAS</td></tr>
+            <tr><td>1</td><td>2</td><td>7ºH</td><td>11</td><td>—</td><td>NIV. ING.</td><td>NIV. ING.</td><td>—</td><td>FISCAIS</td></tr>
+            <tr><td>1</td><td>2</td><td>—</td><td>12</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+            <tr><td>1</td><td>2</td><td>7ºA</td><td>13</td><td>NIV. MAT</td><td>NIV. MAT</td><td>NIV. MAT</td><td>ARENÃO LP/ING (14h15–15h45)</td><td>NIV. MAT</td></tr>
+            <tr><td>1</td><td>2</td><td>7ºC</td><td>14</td><td>NIV. LP / DANÇA (16h10)</td><td>NIV. LP</td><td>DANÇA (16h10–16h55)</td><td>—</td><td>ARENÃO LP/ING (14h15–15h45)</td></tr>
+            <tr><td>1</td><td>2</td><td>SALA</td><td>15</td><td>—</td><td>—</td><td>—</td><td>—</td><td>FEDERADOS</td></tr>
+            <tr><td>1</td><td>2</td><td>8ºG</td><td>16</td><td>—</td><td>—</td><td>—</td><td>—</td><td>PROVA</td></tr>
+            <tr><td>1</td><td>2</td><td>SALA</td><td>17</td><td>TEATRO (16h10–17h40)</td><td>—</td><td>TEATRO (14h15–17h40)</td><td>MEDITAÇÃO (14h15)/TEATRO (16h55)</td><td>MEDITAÇÃO (14h15–15h45)</td></tr>
+            <tr><td>1</td><td>2</td><td>TATAME</td><td>18</td><td>JUDÔ/JIU-JITSU (15h/17h40)</td><td>—</td><td>FUNCIONAL (16h10–16h55)</td><td>JUDÔ (17h40–18h25)</td><td>JIU-JITSU</td></tr>
+            <tr><td>1</td><td>2</td><td>8ºH</td><td>19</td><td>ED. FINANC. (14h15–17h40)</td><td>EAGLE (16h55–17h40)</td><td>ARENAMUN (16h10–17h40)</td><td>EAGLE (14h15–15h)</td><td>PROVA</td></tr>
+            <tr><td>4</td><td>1</td><td>8ºE</td><td>32</td><td>PL. RED. 7º</td><td>PL. RED. 6º</td><td>PL. RED. 9º</td><td>—</td><td>PROVA</td></tr>
+            <tr><td>4</td><td>1</td><td>8ºF</td><td>33</td><td>PL. RED. 8º</td><td>—</td><td>—</td><td>—</td><td>PROVA</td></tr>
+            <tr><td>2</td><td>T</td><td>8ºD</td><td>20</td><td>S. ESTUDOS (6º/7º)</td><td>S. ESTUDOS (6º/7º)</td><td>S. ESTUDOS (6º/7º)</td><td>PROVA</td><td>PROVA</td></tr>
+            <tr><td>2</td><td>T</td><td>8ºC</td><td>21</td><td>S. ESTUDOS (8º/9º)</td><td>S. ESTUDOS (8º/9º)</td><td>S. ESTUDOS (8º/9º)</td><td>S. ESTUDOS</td><td>PROVA</td></tr>
+            <tr><td>2</td><td>T</td><td>8ºB</td><td>22</td><td>ARENÃO Física (14h15)</td><td>AGRO – TURMA A (16h10)</td><td>—</td><td>FISCAIS</td><td>PROVA</td></tr>
+            <tr><td>2</td><td>T</td><td>8ºA</td><td>23</td><td>ARENÃO Geo (15h–16h55)</td><td>AGRO – TURMA B (16h55)</td><td>—</td><td>FEDERADOS</td><td>PROVA</td></tr>
+            <tr><td>2</td><td>1</td><td>9ºA</td><td>24</td><td>ARENÃO Debate (16h10)</td><td>—</td><td>ARENÃO Mat (16h10–18h25)</td><td>PROVA</td><td>PROVA</td></tr>
+            <tr><td>2</td><td>1</td><td>9ºB</td><td>25</td><td>—</td><td>ARENÃO Mat 6º/7º (14h15)</td><td>ARENÃO Bio (14h15–16h55)</td><td>PROVA</td><td>PROVA</td></tr>
+            <tr><td>2</td><td>1</td><td>9ºC</td><td>26</td><td>—</td><td>ARENÃO Mat 8º/9º (14h15)</td><td>ARENÃO Qui (14h15–15h45)</td><td>PROVA</td><td>PROVA</td></tr>
+            <tr><td>2</td><td>1</td><td>9ºD</td><td>27</td><td>—</td><td>—</td><td>ARENÃO Hist (16h55–18h25)</td><td>PROVA</td><td>PROVA</td></tr>
+            <tr><td>2</td><td>2</td><td>9ºE</td><td>28</td><td>CAMBRIDGE</td><td>—</td><td>CAMBRIDGE</td><td>PROVA</td><td>PROVA</td></tr>
+            <tr><td>2</td><td>2</td><td>9ºF</td><td>29</td><td>CAMBRIDGE</td><td>—</td><td>CAMBRIDGE</td><td>PROVA</td><td>PROVA</td></tr>
+            <tr><td>2</td><td>2</td><td>9ºG</td><td>30</td><td>CAMBRIDGE</td><td>—</td><td>CAMBRIDGE</td><td>PROVA</td><td>PROVA</td></tr>
+            <tr><td>2</td><td>2</td><td>9ºH</td><td>31</td><td>—</td><td>—</td><td>—</td><td>PROVA</td><td>PROVA</td></tr>
+            <tr><td>Pátio</td><td>—</td><td>PÁTIO</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>S. ESTUDOS</td></tr>
           </tbody>
         </table>
-      `;
+      </div>
+    </section>
 
-      const opt = {
-        margin:       [5, 5, 5, 5],
-        filename:     `Mapa_Salas_${dataFormatadaExibicao.replace(/\//g, '-')}.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
-      };
+    <!-- 3. SALA DE ESTUDOS -->
+    <section id="sec-sala" class="secao">
+      <h2 style="color: #1b4332; font-size: 16px; margin-top: 0;">Sala de Estudos & Biblioteca</h2>
+      <form onsubmit="salvarSala(event)">
+        <div class="form-group">
+          <label>Nome do Aluno</label>
+          <input type="text" id="salaAluno" required placeholder="Nome do aluno...">
+        </div>
+        <div class="form-group">
+          <label>Turma</label>
+          <input type="text" id="salaTurma" required placeholder="Turma...">
+        </div>
+        <div class="form-group">
+          <label>Ocorrência / Motivo</label>
+          <input type="text" id="salaObs" required placeholder="Detalhes...">
+        </div>
+        <button type="submit" class="btn-submit">Registar Ocorrência</button>
+      </form>
+      <table>
+        <thead>
+          <tr><th>Aluno</th><th>Turma</th><th>Ocorrência</th><th>Ações</th></tr>
+        </thead>
+        <tbody id="tabelaSala"></tbody>
+      </table>
+    </section>
 
-      html2pdf().from(elementoTemp).set(opt).save();
+    <!-- 4. PROFESSORES -->
+    <section id="sec-prof" class="secao">
+      <h2 style="color: #1b4332; font-size: 16px; margin-top: 0;">Acompanhamento Docente</h2>
+      <form onsubmit="salvarProf(event)">
+        <div class="form-group">
+          <label>Professor e Matéria</label>
+          <input type="text" id="profNome" required placeholder="Nome do professor...">
+        </div>
+        <div class="form-group">
+          <label>Ocorrência / Observação</label>
+          <input type="text" id="profObs" required placeholder="Detalhes...">
+        </div>
+        <button type="submit" class="btn-submit">Registar Ocorrência</button>
+      </form>
+      <table>
+        <thead>
+          <tr><th>Professor</th><th>Observação</th><th>Ações</th></tr>
+        </thead>
+        <tbody id="tabelaProf"></tbody>
+      </table>
+    </section>
+
+    <!-- 5. INSPETORES -->
+    <section id="sec-insp" class="secao">
+      <h2 style="color: #1b4332; font-size: 16px; margin-top: 0;">Orientações de Inspetores</h2>
+      <form onsubmit="salvarInsp(event)">
+        <div class="form-group">
+          <label>Nome do Inspetor</label>
+          <input type="text" id="inspNome" required placeholder="Nome...">
+        </div>
+        <div class="form-group">
+          <label>Feedback / Orientação</label>
+          <textarea id="inspDesc" rows="2" required placeholder="Relato..."></textarea>
+        </div>
+        <button type="submit" class="btn-submit">Guardar Orientação</button>
+      </form>
+      <table>
+        <thead>
+          <tr><th>Inspetor</th><th>Feedback</th><th>Ações</th></tr>
+        </thead>
+        <tbody id="tabelaInsp"></tbody>
+      </table>
+    </section>
+
+    <!-- 6. ATENDIMENTOS -->
+    <section id="sec-atd" class="secao">
+      <h2 style="color: #1b4332; font-size: 16px; margin-top: 0;">Registo de Atendimentos</h2>
+      <form onsubmit="salvarAtd(event)">
+        <div class="form-group">
+          <label>Nome do Aluno</label>
+          <input type="text" id="atdAluno" required placeholder="Aluno...">
+        </div>
+        <div class="form-group">
+          <label>Turma / Responsáveis</label>
+          <input type="text" id="atdTurma" required placeholder="Turma e responsáveis...">
+        </div>
+        <div class="form-group">
+          <label>Relato</label>
+          <textarea id="atdRelato" rows="2" required placeholder="Relato..."></textarea>
+        </div>
+        <button type="submit" class="btn-submit">Guardar Atendimento</button>
+      </form>
+      <table>
+        <thead>
+          <tr><th>Aluno</th><th>Turma / Pais</th><th>Relato</th><th>Ações</th></tr>
+        </thead>
+        <tbody id="tabelaAtd"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script>
+    function mudarAba(id) {
+      var secoes = document.getElementsByClassName('secao');
+      for (var i = 0; i < secoes.length; i++) { secoes[i].classList.remove('ativa'); }
+
+      var botoes = document.getElementsByTagName('nav')[0].getElementsByTagName('button');
+      for (var i = 0; i < botoes.length; i++) { botoes[i].classList.remove('ativo'); }
+
+      document.getElementById('sec-' + id).classList.add('ativa');
+      document.getElementById('btn-' + id).classList.add('ativo');
     }
 
-    function renderizarMapaSalas() {
-      const dataStr = document.getElementById('buscaData').value;
-      document.getElementById('labelDataMapa').textContent = dataStr ? dataStr.split('-').reverse().join('/') : 'Nenhuma data';
+    var dbAtrasos = JSON.parse(localStorage.getItem('arena_atrasos') || '[]');
+    var dbSala = JSON.parse(localStorage.getItem('arena_sala') || '[]');
+    var dbProf = JSON.parse(localStorage.getItem('arena_prof') || '[]');
+    var dbInsp = JSON.parse(localStorage.getItem('arena_insp') || '[]');
+    var dbAtd = JSON.parse(localStorage.getItem('arena_atd') || '[]');
 
-      const tbody = document.getElementById('corpoMapaSalas');
-      if (!tbody) return;
-      tbody.innerHTML = '';
-
-      let chaveDiaConsulta = '';
-      if (dataStr) {
-        const [ano, mes, dia] = dataStr.split('-');
-        const dataObj = new Date(ano, mes - 1, dia);
-        const diaSemanaNum = dataObj.getDay();
-        const diasMap = { 1: 'seg', 2: 'ter', 3: 'qua', 4: 'qui', 5: 'sex' };
-        chaveDiaConsulta = diasMap[diaSemanaNum] || '';
-      }
-
-      const reservasDaData = dataStr ? reservasSalasList.filter(r => r.data === dataStr) : [];
-
-      MAPA_ESTRUTURA.forEach(linha => {
-        const reservasDaSala = reservasDaData.filter(r => r.sala === linha.numero);
-
-        let htmlSeg = formatarTextoAtividade(linha.seg);
-        let htmlTer = formatarTextoAtividade(linha.ter);
-        let htmlQua = formatarTextoAtividade(linha.qua);
-        let htmlQui = formatarTextoAtividade(linha.qui);
-        let htmlSex = formatarTextoAtividade(linha.sex);
-
-        if (reservasDaSala.length > 0) {
-          let htmlReservaBox = '';
-          reservasDaSala.forEach(res => {
-            const dataFormatada = res.data ? res.data.split('-').reverse().join('/') : '';
-            htmlReservaBox += `
-              <div class="mt-1 bg-emerald-100 border border-emerald-500 text-emerald-900 p-1.5 rounded font-bold text-[11px] shadow-sm text-left">
-                📌 ${res.responsavel} <span class="text-[9px] text-emerald-700 bg-white px-1 rounded border border-emerald-300">📅 ${dataFormatada}</span><br>
-                <span class="text-[10px] font-normal text-emerald-800">${res.atividade} (${res.horario})</span>
-              </div>
-            `;
-          });
-
-          if (chaveDiaConsulta === 'seg') htmlSeg = (htmlSeg ? htmlSeg + '<br>' : '') + htmlReservaBox;
-          else if (chaveDiaConsulta === 'ter') htmlTer = (htmlTer ? htmlTer + '<br>' : '') + htmlReservaBox;
-          else if (chaveDiaConsulta === 'qua') htmlQua = (htmlQua ? htmlQua + '<br>' : '') + htmlReservaBox;
-          else if (chaveDiaConsulta === 'qui') htmlQui = (htmlQui ? htmlQui + '<br>' : '') + htmlReservaBox;
-          else if (chaveDiaConsulta === 'sex') htmlSex = (htmlSex ? htmlSex + '<br>' : '') + htmlReservaBox;
-          else htmlSeg = (htmlSeg ? htmlSeg + '<br>' : '') + htmlReservaBox;
-        }
-
-        tbody.innerHTML += `
-          <tr class="border-b border-b-gray-300 hover:bg-gray-50">
-            <td class="p-2 border-r-2 border-r-gray-400 font-bold bg-gray-100">${linha.bloco}</td>
-            <td class="p-2 border-r-2 border-r-gray-400 font-semibold bg-gray-50">${linha.andar}</td>
-            <td class="p-2 border font-medium">${linha.serie}</td>
-            <td class="p-2 border font-bold text-[#1b4332]">${linha.numero}</td>
-            <td class="p-2 border">${htmlSeg}</td>
-            <td class="p-2 border">${htmlTer}</td>
-            <td class="p-2 border">${htmlQua}</td>
-            <td class="p-2 border">${htmlQui}</td>
-            <td class="p-2 border">${htmlSex}</td>
-          </tr>
-        `;
-      });
-    }
-
-    function formatarTextoAtividade(texto) {
-      if (!texto) return '';
-      return texto.replace(/\((.*?)\)/g, '<br><span class="text-[10px] font-bold text-blue-700">($1)</span>');
-    }
-
-    function converterHoraParaMinutos(horaStr) {
-      if (!horaStr) return 0;
-      const [h, m] = horaStr.split(':').map(Number);
-      return h * 60 + m;
-    }
-
-    function extrairHorarios(texto) {
-      if (!texto) return [];
-      const regex = /(\d{2}:\d{2})\s*–\s*(\d{2}:\d{2})/g;
-      let matches = [];
-      let match;
-      while ((match = regex.exec(texto)) !== null) {
-        matches.push({ inicio: converterHoraParaMinutos(match[1]), termino: converterHoraParaMinutos(match[2]) });
-      }
-      return matches;
-    }
-
-    function verificarDisponibilidade() {
-      renderizarMapaSalas();
-
-      const dataStr = document.getElementById('buscaData').value;
-      const horaInicioStr = document.getElementById('buscaHoraInicio').value;
-      const horaTerminoStr = document.getElementById('buscaHoraTermino').value;
-
-      if (!dataStr || !horaInicioStr || !horaTerminoStr) {
-        alert('Por favor, informe a data, o horário de início e o horário de término.');
-        return;
-      }
-
-      const buscaInicio = converterHoraParaMinutos(horaInicioStr);
-      const buscaTermino = converterHoraParaMinutos(horaTerminoStr);
-
-      const [ano, mes, dia] = dataStr.split('-');
-      const dataObj = new Date(ano, mes - 1, dia);
-      const diaSemanaNum = dataObj.getDay();
-
-      const diasMap = { 1: 'seg', 2: 'ter', 3: 'qua', 4: 'qui', 5: 'sex' };
-      const chaveDia = diasMap[diaSemanaNum];
-
-      let salasOcupadasFixas = [];
-      if (chaveDia) {
-        MAPA_ESTRUTURA.forEach(item => {
-          const textoAtividade = item[chaveDia] || '';
-          if (textoAtividade.trim() !== '') {
-            const intervalos = extrairHorarios(textoAtividade);
-            if (intervalos.length === 0) {
-              salasOcupadasFixas.push(item.numero);
-            } else {
-              let temConflito = false;
-              intervalos.forEach(iv => {
-                if (!(buscaTermino <= iv.inicio || buscaInicio >= iv.termino)) {
-                  temConflito = true;
-                }
-              });
-              if (temConflito) {
-                salasOcupadasFixas.push(item.numero);
-              }
-            }
-          }
-        });
-      }
-
-      const editIdAtual = document.getElementById('reservaEditId').value;
-      let salasOcupadasExtras = [];
-      reservasSalasList
-        .filter(r => r.data === dataStr && r.id != editIdAtual)
-        .forEach(r => {
-          const partes = r.horario.split(' às ');
-          if (partes.length === 2) {
-            const rInicio = converterHoraParaMinutos(partes[0]);
-            const rTermino = converterHoraParaMinutos(partes[1]);
-            if (!(buscaTermino <= rInicio || buscaInicio >= rTermino)) {
-              salasOcupadasExtras.push(r.sala);
-            }
-          } else {
-            salasOcupadasExtras.push(r.sala);
-          }
-        });
-
-      const todasOcupadas = [...new Set([...salasOcupadasFixas, ...salasOcupadasExtras])];
-      const salasLivres = TODAS_AS_SALAS.filter(sala => !todasOcupadas.includes(sala));
-
-      const container = document.getElementById('listaSalasDisponiveis');
-      container.innerHTML = '';
-      document.getElementById('containerResultadoBusca').classList.remove('hidden');
-
-      if (salasLivres.length === 0) {
-        container.innerHTML = `<p class="text-xs text-red-600 font-semibold col-span-full">Nenhuma sala disponível para esta data e horário.</p>`;
-        return;
-      }
-
-      salasLivres.forEach(sala => {
-        container.innerHTML += `
-          <label class="flex items-center gap-2 bg-emerald-50 border border-emerald-300 text-[#1b4332] p-2 rounded text-xs font-bold hover:bg-emerald-100 cursor-pointer shadow-sm">
-            <input type="checkbox" name="salaCheckbox" value="${sala}" class="w-4 h-4 accent-[#1b4332]" />
-            <span>${sala}</span>
-          </label>
-        `;
-      });
-    }
-
-    function avancarParaFormularioMultiplo() {
-      const checkboxes = document.querySelectorAll('input[name="salaCheckbox"]:checked');
-      if (checkboxes.length === 0) {
-        alert('Selecione pelo menos uma sala na lista acima.');
-        return;
-      }
-
-      const salasSelecionadas = Array.from(checkboxes).map(cb => cb.value);
-      const dataStr = document.getElementById('buscaData').value;
-      const horaInicio = document.getElementById('buscaHoraInicio').value;
-      const horaTermino = document.getElementById('buscaHoraTermino').value;
-      const horarioStr = `${horaInicio} às ${horaTermino}`;
-
-      document.getElementById('reservaEditId').value = '';
-      document.getElementById('tituloModoForm').textContent = 'Confirmar Reserva Múltipla';
-      document.getElementById('btnSalvarTexto').textContent = 'Concluir Reservas';
-
-      document.getElementById('reservaSalasMultiplas').value = JSON.stringify(salasSelecionadas);
-      document.getElementById('reservaData').value = dataStr;
-      document.getElementById('reservaHorario').value = horarioStr;
-      document.getElementById('labelSalaSelecionada').textContent = `${salasSelecionadas.join(', ')} (${dataStr} — ${horarioStr})`;
-      
-      document.getElementById('containerFormReserva').classList.remove('hidden');
-      document.getElementById('containerFormReserva').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function editarReserva(id) {
-      const item = reservasSalasList.find(r => r.id === id);
-      if (!item) return;
-
-      document.getElementById('reservaEditId').value = item.id;
-      document.getElementById('reservaSalasMultiplas').value = JSON.stringify([item.sala]);
-      document.getElementById('reservaData').value = item.data;
-      document.getElementById('reservaHorario').value = item.horario;
-      document.getElementById('reservaResponsavel').value = item.responsavel;
-      document.getElementById('reservaAtividade').value = item.atividade;
-
-      document.getElementById('tituloModoForm').textContent = 'Editar Reserva';
-      document.getElementById('btnSalvarTexto').textContent = 'Salvar Alterações';
-      document.getElementById('labelSalaSelecionada').textContent = `${item.sala} (${item.data} — ${item.horario})`;
-
-      document.getElementById('containerFormReserva').classList.remove('hidden');
-      document.getElementById('containerFormReserva').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function cancelarSelecao() {
-      document.getElementById('containerFormReserva').classList.add('hidden');
-      document.getElementById('reservaEditId').value = '';
-    }
-
-    function salvarReservaSala(e) {
+    function salvarAtraso(e) {
       e.preventDefault();
-      const editId = document.getElementById('reservaEditId').value;
-      const salasArr = JSON.parse(document.getElementById('reservaSalasMultiplas').value || '[]');
-      const dataVal = document.getElementById('reservaData').value;
-      const horarioVal = document.getElementById('reservaHorario').value;
-      const respVal = document.getElementById('reservaResponsavel').value.trim();
-      const ativVal = document.getElementById('reservaAtividade').value.trim();
-
-      if (editId) {
-        const salaUnica = salasArr[0];
-        reservasSalasList = reservasSalasList.map(r => {
-          if (r.id == editId) {
-            return { ...r, sala: salaUnica, data: dataVal, horario: horarioVal, responsavel: respVal, atividade: ativVal };
-          }
-          return r;
-        });
-        ultimoIdReservado = Number(editId);
-      } else {
-        const primeiroNovoId = Date.now();
-        ultimoIdReservado = primeiroNovoId;
-
-        salasArr.forEach((salaNome, index) => {
-          const item = {
-            id: primeiroNovoId + index,
-            sala: salaNome,
-            data: dataVal,
-            horario: horarioVal,
-            responsavel: respVal,
-            atividade: ativVal
-          };
-          reservasSalasList.unshift(item);
-        });
-      }
-
-      if (usaNuvem) {
-        db.ref('escola_arena_salas/reservas').set(reservasSalasList);
-      }
-      localStorage.setItem('escola_reservas_salas_local', JSON.stringify(reservasSalasList));
-
-      e.target.reset();
-      document.getElementById('containerFormReserva').classList.add('hidden');
-      document.getElementById('reservaEditId').value = '';
-      renderizarTudo();
-      verificarDisponibilidade();
-      alert(editId ? 'Reserva atualizada com sucesso!' : 'Salas reservadas com sucesso!');
-    }
-
-    function renderizarReservasExtras() {
-      const tbody = document.getElementById('corpoTabelaReservasExtras');
-      if (!tbody) return;
-      tbody.innerHTML = '';
-
-      if (!reservasSalasList || reservasSalasList.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-xs text-gray-500 italic">Nenhuma reserva extra cadastrada.</td></tr>`;
-        return;
-      }
-
-      reservasSalasList.forEach(r => {
-        const isRecemReservado = r.id === ultimoIdReservado;
-        const linhaCor = isRecemReservado ? 'bg-amber-100 font-semibold border-amber-300' : 'hover:bg-gray-50';
-
-        tbody.innerHTML += `
-          <tr class="border-b ${linhaCor}">
-            <td class="p-2 border text-center">${r.data}</td>
-            <td class="p-2 border text-center text-emerald-900">${r.horario}</td>
-            <td class="p-2 border text-center font-bold">${r.sala}</td>
-            <td class="p-2 border">${r.responsavel}</td>
-            <td class="p-2 border">${r.atividade} ${isRecemReservado ? '<span class="ml-2 bg-amber-500 text-white text-[10px] px-2 py-0.5 rounded-full uppercase tracking-wider font-bold">Novo</span>' : ''}</td>
-            <td class="p-2 border text-center space-x-2">
-              <button onclick="editarReserva(${r.id})" class="text-blue-600 font-bold hover:underline text-xs">Editar</button>
-              <button onclick="excluirReservaSala(${r.id})" class="text-red-600 font-bold hover:underline text-xs">Excluir</button>
-            </td>
-          </tr>
-        `;
+      dbAtrasos.unshift({
+        id: Date.now(),
+        atv: document.getElementById('atv').value,
+        aluno: document.getElementById('aluno').value.toUpperCase(),
+        turma: document.getElementById('turma').value,
+        motivo: document.getElementById('motivo').value,
+        lancado: document.getElementById('lancado').checked
       });
+      localStorage.setItem('arena_atrasos', JSON.stringify(dbAtrasos));
+      e.target.reset();
+      renderizarTudo();
     }
 
-    function excluirReservaSala(id) {
-      if (confirm('Deseja cancelar esta reserva?')) {
-        reservasSalasList = reservasSalasList.filter(r => r.id !== id);
-        if (usaNuvem) {
-          db.ref('escola_arena_salas/reservas').set(reservasSalasList);
+    function toggleLancado(id) {
+      for (var i = 0; i < dbAtrasos.length; i++) {
+        if (dbAtrasos[i].id === id) {
+          dbAtrasos[i].lancado = !dbAtrasos[i].lancado;
+          break;
         }
-        localStorage.setItem('escola_reservas_salas_local', JSON.stringify(reservasSalasList));
-        renderizarTudo();
+      }
+      localStorage.setItem('arena_atrasos', JSON.stringify(dbAtrasos));
+      renderizarTudo();
+    }
+
+    function apagarAtraso(id) {
+      dbAtrasos = dbAtrasos.filter(function(x) { return x.id !== id; });
+      localStorage.setItem('arena_atrasos', JSON.stringify(dbAtrasos));
+      renderizarTudo();
+    }
+
+    function salvarSala(e) {
+      e.preventDefault();
+      dbSala.unshift({
+        id: Date.now(),
+        aluno: document.getElementById('salaAluno').value.toUpperCase(),
+        turma: document.getElementById('salaTurma').value,
+        obs: document.getElementById('salaObs').value
+      });
+      localStorage.setItem('arena_sala', JSON.stringify(dbSala));
+      e.target.reset();
+      renderizarTudo();
+    }
+    function apagarSala(id) {
+      dbSala = dbSala.filter(function(x) { return x.id !== id; });
+      localStorage.setItem('arena_sala', JSON.stringify(dbSala));
+      renderizarTudo();
+    }
+
+    function salvarProf(e) {
+      e.preventDefault();
+      dbProf.unshift({
+        id: Date.now(),
+        nome: document.getElementById('profNome').value,
+        obs: document.getElementById('profObs').value
+      });
+      localStorage.setItem('arena_prof', JSON.stringify(dbProf));
+      e.target.reset();
+      renderizarTudo();
+    }
+    function apagarProf(id) {
+      dbProf = dbProf.filter(function(x) { return x.id !== id; });
+      localStorage.setItem('arena_prof', JSON.stringify(dbProf));
+      renderizarTudo();
+    }
+
+    function salvarInsp(e) {
+      e.preventDefault();
+      dbInsp.unshift({
+        id: Date.now(),
+        nome: document.getElementById('inspNome').value,
+        desc: document.getElementById('inspDesc').value
+      });
+      localStorage.setItem('arena_insp', JSON.stringify(dbInsp));
+      e.target.reset();
+      renderizarTudo();
+    }
+    function apagarInsp(id) {
+      dbInsp = dbInsp.filter(function(x) { return x.id !== id; });
+      localStorage.setItem('arena_insp', JSON.stringify(dbInsp));
+      renderizarTudo();
+    }
+
+    function salvarAtd(e) {
+      e.preventDefault();
+      dbAtd.unshift({
+        id: Date.now(),
+        aluno: document.getElementById('atdAluno').value.toUpperCase(),
+        turma: document.getElementById('atdTurma').value,
+        relato: document.getElementById('atdRelato').value
+      });
+      localStorage.setItem('arena_atd', JSON.stringify(dbAtd));
+      e.target.reset();
+      renderizarTudo();
+    }
+    function apagarAtd(id) {
+      dbAtd = dbAtd.filter(function(x) { return x.id !== id; });
+      localStorage.setItem('arena_atd', JSON.stringify(dbAtd));
+      renderizarTudo();
+    }
+
+    function renderizarTudo() {
+      // Atrasos
+      var tbA = document.getElementById('tabelaAtrasos');
+      if (tbA) {
+        tbA.innerHTML = '';
+        var contagem = {};
+        for (var i = 0; i < dbAtrasos.length; i++) {
+          var nome = dbAtrasos[i].aluno.trim();
+          contagem[nome] = (contagem[nome] || 0) + 1;
+        }
+        for (var i = 0; i < dbAtrasos.length; i++) {
+          var x = dbAtrasos[i];
+          var qtd = contagem[x.aluno.trim()] || 0;
+          var estilo = qtd >= 2 ? 'background-color: #fef2f2; color: #991b1b; font-weight: bold;' : '';
+          var alerta = qtd >= 2 ? ' <span style="background:red; color:white; padding:1px 4px; border-radius:3px; font-size:10px;">ALERTA (' + qtd + 'x)</span>' : '';
+          var checked = x.lancado ? 'checked' : '';
+
+          tbA.innerHTML += '<tr style="' + estilo + '"><td>' + x.aluno + alerta + '</td><td>' + x.turma + '</td><td>' + x.atv + '</td><td>' + x.motivo + '</td><td style="text-align:center;"><input type="checkbox" ' + checked + ' onclick="toggleLancado(' + x.id + ')"></td><td><button onclick="apagarAtraso(' + x.id + ')" style="color:red; background:none; border:none; cursor:pointer; font-weight:bold;">Apagar</button></td></tr>';
+        }
+      }
+
+      // Sala
+      var tbS = document.getElementById('tabelaSala');
+      if (tbS) {
+        tbS.innerHTML = '';
+        for (var i = 0; i < dbSala.length; i++) {
+          tbS.innerHTML += '<tr><td><strong>' + dbSala[i].aluno + '</strong></td><td>' + dbSala[i].turma + '</td><td>' + dbSala[i].obs + '</td><td><button onclick="apagarSala(' + dbSala[i].id + ')" style="color:red; background:none; border:none; cursor:pointer; font-weight:bold;">Apagar</button></td></tr>';
+        }
+      }
+
+      // Professores
+      var tbP = document.getElementById('tabelaProf');
+      if (tbP) {
+        tbP.innerHTML = '';
+        for (var i = 0; i < dbProf.length; i++) {
+          tbP.innerHTML += '<tr><td><strong>' + dbProf[i].nome + '</strong></td><td>' + dbProf[i].obs + '</td><td><button onclick="apagarProf(' + dbProf[i].id + ')" style="color:red; background:none; border:none; cursor:pointer; font-weight:bold;">Apagar</button></td></tr>';
+        }
+      }
+
+      // Inspetores
+      var tbI = document.getElementById('tabelaInsp');
+      if (tbI) {
+        tbI.innerHTML = '';
+        for (var i = 0; i < dbInsp.length; i++) {
+          tbI.innerHTML += '<tr><td><strong>' + dbInsp[i].nome + '</strong></td><td>' + dbInsp[i].desc + '</td><td><button onclick="apagarInsp(' + dbInsp[i].id + ')" style="color:red; background:none; border:none; cursor:pointer; font-weight:bold;">Apagar</button></td></tr>';
+        }
+      }
+
+      // Atendimentos
+      var tbAt = document.getElementById('tabelaAtd');
+      if (tbAt) {
+        tbAt.innerHTML = '';
+        for (var i = 0; i < dbAtd.length; i++) {
+          tbAt.innerHTML += '<tr><td><strong>' + dbAtd[i].aluno + '</strong></td><td>' + dbAtd[i].turma + '</td><td>' + dbAtd[i].relato + '</td><td><button onclick="apagarAtd(' + dbAtd[i].id + ')" style="color:red; background:none; border:none; cursor:pointer; font-weight:bold;">Apagar</button></td></tr>';
+        }
       }
     }
 
-    function removerReservasPassadas() {
-      const hojeStr = new Date().toISOString().split('T')[0];
-      if (confirm('Deseja remover automaticamente todas as reservas cujas datas já passaram?')) {
-        reservasSalasList = reservasSalasList.filter(r => r.data >= hojeStr);
-        if (usaNuvem) {
-          db.ref('escola_arena_salas/reservas').set(reservasSalasList);
-        }
-        localStorage.setItem('escola_reservas_salas_local', JSON.stringify(reservasSalasList));
-        renderizarTudo();
-        alert('Reservas passadas removidas com sucesso!');
-      }
-    }
-
-    function zerarTodasReservas() {
-      if (confirm('ATENÇÃO: Deseja realmente apagar TODAS as reservas cadastradas na nuvem? Esta ação não pode ser desfeita.')) {
-        reservasSalasList = [];
-        if (usaNuvem) {
-          db.ref('escola_arena_salas/reservas').set(null);
-        }
-        localStorage.setItem('escola_reservas_salas_local', JSON.stringify([]));
-        renderizarTudo();
-        document.getElementById('containerFormReserva').classList.add('hidden');
-        alert('Todas as reservas foram zeradas.');
-      }
-    }
+    window.onload = function() {
+      renderizarTudo();
+    };
   </script>
 </body>
 </html>
