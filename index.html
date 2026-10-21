@@ -10,16 +10,17 @@
     nav { background: white; border-bottom: 1px solid #e5e7eb; padding: 8px 24px; display: flex; gap: 8px; flex-wrap: wrap; }
     nav button { padding: 8px 16px; border: none; background: #f3f4f6; color: #4b5563; font-weight: bold; cursor: pointer; border-radius: 4px; }
     nav button.ativo { background-color: #1b4332; color: white; }
-    main { max-width: 1150px; margin: 24px auto; background: white; padding: 24px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    main { max-width: 1200px; margin: 24px auto; background: white; padding: 24px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
     .secao { display: none; }
     .secao.ativa { display: block; }
     .form-group { margin-bottom: 12px; }
     .form-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 4px; color: #374151; }
     .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; box-sizing: border-box; font-size: 13px; }
     button.btn-submit { background-color: #1b4332; color: white; border: none; padding: 10px 16px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 13px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 11px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 11px; }
     th, td { border: 1px solid #e5e7eb; padding: 6px; text-align: left; }
-    th { background-color: #f9fafb; font-weight: bold; }
+    th { background-color: #1b4332; color: white; font-weight: bold; }
+    .box-card { background: #f9fafb; border: 1px solid #e5e7eb; padding: 16px; border-radius: 6px; margin-bottom: 20px; }
   </style>
 </head>
 <body>
@@ -85,24 +86,46 @@
       </table>
     </section>
 
-    <!-- 2. RESERVA DE SALAS (DASHBOARD OFICIAL 7º AO 9º ANO) -->
+    <!-- 2. RESERVA DE SALAS (GUIA COMPLETO OFICIAL) -->
     <section id="sec-salas" class="secao">
-      <h2 style="color: #1b4332; font-size: 16px; margin-top: 0;">🏢 Guia de Salas e Grade de Atividades (7º ao 9º Ano)</h2>
-      <p style="font-size: 12px; color: #6b7280; margin-bottom: 12px;">Consulta oficial baseada na distribuição por bloco, andar e série[cite: 6].</p>
+      <h2 style="color: #1b4332; font-size: 16px; margin-top: 0;">🏢 Guia de Salas e Grade de Atividades (7º a 9º ano)</h2>
       
+      <!-- Novo Agendamento -->
+      <div class="box-card">
+        <h3 style="margin-top:0; font-size:14px; color:#1b4332;">➕ Registar Nova Reserva / Agendamento</h3>
+        <form onsubmit="salvarReservaSala(event)">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px;">
+            <div class="form-group"><label>Data</label><input type="date" id="resData" required></div>
+            <div class="form-group"><label>Horário</label><input type="text" id="resHorario" required placeholder="Ex: 14h15 – 15h45"></div>
+            <div class="form-group"><label>Nº da Sala / Espaço</label><input type="text" id="resSala" required placeholder="Ex: Sala 3 ou Tatame"></div>
+            <div class="form-group"><label>Responsável</label><input type="text" id="resResp" required placeholder="Nome..."></div>
+            <div class="form-group"><label>Atividade</label><input type="text" id="resAtv" required placeholder="Atividade..."></div>
+          </div>
+          <button type="submit" class="btn-submit" style="margin-top: 6px;">Guardar Reserva</button>
+        </form>
+      </div>
+
+      <!-- Tabela Geral de Reservas Salvas -->
+      <div class="box-card">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="margin:0; font-size:14px; color:#1b4332;">📋 Tabela Geral de Reservas Registadas</h3>
+          <button onclick="limparReservas()" style="background:#dc2626; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:11px;">Zerar Reservas</button>
+        </div>
+        <table>
+          <thead>
+            <tr><th>Data</th><th>Horário</th><th>Sala</th><th>Responsável</th><th>Atividade</th><th>Ações</th></tr>
+          </thead>
+          <tbody id="tabelaReservasSalvas"></tbody>
+        </table>
+      </div>
+
+      <!-- Grade Fixa Oficial (Conforme Anexo) -->
+      <h3 style="font-size: 14px; color: #1b4332; margin-top: 24px;">🗺️ Grade Oficial de Atividades por Sala (7º a 9º ano)</h3>
       <div style="overflow-x: auto;">
         <table>
           <thead>
             <tr>
-              <th>Bloco</th>
-              <th>Andar</th>
-              <th>Série</th>
-              <th>Nº da Sala</th>
-              <th>2ª Feira</th>
-              <th>3ª Feira</th>
-              <th>4ª Feira</th>
-              <th>5ª Feira</th>
-              <th>6ª Feira</th>
+              <th>Bloco</th><th>Andar</th><th>Série</th><th>Nº</th><th>2ª Feira</th><th>3ª Feira</th><th>4ª Feira</th><th>5ª Feira</th><th>6ª Feira</th>
             </tr>
           </thead>
           <tbody>
@@ -148,24 +171,13 @@
     <section id="sec-sala" class="secao">
       <h2 style="color: #1b4332; font-size: 16px; margin-top: 0;">Sala de Estudos & Biblioteca</h2>
       <form onsubmit="salvarSala(event)">
-        <div class="form-group">
-          <label>Nome do Aluno</label>
-          <input type="text" id="salaAluno" required placeholder="Nome do aluno...">
-        </div>
-        <div class="form-group">
-          <label>Turma</label>
-          <input type="text" id="salaTurma" required placeholder="Turma...">
-        </div>
-        <div class="form-group">
-          <label>Ocorrência / Motivo</label>
-          <input type="text" id="salaObs" required placeholder="Detalhes...">
-        </div>
+        <div class="form-group"><label>Nome do Aluno</label><input type="text" id="salaAluno" required placeholder="Nome..."></div>
+        <div class="form-group"><label>Turma</label><input type="text" id="salaTurma" required placeholder="Turma..."></div>
+        <div class="form-group"><label>Ocorrência / Motivo</label><input type="text" id="salaObs" required placeholder="Detalhes..."></div>
         <button type="submit" class="btn-submit">Registar Ocorrência</button>
       </form>
       <table>
-        <thead>
-          <tr><th>Aluno</th><th>Turma</th><th>Ocorrência</th><th>Ações</th></tr>
-        </thead>
+        <thead><tr><th>Aluno</th><th>Turma</th><th>Ocorrência</th><th>Ações</th></tr></thead>
         <tbody id="tabelaSala"></tbody>
       </table>
     </section>
@@ -174,20 +186,12 @@
     <section id="sec-prof" class="secao">
       <h2 style="color: #1b4332; font-size: 16px; margin-top: 0;">Acompanhamento Docente</h2>
       <form onsubmit="salvarProf(event)">
-        <div class="form-group">
-          <label>Professor e Matéria</label>
-          <input type="text" id="profNome" required placeholder="Nome do professor...">
-        </div>
-        <div class="form-group">
-          <label>Ocorrência / Observação</label>
-          <input type="text" id="profObs" required placeholder="Detalhes...">
-        </div>
+        <div class="form-group"><label>Professor e Matéria</label><input type="text" id="profNome" required placeholder="Professor..."></div>
+        <div class="form-group"><label>Ocorrência / Observação</label><input type="text" id="profObs" required placeholder="Detalhes..."></div>
         <button type="submit" class="btn-submit">Registar Ocorrência</button>
       </form>
       <table>
-        <thead>
-          <tr><th>Professor</th><th>Observação</th><th>Ações</th></tr>
-        </thead>
+        <thead><tr><th>Professor</th><th>Observação</th><th>Ações</th></tr></thead>
         <tbody id="tabelaProf"></tbody>
       </table>
     </section>
@@ -196,20 +200,12 @@
     <section id="sec-insp" class="secao">
       <h2 style="color: #1b4332; font-size: 16px; margin-top: 0;">Orientações de Inspetores</h2>
       <form onsubmit="salvarInsp(event)">
-        <div class="form-group">
-          <label>Nome do Inspetor</label>
-          <input type="text" id="inspNome" required placeholder="Nome...">
-        </div>
-        <div class="form-group">
-          <label>Feedback / Orientação</label>
-          <textarea id="inspDesc" rows="2" required placeholder="Relato..."></textarea>
-        </div>
+        <div class="form-group"><label>Nome do Inspetor</label><input type="text" id="inspNome" required placeholder="Nome..."></div>
+        <div class="form-group"><label>Feedback / Orientação</label><textarea id="inspDesc" rows="2" required placeholder="Relato..."></textarea></div>
         <button type="submit" class="btn-submit">Guardar Orientação</button>
       </form>
       <table>
-        <thead>
-          <tr><th>Inspetor</th><th>Feedback</th><th>Ações</th></tr>
-        </thead>
+        <thead><tr><th>Inspetor</th><th>Feedback</th><th>Ações</th></tr></thead>
         <tbody id="tabelaInsp"></tbody>
       </table>
     </section>
@@ -218,24 +214,13 @@
     <section id="sec-atd" class="secao">
       <h2 style="color: #1b4332; font-size: 16px; margin-top: 0;">Registo de Atendimentos</h2>
       <form onsubmit="salvarAtd(event)">
-        <div class="form-group">
-          <label>Nome do Aluno</label>
-          <input type="text" id="atdAluno" required placeholder="Aluno...">
-        </div>
-        <div class="form-group">
-          <label>Turma / Responsáveis</label>
-          <input type="text" id="atdTurma" required placeholder="Turma e responsáveis...">
-        </div>
-        <div class="form-group">
-          <label>Relato</label>
-          <textarea id="atdRelato" rows="2" required placeholder="Relato..."></textarea>
-        </div>
+        <div class="form-group"><label>Nome do Aluno</label><input type="text" id="atdAluno" required placeholder="Aluno..."></div>
+        <div class="form-group"><label>Turma / Responsáveis</label><input type="text" id="atdTurma" required placeholder="Turma e pais..."></div>
+        <div class="form-group"><label>Relato</label><textarea id="atdRelato" rows="2" required placeholder="Relato..."></textarea></div>
         <button type="submit" class="btn-submit">Guardar Atendimento</button>
       </form>
       <table>
-        <thead>
-          <tr><th>Aluno</th><th>Turma / Pais</th><th>Relato</th><th>Ações</th></tr>
-        </thead>
+        <thead><tr><th>Aluno</th><th>Turma / Pais</th><th>Relato</th><th>Ações</th></tr></thead>
         <tbody id="tabelaAtd"></tbody>
       </table>
     </section>
@@ -245,15 +230,14 @@
     function mudarAba(id) {
       var secoes = document.getElementsByClassName('secao');
       for (var i = 0; i < secoes.length; i++) { secoes[i].classList.remove('ativa'); }
-
       var botoes = document.getElementsByTagName('nav')[0].getElementsByTagName('button');
       for (var i = 0; i < botoes.length; i++) { botoes[i].classList.remove('ativo'); }
-
       document.getElementById('sec-' + id).classList.add('ativa');
       document.getElementById('btn-' + id).classList.add('ativo');
     }
 
     var dbAtrasos = JSON.parse(localStorage.getItem('arena_atrasos') || '[]');
+    var dbSalasRes = JSON.parse(localStorage.getItem('arena_salas_reservas') || '[]');
     var dbSala = JSON.parse(localStorage.getItem('arena_sala') || '[]');
     var dbProf = JSON.parse(localStorage.getItem('arena_prof') || '[]');
     var dbInsp = JSON.parse(localStorage.getItem('arena_insp') || '[]');
@@ -276,10 +260,7 @@
 
     function toggleLancado(id) {
       for (var i = 0; i < dbAtrasos.length; i++) {
-        if (dbAtrasos[i].id === id) {
-          dbAtrasos[i].lancado = !dbAtrasos[i].lancado;
-          break;
-        }
+        if (dbAtrasos[i].id === id) { dbAtrasos[i].lancado = !dbAtrasos[i].lancado; break; }
       }
       localStorage.setItem('arena_atrasos', JSON.stringify(dbAtrasos));
       renderizarTudo();
@@ -291,75 +272,70 @@
       renderizarTudo();
     }
 
+    function salvarReservaSala(e) {
+      e.preventDefault();
+      dbSalasRes.unshift({
+        id: Date.now(),
+        data: document.getElementById('resData').value,
+        horario: document.getElementById('resHorario').value,
+        sala: document.getElementById('resSala').value,
+        resp: document.getElementById('resResp').value,
+        atividade: document.getElementById('resAtv').value
+      });
+      localStorage.setItem('arena_salas_reservas', JSON.stringify(dbSalasRes));
+      e.target.reset();
+      renderizarTudo();
+    }
+
+    function apagarReserva(id) {
+      dbSalasRes = dbSalasRes.filter(function(x) { return x.id !== id; });
+      localStorage.setItem('arena_salas_reservas', JSON.stringify(dbSalasRes));
+      renderizarTudo();
+    }
+
+    function limparReservas() {
+      if (confirm('Deseja zerar todas as reservas salvas?')) {
+        dbSalasRes = [];
+        localStorage.removeItem('arena_salas_reservas');
+        renderizarTudo();
+      }
+    }
+
     function salvarSala(e) {
       e.preventDefault();
-      dbSala.unshift({
-        id: Date.now(),
-        aluno: document.getElementById('salaAluno').value.toUpperCase(),
-        turma: document.getElementById('salaTurma').value,
-        obs: document.getElementById('salaObs').value
-      });
+      dbSala.unshift({ id: Date.now(), aluno: document.getElementById('salaAluno').value.toUpperCase(), turma: document.getElementById('salaTurma').value, obs: document.getElementById('salaObs').value });
       localStorage.setItem('arena_sala', JSON.stringify(dbSala));
       e.target.reset();
       renderizarTudo();
     }
-    function apagarSala(id) {
-      dbSala = dbSala.filter(function(x) { return x.id !== id; });
-      localStorage.setItem('arena_sala', JSON.stringify(dbSala));
-      renderizarTudo();
-    }
+    function apagarSala(id) { dbSala = dbSala.filter(function(x) { return x.id !== id; }); localStorage.setItem('arena_sala', JSON.stringify(dbSala)); renderizarTudo(); }
 
     function salvarProf(e) {
       e.preventDefault();
-      dbProf.unshift({
-        id: Date.now(),
-        nome: document.getElementById('profNome').value,
-        obs: document.getElementById('profObs').value
-      });
+      dbProf.unshift({ id: Date.now(), nome: document.getElementById('profNome').value, obs: document.getElementById('profObs').value });
       localStorage.setItem('arena_prof', JSON.stringify(dbProf));
       e.target.reset();
       renderizarTudo();
     }
-    function apagarProf(id) {
-      dbProf = dbProf.filter(function(x) { return x.id !== id; });
-      localStorage.setItem('arena_prof', JSON.stringify(dbProf));
-      renderizarTudo();
-    }
+    function apagarProf(id) { dbProf = dbProf.filter(function(x) { return x.id !== id; }); localStorage.setItem('arena_prof', JSON.stringify(dbProf)); renderizarTudo(); }
 
     function salvarInsp(e) {
       e.preventDefault();
-      dbInsp.unshift({
-        id: Date.now(),
-        nome: document.getElementById('inspNome').value,
-        desc: document.getElementById('inspDesc').value
-      });
+      dbInsp.unshift({ id: Date.now(), nome: document.getElementById('inspNome').value, desc: document.getElementById('inspDesc').value });
       localStorage.setItem('arena_insp', JSON.stringify(dbInsp));
       e.target.reset();
       renderizarTudo();
     }
-    function apagarInsp(id) {
-      dbInsp = dbInsp.filter(function(x) { return x.id !== id; });
-      localStorage.setItem('arena_insp', JSON.stringify(dbInsp));
-      renderizarTudo();
-    }
+    function apagarInsp(id) { dbInsp = dbInsp.filter(function(x) { return x.id !== id; }); localStorage.setItem('arena_insp', JSON.stringify(dbInsp)); renderizarTudo(); }
 
     function salvarAtd(e) {
       e.preventDefault();
-      dbAtd.unshift({
-        id: Date.now(),
-        aluno: document.getElementById('atdAluno').value.toUpperCase(),
-        turma: document.getElementById('atdTurma').value,
-        relato: document.getElementById('atdRelato').value
-      });
+      dbAtd.unshift({ id: Date.now(), aluno: document.getElementById('atdAluno').value.toUpperCase(), turma: document.getElementById('atdTurma').value, relato: document.getElementById('atdRelato').value });
       localStorage.setItem('arena_atd', JSON.stringify(dbAtd));
       e.target.reset();
       renderizarTudo();
     }
-    function apagarAtd(id) {
-      dbAtd = dbAtd.filter(function(x) { return x.id !== id; });
-      localStorage.setItem('arena_atd', JSON.stringify(dbAtd));
-      renderizarTudo();
-    }
+    function apagarAtd(id) { dbAtd = dbAtd.filter(function(x) { return x.id !== id; }); localStorage.setItem('arena_atd', JSON.stringify(dbAtd)); renderizarTudo(); }
 
     function renderizarTudo() {
       // Atrasos
@@ -377,8 +353,17 @@
           var estilo = qtd >= 2 ? 'background-color: #fef2f2; color: #991b1b; font-weight: bold;' : '';
           var alerta = qtd >= 2 ? ' <span style="background:red; color:white; padding:1px 4px; border-radius:3px; font-size:10px;">ALERTA (' + qtd + 'x)</span>' : '';
           var checked = x.lancado ? 'checked' : '';
-
           tbA.innerHTML += '<tr style="' + estilo + '"><td>' + x.aluno + alerta + '</td><td>' + x.turma + '</td><td>' + x.atv + '</td><td>' + x.motivo + '</td><td style="text-align:center;"><input type="checkbox" ' + checked + ' onclick="toggleLancado(' + x.id + ')"></td><td><button onclick="apagarAtraso(' + x.id + ')" style="color:red; background:none; border:none; cursor:pointer; font-weight:bold;">Apagar</button></td></tr>';
+        }
+      }
+
+      // Reservas de Salas
+      var tbRes = document.getElementById('tabelaReservasSalvas');
+      if (tbRes) {
+        tbRes.innerHTML = '';
+        for (var i = 0; i < dbSalasRes.length; i++) {
+          var r = dbSalasRes[i];
+          tbRes.innerHTML += '<tr><td>' + r.data + '</td><td>' + r.horario + '</td><td>' + r.sala + '</td><td>' + r.resp + '</td><td>' + r.atividade + '</td><td><button onclick="apagarReserva(' + r.id + ')" style="color:red; background:none; border:none; cursor:pointer; font-weight:bold;">Apagar</button></td></tr>';
         }
       }
 
@@ -414,7 +399,7 @@
       if (tbAt) {
         tbAt.innerHTML = '';
         for (var i = 0; i < dbAtd.length; i++) {
-          tbAt.innerHTML += '<tr><td><strong>' + dbAtd[i].aluno + '</strong></td><td>' + dbAt[i].turma + '</td><td>' + dbAtd[i].relato + '</td><td><button onclick="apagarAtd(' + dbAtd[i].id + ')" style="color:red; background:none; border:none; cursor:pointer; font-weight:bold;">Apagar</button></td></tr>';
+          tbAt.innerHTML += '<tr><td><strong>' + dbAtd[i].aluno + '</strong></td><td>' + dbAtd[i].turma + '</td><td>' + dbAtd[i].relato + '</td><td><button onclick="apagarAtd(' + dbAtd[i].id + ')" style="color:red; background:none; border:none; cursor:pointer; font-weight:bold;">Apagar</button></td></tr>';
         }
       }
     }
