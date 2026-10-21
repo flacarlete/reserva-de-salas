@@ -46,18 +46,20 @@
       <div id="resultadoConsulta" style="margin-top: 12px; font-size: 13px; color: #1b4332; background: #e6f4ea; padding: 12px; border-radius: 4px; display: none; line-height: 1.5;"></div>
     </div>
 
-    <!-- 2. REGISTAR NOVA RESERVA -->
+    <!-- 2. REGISTAR / EDITAR RESERVA -->
     <div class="card-box" id="blocoReserva">
-      <h3 style="margin-top:0; font-size:14px; color:#1b4332;">➕ 2. Registar Nova Reserva</h3>
+      <h3 style="margin-top:0; font-size:14px; color:#1b4332;" id="tituloFormReserva">➕ 2. Registar Nova Reserva</h3>
       <form onsubmit="salvarReserva(event)">
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px;">
-          <div class="form-group"><label>Data</label><input type="date" id="resData" required></div>
-          <div class="form-group"><label>Horário</label><input type="text" id="resHorario" required placeholder="Ex: 14h15 – 15h45"></div>
-          <div class="form-group"><label>Sala(s) Selecionada(s)</label><input type="text" id="resSala" required readonly placeholder="Selecione acima e clique em 'Prosseguir'..." style="background: #e5e7eb; font-weight: bold;"></div>
+        <input type="hidden" id="editId" value="">
+        <input type="hidden" id="resData">
+        <input type="hidden" id="resHorario">
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+          <div class="form-group"><label>Sala(s) Selecionada(s)</label><input type="text" id="resSala" required readonly placeholder="Selecione acima..." style="background: #e5e7eb; font-weight: bold;"></div>
           <div class="form-group"><label>Responsável</label><input type="text" id="resResp" required placeholder="Nome..."></div>
           <div class="form-group"><label>Atividade</label><input type="text" id="resAtv" required placeholder="Atividade..."></div>
         </div>
-        <button type="submit" class="btn-submit" style="margin-top: 6px;">Efetuar Reserva</button>
+        <button type="submit" class="btn-submit" id="btnSalvarReserva" style="margin-top: 10px;">Efetuar Reserva</button>
       </form>
     </div>
 
@@ -120,63 +122,3 @@
           <button onclick="zerarReservas()" style="background:#dc2626; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; font-size:11px;">Zerar Reservas</button>
         </div>
       </div>
-      <table>
-        <thead>
-          <tr><th>Data</th><th>Horário</th><th>Sala</th><th>Responsável</th><th>Atividade</th><th>Ações</th></tr>
-        </thead>
-        <tbody id="tabelaReservas"></tbody>
-      </table>
-    </div>
-  </main>
-
-  <script>
-    var dbReservas = JSON.parse(localStorage.getItem('arena_reservas_salas_indep') || '[]');
-
-    function salvarReserva(e) {
-      e.preventDefault();
-      var salaSel = document.getElementById('resSala').value;
-      if (!salaSel) {
-        alert('Por favor, selecione pelo menos uma sala livre na consulta acima e clique em prosseguir.');
-        return;
-      }
-      dbReservas.unshift({
-        id: Date.now(),
-        data: document.getElementById('resData').value,
-        horario: document.getElementById('resHorario').value,
-        sala: salaSel,
-        resp: document.getElementById('resResp').value,
-        atividade: document.getElementById('resAtv').value
-      });
-      localStorage.setItem('arena_reservas_salas_indep', JSON.stringify(dbReservas));
-      e.target.reset();
-      document.getElementById('resSala').value = '';
-      renderizarTudo();
-      alert('Reserva efetuada com sucesso!');
-    }
-
-    function apagarReserva(id) {
-      if (confirm('Deseja apagar esta reserva?')) {
-        dbReservas = dbReservas.filter(function(x) { return x.id !== id; });
-        localStorage.setItem('arena_reservas_salas_indep', JSON.stringify(dbReservas));
-        renderizarTudo();
-      }
-    }
-
-    function zerarReservas() {
-      if (confirm('Tem certeza que deseja apagar todas as reservas?')) {
-        dbReservas = [];
-        localStorage.removeItem('arena_reservas_salas_indep');
-        renderizarTudo();
-      }
-    }
-
-    function limparPassadas() {
-      var hoje = new Date().toISOString().split('T')[0];
-      dbReservas = dbReservas.filter(function(x) { return x.data >= hoje; });
-      localStorage.setItem('arena_reservas_salas_indep', JSON.stringify(dbReservas));
-      renderizarTudo();
-      alert('Reservas passadas limpas com sucesso!');
-    }
-
-    function prosseguirParaReserva(dataDesejada) {
-      var checkboxes = document.querySelectorAll('.sala-checkbox:checked
