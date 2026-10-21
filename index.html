@@ -53,7 +53,7 @@
             <tr><td>1</td><td>1</td><td>—</td><td>1</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
             <tr><td>1</td><td>1</td><td>—</td><td>2</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
             <tr><td>1</td><td>1</td><td>7ºB</td><td>3</td><td>AEE LINGUAGUENS[cite: 9]</td><td>AEE[cite: 9]</td><td>AEE LINGUAGUENS[cite: 9]</td><td>AEE CIÊNCIAS[cite: 9]</td><td>AEE CIÊNCIAS[cite: 9]</td></tr>
-            <tr><td>1</td><td>1</td><td>7ºD</td><td>4</td><td>AEE CIÊNCIAS[cite: 9]</td><td>AEE[cite: 9]</td><td>AEE CIÊNCIAS[cite: 9]</td><td>AEE LINGUAGENS E HUMANIDAES[cite: 9]</td><td>AEE[cite: 9]</td></tr>
+            <tr><td>1</td><td>1</td><td>7ºD</td><td>4</td><td>AEE CIÊNCIAS[cite: 9]</td><td>AEE[cite: 9]</td><td>AEE CIÊNCIAS[cite: 9]</td><td>AEE LINGUAGENS E HUMANIDADES[cite: 9]</td><td>AEE[cite: 9]</td></tr>
             <tr><td>1</td><td>1</td><td>MAT</td><td>5</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
             <tr><td>1</td><td>1</td><td>7ºG</td><td>7</td><td>AEE[cite: 9]</td><td>AEE[cite: 9]</td><td>AEE[cite: 9]</td><td>—</td><td>PROVA[cite: 9]</td></tr>
             <tr><td>1</td><td>1</td><td>7ºF</td><td>8</td><td>AEE HUMANIDADES[cite: 9]</td><td>AEE[cite: 9]</td><td>AEE HUMANIDADES[cite: 9]</td><td>—</td><td>PROVA[cite: 9]</td></tr>
@@ -97,7 +97,7 @@
         <div class="form-group"><label>Horário Término</label><input type="time" id="conFim"></div>
         <button type="button" class="btn-submit" onclick="consultarSalas()">Ver Salas Livres</button>
       </div>
-      <div id="resultadoConsulta" style="margin-top: 10px; font-size: 12px; font-weight: bold; color: #1b4332;"></div>
+      <div id="resultadoConsulta" style="margin-top: 12px; font-size: 13px; font-weight: bold; color: #1b4332; background: #e6f4ea; padding: 10px; border-radius: 4px; display: none;"></div>
     </div>
 
     <!-- 3. REGISTAR NOVA RESERVA -->
@@ -178,15 +178,23 @@
 
     function consultarSalas() {
       var data = document.getElementById('conData').value;
+      var inicio = document.getElementById('conInicio').value;
+      var fim = document.getElementById('conFim').value;
+      
+      var resDiv = document.getElementById('resultadoConsulta');
+      resDiv.style.display = 'block';
+
       if (!data) {
-        document.getElementById('resultadoConsulta').innerText = 'Por favor, selecione uma data para consultar.';
+        resDiv.innerText = '⚠️ Por favor, selecione uma data para consultar.';
         return;
       }
-      var ocupadas = dbReservas.filter(function(x) { return x.data === data; }).map(function(x) { return x.sala; });
+
+      var ocupadas = dbReservas.filter(function(x) { return x.data === data; }).map(function(x) { return x.sala + ' (' + x.horario + ' - ' + x.atividade + ' por ' + x.resp + ')'; });
+      
       if (ocupadas.length === 0) {
-        document.getElementById('resultadoConsulta').innerText = '📅 Para o dia ' + data + ', todas as salas cadastradas encontram-se livres (nenhuma reserva registada para esta data).';
+        resDiv.innerHTML = '📅 Para o dia <strong>' + data + '</strong>, não existem reservas registadas. Todas as salas encontram-se disponíveis.';
       } else {
-        document.getElementById('resultadoConsulta').innerText = '⚠️ Salas ocupadas no dia ' + data + ': ' + ocupadas.join(', ');
+        resDiv.innerHTML = '⚠️ <strong>Salas já reservadas no dia ' + data + ':</strong><br>• ' + ocupadas.join('<br>• ');
       }
     }
 
