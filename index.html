@@ -10,7 +10,7 @@
     nav { background: white; border-bottom: 1px solid #e5e7eb; padding: 12px 24px; display: flex; gap: 8px; flex-wrap: wrap; }
     nav button { padding: 8px 16px; border: none; background: #f3f4f6; color: #4b5563; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 13px; }
     nav button.ativo { background-color: #1b4332; color: white; }
-    main { max-width: 1200px; margin: 24px auto; background: white; padding: 24px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    main { max-width: 1100px; margin: 24px auto; background: white; padding: 24px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
     .secao { display: none; }
     .secao.ativa { display: block; }
     .form-group { margin-bottom: 12px; }
@@ -20,15 +20,14 @@
     table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 12px; }
     th, td { border: 1px solid #e5e7eb; padding: 8px; text-align: left; }
     th { background-color: #f9fafb; font-weight: bold; }
-    .card-box { background: #f9fafb; border: 1px solid #e5e7eb; padding: 16px; border-radius: 6px; margin-bottom: 20px; }
   </style>
 </head>
 <body>
 
   <header>
     <div>
-      <h1 style="margin:0; font-size: 18px;">📋 Colégio Arena — Gestão Escolar</h1>
-      <p style="margin:4px 0 0 0; font-size: 12px; color: #a7f3d0;">Painel Operacional Organizado</p>
+      <h1 style="margin:0; font-size: 18px;">📋 Colégio Arena — Gestão Escolar & Contraturno</h1>
+      <p style="margin:4px 0 0 0; font-size: 12px; color: #a7f3d0;">Painel Operacional — Coordenação</p>
     </div>
     <div style="font-size: 12px; background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 4px;">
       🟢 1.160 Alunos
@@ -37,7 +36,6 @@
 
   <nav>
     <button onclick="mudarAba('atrasos')" id="btn-atrasos" class="ativo">⏰ Atrasos</button>
-    <button onclick="mudarAba('salas')" id="btn-salas">🏢 Reserva de Salas</button>
     <button onclick="mudarAba('sala')" id="btn-sala">📚 Sala de Estudos</button>
     <button onclick="mudarAba('prof')" id="btn-prof">👨‍🏫 Professores</button>
     <button onclick="mudarAba('insp')" id="btn-insp">📋 Inspetores</button>
@@ -87,64 +85,120 @@
       </table>
     </section>
 
-    <!-- 2. RESERVA DE SALAS -->
-    <section id="sec-salas" class="secao">
-      <h2 style="color: #1b4332; font-size: 16px; margin-top: 0;">🏢 Guia de Salas e Grade de Atividades (7º a 9º ano)</h2>
-      
-      <div class="card-box">
-        <h3 style="margin-top:0; font-size:14px; color:#1b4332;">➕ Registar Nova Reserva / Agendamento</h3>
-        <form onsubmit="salvarReservaSala(event)">
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px;">
-            <div class="form-group"><label>Data</label><input type="date" id="resData" required></div>
-            <div class="form-group"><label>Horário</label><input type="text" id="resHorario" required placeholder="Ex: 14h15 – 15h45"></div>
-            <div class="form-group"><label>Nº da Sala / Espaço</label><input type="text" id="resSala" required placeholder="Ex: Sala 3 ou Tatame"></div>
-            <div class="form-group"><label>Responsável</label><input type="text" id="resResp" required placeholder="Nome..."></div>
-            <div class="form-group"><label>Atividade</label><input type="text" id="resAtv" required placeholder="Atividade..."></div>
-          </div>
-          <button type="submit" class="btn-submit" style="margin-top: 6px;">Guardar Reserva</button>
-        </form>
-      </div>
+    <!-- 2. SALA DE ESTUDOS -->
+    <section id="sec-sala" class="secao">
+      <h2 style="color: #1b4332; font-size: 16px; margin-top: 0;">Sala de Estudos & Biblioteca</h2>
+      <form onsubmit="salvarSala(event)">
+        <div class="form-group"><label>Nome do Aluno</label><input type="text" id="salaAluno" required placeholder="Nome do aluno..."></div>
+        <div class="form-group"><label>Turma</label><input type="text" id="salaTurma" required placeholder="Turma..."></div>
+        <div class="form-group"><label>Ocorrência / Motivo</label><input type="text" id="salaObs" required placeholder="Detalhes..."></div>
+        <button type="submit" class="btn-submit">Registar Ocorrência</button>
+      </form>
+      <table>
+        <thead><tr><th>Aluno</th><th>Turma</th><th>Ocorrência</th><th>Ações</th></tr></thead>
+        <tbody id="tabelaSala"></tbody>
+      </table>
+    </section>
 
-      <div class="card-box">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <h3 style="margin:0; font-size:14px; color:#1b4332;">📋 Tabela Geral de Reservas Registadas</h3>
-          <button onclick="limparReservas()" style="background:#dc2626; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:11px;">Zerar Reservas</button>
-        </div>
-        <table>
-          <thead>
-            <tr><th>Data</th><th>Horário</th><th>Sala</th><th>Responsável</th><th>Atividade</th><th>Ações</th></tr>
-          </thead>
-          <tbody id="tabelaReservasSalvas"></tbody>
-        </table>
-      </div>
+    <!-- 3. PROFESSORES -->
+    <section id="sec-prof" class="secao">
+      <h2 style="color: #1b4332; font-size: 16px; margin-top: 0;">Acompanhamento Docente</h2>
+      <form onsubmit="salvarProf(event)">
+        <div class="form-group"><label>Professor e Matéria</label><input type="text" id="profNome" required placeholder="Nome do professor..."></div>
+        <div class="form-group"><label>Ocorrência / Observação</label><input type="text" id="profObs" required placeholder="Detalhes..."></div>
+        <button type="submit" class="btn-submit">Registar Ocorrência</button>
+      </form>
+      <table>
+        <thead><tr><th>Professor</th><th>Observação</th><th>Ações</th></tr></thead>
+        <tbody id="tabelaProf"></tbody>
+      </table>
+    </section>
 
-      <h3 style="font-size: 14px; color: #1b4332; margin-top: 24px;">🗺️ Grade Oficial de Atividades por Sala (7º a 9º ano)</h3>
-      <div style="overflow-x: auto;">
-        <table style="font-size: 11px;">
-          <thead>
-            <tr><th>Bloco</th><th>Andar</th><th>Série</th><th>Nº</th><th>2ª Feira</th><th>3ª Feira</th><th>4ª Feira</th><th>5ª Feira</th><th>6ª Feira</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>1</td><td>1</td><td>7ºB</td><td>3</td><td>AEE LINGUAGUENS[cite: 6]</td><td>AEE[cite: 6]</td><td>AEE LINGUAGUENS[cite: 6]</td><td>AEE CIÊNCIAS[cite: 6]</td><td>AEE CIÊNCIAS[cite: 6]</td></tr>
-            <tr><td>1</td><td>1</td><td>7ºD</td><td>4</td><td>AEE CIÊNCIAS[cite: 6]</td><td>AEE[cite: 6]</td><td>AEE CIÊNCIAS[cite: 6]</td><td>AEE LING. E HUMANIDADES[cite: 6]</td><td>AEE[cite: 6]</td></tr>
-            <tr><td>1</td><td>1</td><td>7ºG</td><td>7</td><td>AEE[cite: 6]</td><td>AEE[cite: 6]</td><td>AEE[cite: 6]</td><td>—</td><td>PROVA[cite: 6]</td></tr>
-            <tr><td>1</td><td>1</td><td>7ºF</td><td>8</td><td>AEE HUMANIDADES[cite: 6]</td><td>AEE[cite: 6]</td><td>AEE HUMANIDADES[cite: 6]</td><td>—</td><td>PROVA[cite: 6]</td></tr>
-            <tr><td>1</td><td>1</td><td>MAKER</td><td>9</td><td>ROBÓTICA 6º-9º[cite: 6]</td><td>ROBÓTICA 6º-9º[cite: 6]</td><td>ROBÓTICA 6º-9º[cite: 6]</td><td>ROBÓTICA 6º-9º[cite: 6]</td><td>ROBÓTICA 6º-9º[cite: 6]</td></tr>
-            <tr><td>1</td><td>1</td><td>7ºE</td><td>10</td><td>AEE EXATAS[cite: 6]</td><td>AEE[cite: 6]</td><td>AEE EXATAS[cite: 6]</td><td>AEE EXATAS[cite: 6]</td><td>AEE EXATAS[cite: 6]</td></tr>
-            <tr><td>1</td><td>2</td><td>7ºH</td><td>11</td><td>—</td><td>NIV. ING.[cite: 6]</td><td>NIV. ING.[cite: 6]</td><td>—</td><td>FISCAIS[cite: 6]</td></tr>
-            <tr><td>1</td><td>2</td><td>7ºA</td><td>13</td><td>NIV. MAT[cite: 6]</td><td>NIV. MAT[cite: 6]</td><td>NIV. MAT[cite: 6]</td><td>ARENÃO LP/ING (14h15)[cite: 6]</td><td>NIV. MAT[cite: 6]</td></tr>
-            <tr><td>1</td><td>2</td><td>7ºC</td><td>14</td><td>NIV. LP / DANÇA (16h10)[cite: 6]</td><td>NIV. LP[cite: 6]</td><td>DANÇA (16h10)[cite: 6]</td><td>—</td><td>ARENÃO LP/ING[cite: 6]</td></tr>
-            <tr><td>1</td><td>2</td><td>SALA</td><td>15</td><td>—</td><td>—</td><td>—</td><td>—</td><td>FEDERADOS[cite: 6]</td></tr>
-            <tr><td>1</td><td>2</td><td>8ºG</td><td>16</td><td>—</td><td>—</td><td>—</td><td>—</td><td>PROVA[cite: 6]</td></tr>
-            <tr><td>1</td><td>2</td><td>SALA</td><td>17</td><td>TEATRO (16h10)[cite: 6]</td><td>—</td><td>TEATRO (14h15)[cite: 6]</td><td>MEDITAÇÃO / TEATRO[cite: 6]</td><td>MEDITAÇÃO[cite: 6]</td></tr>
-            <tr><td>1</td><td>2</td><td>TATAME</td><td>18</td><td>JUDÔ/JIU-JITSU[cite: 6]</td><td>—</td><td>FUNCIONAL[cite: 6]</td><td>JUDÔ[cite: 6]</td><td>JIU-JITSU[cite: 6]</td></tr>
-            <tr><td>1</td><td>2</td><td>8ºH</td><td>19</td><td>ED. FINANC.[cite: 6]</td><td>EAGLE[cite: 6]</td><td>ARENAMUN[cite: 6]</td><td>EAGLE[cite: 6]</td><td>PROVA[cite: 6]</td></tr>
-            <tr><td>4</td><td>1</td><td>8ºE</td><td>32</td><td>PL. RED. 7º[cite: 6]</td><td>PL. RED. 6º[cite: 6]</td><td>PL. RED. 9º[cite: 6]</td><td>—</td><td>PROVA[cite: 6]</td></tr>
-            <tr><td>4</td><td>1</td><td>8ºF</td><td>33</td><td>PL. RED. 8º[cite: 6]</td><td>—</td><td>—</td><td>—</td><td>PROVA[cite: 6]</td></tr>
-            <tr><td>2</td><td>T</td><td>8ºD</td><td>20</td><td>S. ESTUDOS (6º/7º)[cite: 6]</td><td>S. ESTUDOS (6º/7º)[cite: 6]</td><td>S. ESTUDOS (6º/7º)[cite: 6]</td><td>PROVA[cite: 6]</td><td>PROVA[cite: 6]</td></tr>
-            <tr><td>2</td><td>T</td><td>8ºC</td><td>21</td><td>S. ESTUDOS (8º/9º)[cite: 6]</td><td>S. ESTUDOS (8º/9º)[cite: 6]</td><td>S. ESTUDOS (8º/9º)[cite: 6]</td><td>S. ESTUDOS[cite: 6]</td><td>PROVA[cite: 6]</td></tr>
-            <tr><td>2</td><td>T</td><td>8ºB</td><td>22</td><td>ARENÃO Física[cite: 6]</td><td>AGRO – TURMA A[cite: 6]</td><td>—</td><td>FISCAIS[cite: 6]</td><td>PROVA[cite: 6]</td></tr>
-            <tr><td>2</td><td>T</td><td>8ºA</td><td>23</td><td>ARENÃO Geo[cite: 6]</td><td>AGRO – TURMA B[cite: 6]</td><td>—</td><td>FEDERADOS[cite: 6]</td><td>PROVA[cite: 6]</td></tr>
-            <tr><td>2</td><td>1</td><td>9ºA</td><td>24</td><td>ARENÃO Debate[cite: 6]</td><td>—</td><td>ARENÃO Mat[cite: 6]</td><td>PROVA[cite: 6]</td><td>PROVA[cite: 6]</td></tr>
-            <tr><td>2</td><td>1</td><td>9ºB</td><td>25</td><td>—</td><td>ARENÃO Mat 6º/7º[cite: 6]</td><td>ARENÃO Bio[cite: 6]</td><td>PROVA[cite: 6]</td><td>PROVA[cite: 6]</td></tr>
-            <tr><td>2</td><td>1</td><td>9ºC</td><td>26</td><td>—</td><td>ARENÃO Mat 8º/9º[cite: 6]</td><td>ARENÃO Qui[cite: 6]</td><td>PROVA[cite: 6]</td><td>PROVA
+    <!-- 4. INSPETORES -->
+    <section id="sec-insp" class="secao">
+      <h2 style="color: #1b4332; font-size: 16px; margin-top: 0;">Orientações de Inspetores</h2>
+      <form onsubmit="salvarInsp(event)">
+        <div class="form-group"><label>Nome do Inspetor</label><input type="text" id="inspNome" required placeholder="Nome..."></div>
+        <div class="form-group"><label>Feedback / Orientação</label><textarea id="inspDesc" rows="2" required placeholder="Relato..."></textarea></div>
+        <button type="submit" class="btn-submit">Guardar Orientação</button>
+      </form>
+      <table>
+        <thead><tr><th>Inspetor</th><th>Feedback</th><th>Ações</th></tr></thead>
+        <tbody id="tabelaInsp"></tbody>
+      </table>
+    </section>
+
+    <!-- 5. ATENDIMENTOS -->
+    <section id="sec-atd" class="secao">
+      <h2 style="color: #1b4332; font-size: 16px; margin-top: 0;">Registo de Atendimentos</h2>
+      <form onsubmit="salvarAtd(event)">
+        <div class="form-group"><label>Nome do Aluno</label><input type="text" id="atdAluno" required placeholder="Aluno..."></div>
+        <div class="form-group"><label>Turma / Responsáveis</label><input type="text" id="atdTurma" required placeholder="Turma e responsáveis..."></div>
+        <div class="form-group"><label>Relato</label><textarea id="atdRelato" rows="2" required placeholder="Relato..."></textarea></div>
+        <button type="submit" class="btn-submit">Guardar Atendimento</button>
+      </form>
+      <table>
+        <thead><tr><th>Aluno</th><th>Turma / Pais</th><th>Relato</th><th>Ações</th></tr></thead>
+        <tbody id="tabelaAtd"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script>
+    function mudarAba(id) {
+      var secoes = document.getElementsByClassName('secao');
+      for (var i = 0; i < secoes.length; i++) { secoes[i].classList.remove('ativa'); }
+
+      var botoes = document.getElementsByTagName('nav')[0].getElementsByTagName('button');
+      for (var i = 0; i < botoes.length; i++) { botoes[i].classList.remove('ativo'); }
+
+      document.getElementById('sec-' + id).classList.add('ativa');
+      document.getElementById('btn-' + id).classList.add('ativo');
+    }
+
+    var dbAtrasos = JSON.parse(localStorage.getItem('arena_atrasos') || '[]');
+    var dbSala = JSON.parse(localStorage.getItem('arena_sala') || '[]');
+    var dbProf = JSON.parse(localStorage.getItem('arena_prof') || '[]');
+    var dbInsp = JSON.parse(localStorage.getItem('arena_insp') || '[]');
+    var dbAtd = JSON.parse(localStorage.getItem('arena_atd') || '[]');
+
+    function salvarAtraso(e) {
+      e.preventDefault();
+      dbAtrasos.unshift({
+        id: Date.now(),
+        atv: document.getElementById('atv').value,
+        aluno: document.getElementById('aluno').value.toUpperCase(),
+        turma: document.getElementById('turma').value,
+        motivo: document.getElementById('motivo').value,
+        lancado: document.getElementById('lancado').checked
+      });
+      localStorage.setItem('arena_atrasos', JSON.stringify(dbAtrasos));
+      e.target.reset();
+      renderizarTudo();
+    }
+
+    function toggleLancado(id) {
+      for (var i = 0; i < dbAtrasos.length; i++) {
+        if (dbAtrasos[i].id === id) {
+          dbAtrasos[i].lancado = !dbAtrasos[i].lancado;
+          break;
+        }
+      }
+      localStorage.setItem('arena_atrasos', JSON.stringify(dbAtrasos));
+      renderizarTudo();
+    }
+
+    function apagarAtraso(id) {
+      dbAtrasos = dbAtrasos.filter(function(x) { return x.id !== id; });
+      localStorage.setItem('arena_atrasos', JSON.stringify(dbAtrasos));
+      renderizarTudo();
+    }
+
+    function salvarSala(e) {
+      e.preventDefault();
+      dbSala.unshift({ id: Date.now(), aluno: document.getElementById('salaAluno').value.toUpperCase(), turma: document.getElementById('salaTurma').value, obs: document.getElementById('salaObs').value });
+      localStorage.setItem('arena_sala', JSON.stringify(dbSala));
+      e.target.reset();
+      renderizarTudo();
+    }
+    function apagarSala(
