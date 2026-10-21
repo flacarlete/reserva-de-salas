@@ -31,7 +31,7 @@
   </header>
 
   <main>
-    <!-- 1. CONSULTAR SALAS DISPONÍVEIS (LIVRES) - LOGO NO TOPO -->
+    <!-- 1. CONSULTAR SALAS DISPONÍVEIS -->
     <div class="card-box" style="border: 2px solid #2b8a3e; background: #f4fbf7;">
       <h3 style="margin-top:0; font-size:15px; color:#1b4332;">🔍 1. Consultar Salas Disponíveis (Livres)</h3>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; align-items: flex-end;">
@@ -43,22 +43,14 @@
       <div id="resultadoConsulta" style="margin-top: 12px; font-size: 13px; color: #1b4332; background: #e6f4ea; padding: 12px; border-radius: 4px; display: none; line-height: 1.5;"></div>
     </div>
 
-    <!-- 2. QUADRO OFICIAL DE SALAS E ATIVIDADES (7º A 9º ANO) -->
+    <!-- 2. QUADRO OFICIAL DE SALAS E ATIVIDADES -->
     <div class="card-box" style="border: 2px solid #1b4332;">
       <h3 style="margin-top:0; font-size:15px; color:#1b4332;">🗺️ 2. Quadro Oficial de Salas e Atividades (7º a 9º ano)</h3>
       <div style="overflow-x: auto; max-height: 400px;">
         <table id="tabelaQuadroOficial">
           <thead>
             <tr>
-              <th>Bloco</th>
-              <th>Andar</th>
-              <th>Série</th>
-              <th>Nº</th>
-              <th>2ª Feira</th>
-              <th>3ª Feira</th>
-              <th>4ª Feira</th>
-              <th>5ª Feira</th>
-              <th>6ª Feira</th>
+              <th>Bloco</th><th>Andar</th><th>Série</th><th>Nº</th><th>2ª Feira</th><th>3ª Feira</th><th>4ª Feira</th><th>5ª Feira</th><th>6ª Feira</th>
             </tr>
           </thead>
           <tbody>
@@ -104,4 +96,160 @@
     <div class="card-box">
       <h3 style="margin-top:0; font-size:14px; color:#1b4332;">➕ 3. Registar Nova Reserva</h3>
       <form onsubmit="salvarReserva(event)">
-        <div style="display: grid; grid-template
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px;">
+          <div class="form-group"><label>Data</label><input type="date" id="resData" required></div>
+          <div class="form-group"><label>Horário</label><input type="text" id="resHorario" required placeholder="Ex: 14h15 – 15h45"></div>
+          <div class="form-group"><label>Sala / Espaço</label><input type="text" id="resSala" required placeholder="Ex: Sala 3 ou Tatame"></div>
+          <div class="form-group"><label>Responsável</label><input type="text" id="resResp" required placeholder="Nome..."></div>
+          <div class="form-group"><label>Atividade</label><input type="text" id="resAtv" required placeholder="Atividade..."></div>
+        </div>
+        <button type="submit" class="btn-submit" style="margin-top: 6px;">Guardar Reserva</button>
+      </form>
+    </div>
+
+    <!-- 4. TABELA GERAL DE RESERVAS -->
+    <div class="card-box">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin:0; font-size:14px; color:#1b4332;">📋 4. Tabela Geral de Reservas (Sincronizada)</h3>
+        <div>
+          <button onclick="limparPassadas()" style="background:#d97706; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; font-size:11px; margin-right:5px;">Limpar Passadas</button>
+          <button onclick="zerarReservas()" style="background:#dc2626; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; font-size:11px;">Zerar Reservas</button>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr><th>Data</th><th>Horário</th><th>Sala</th><th>Responsável</th><th>Atividade</th><th>Ações</th></tr>
+        </thead>
+        <tbody id="tabelaReservas"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <script>
+    var dbReservas = JSON.parse(localStorage.getItem('arena_reservas_salas_indep') || '[]');
+
+    function salvarReserva(e) {
+      e.preventDefault();
+      dbReservas.unshift({
+        id: Date.now(),
+        data: document.getElementById('resData').value,
+        horario: document.getElementById('resHorario').value,
+        sala: document.getElementById('resSala').value,
+        resp: document.getElementById('resResp').value,
+        atividade: document.getElementById('resAtv').value
+      });
+      localStorage.setItem('arena_reservas_salas_indep', JSON.stringify(dbReservas));
+      e.target.reset();
+      renderizarReservas();
+      alert('Reserva guardada com sucesso!');
+    }
+
+    function apagarReserva(id) {
+      if (confirm('Deseja apagar esta reserva?')) {
+        dbReservas = dbReservas.filter(function(x) { return x.id !== id; });
+        localStorage.setItem('arena_reservas_salas_indep', JSON.stringify(dbReservas));
+        renderizarReservas();
+      }
+    }
+
+    function zerarReservas() {
+      if (confirm('Tem certeza que deseja apagar todas as reservas?')) {
+        dbReservas = [];
+        localStorage.removeItem('arena_reservas_salas_indep');
+        renderizarReservas();
+      }
+    }
+
+    function limparPassadas() {
+      var hoje = new Date().toISOString().split('T')[0];
+      dbReservas = dbReservas.filter(function(x) { return x.data >= hoje; });
+      localStorage.setItem('arena_reservas_salas_indep', JSON.stringify(dbReservas));
+      renderizarReservas();
+      alert('Reservas passadas limpas com sucesso!');
+    }
+
+    function consultarSalas() {
+      var dataStr = document.getElementById('conData').value;
+      var resDiv = document.getElementById('resultadoConsulta');
+      resDiv.style.display = 'block';
+
+      if (!dataStr) {
+        resDiv.innerText = '⚠️ Por favor, selecione uma data para consultar.';
+        return;
+      }
+
+      var partes = dataStr.split('-');
+      var ano = parseInt(partes[0], 10);
+      var mes = parseInt(partes[1], 10) - 1;
+      var dia = parseInt(partes[2], 10);
+      var dataObj = new Date(ano, mes, dia);
+      var diaSemana = dataObj.getDay();
+
+      if (diaSemana === 0 || diaSemana === 6) {
+        resDiv.innerHTML = '📅 A data selecionada (' + dataStr + ') cai num fim de semana. Não há atividades regulares na grade fixa.';
+        return;
+      }
+
+      var colIndex = diaSemana + 3; 
+
+      var ocupadasSet = {};
+      var linhas = document.querySelectorAll('#tabelaQuadroOficial tbody tr');
+      for (var i = 0; i < linhas.length; i++) {
+        var cols = linhas[i].querySelectorAll('td');
+        if (cols.length > colIndex) {
+          var salaNum = cols[3].innerText.trim();
+          var atividade = cols[colIndex].innerText.trim();
+          if (atividade && atividade !== '—') {
+            ocupadasSet['Sala ' + salaNum] = true;
+            ocupadasSet[salaNum] = true;
+          }
+        }
+      }
+
+      dbReservas.filter(function(x) { return x.data === dataStr; }).forEach(function(x) {
+        ocupadasSet['Sala ' + x.sala] = true;
+        ocupadasSet[x.sala] = true;
+      });
+
+      var todasSalasPossiveis = ['1', '2', '3', '4', '5', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', 'Tatame', 'Pátio'];
+      
+      var livres = [];
+      for (var j = 0; j < todasSalasPossiveis.length; j++) {
+        var item = todasSalasPossiveis[j];
+        var nomeFormatado = (item === 'Tatame' || item === 'Pátio') ? item : ('Sala ' + item);
+        
+        if (!ocupadasSet[item] && !ocupadasSet['Sala ' + item]) {
+          livres.push(nomeFormatado);
+        }
+      }
+
+      if (livres.length === 0) {
+        resDiv.innerHTML = '⚠️ Para o dia <strong>' + dataStr + '</strong>, todas as salas encontram-se ocupadas.';
+      } else {
+        resDiv.innerHTML = '✅ <strong>Salas livres / disponíveis para o dia ' + dataStr + ':</strong><br><br>' + livres.join(', ');
+      }
+    }
+
+    function renderizarReservas() {
+      var tb = document.getElementById('tabelaReservas');
+      if (!tb) return;
+      tb.innerHTML = '';
+      if (dbReservas.length === 0) {
+        tb.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#6b7280; padding:12px;">Nenhuma reserva registada até o momento.</td></tr>';
+        return;
+      }
+      for (var i = 0; i < dbReservas.length; i++) {
+        var r = dbReservas[i];
+        tb.innerHTML += '<tr><td>' + r.data + '</td><td>' + r.horario + '</td><td><strong>' + r.sala + '</strong></td><td>' + r.resp + '</td><td>' + r.atividade + '</td><td><button onclick="apagarReserva(' + r.id + ')" style="color:red; background:none; border:none; cursor:pointer; font-weight:bold;">Apagar</button></td></tr>';
+      }
+    }
+
+    window.onload = function() {
+      var hoje = new Date().toISOString().split('T')[0];
+      if(document.getElementById('resData')) document.getElementById('resData').value = hoje;
+      if(document.getElementById('conData')) document.getElementById('conData').value = hoje;
+      renderizarReservas();
+    };
+  </script>
+</body>
+</html>
