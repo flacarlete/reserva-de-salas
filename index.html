@@ -31,10 +31,22 @@
   </header>
 
   <main>
-    <!-- 1. QUADRO OFICIAL DE SALAS E ATIVIDADES (7º A 9º ANO) -->
+    <!-- 1. CONSULTAR SALAS DISPONÍVEIS (LIVRES) - LOGO NO TOPO -->
+    <div class="card-box" style="border: 2px solid #2b8a3e; background: #f4fbf7;">
+      <h3 style="margin-top:0; font-size:15px; color:#1b4332;">🔍 1. Consultar Salas Disponíveis (Livres)</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; align-items: flex-end;">
+        <div class="form-group"><label>Data Desejada</label><input type="date" id="conData"></div>
+        <div class="form-group"><label>Horário Início</label><input type="time" id="conInicio" value="14:00"></div>
+        <div class="form-group"><label>Horário Término</label><input type="time" id="conFim" value="18:25"></div>
+        <button type="button" class="btn-submit" onclick="consultarSalas()">Ver Salas Livres</button>
+      </div>
+      <div id="resultadoConsulta" style="margin-top: 12px; font-size: 13px; color: #1b4332; background: #e6f4ea; padding: 12px; border-radius: 4px; display: none; line-height: 1.5;"></div>
+    </div>
+
+    <!-- 2. QUADRO OFICIAL DE SALAS E ATIVIDADES (7º A 9º ANO) -->
     <div class="card-box" style="border: 2px solid #1b4332;">
-      <h3 style="margin-top:0; font-size:15px; color:#1b4332;">🗺️ Quadro Oficial de Salas e Atividades (7º a 9º ano)</h3>
-      <div style="overflow-x: auto; max-height: 450px;">
+      <h3 style="margin-top:0; font-size:15px; color:#1b4332;">🗺️ 2. Quadro Oficial de Salas e Atividades (7º a 9º ano)</h3>
+      <div style="overflow-x: auto; max-height: 400px;">
         <table id="tabelaQuadroOficial">
           <thead>
             <tr>
@@ -73,4 +85,23 @@
             <tr><td>2</td><td>T</td><td>8ºD</td><td>20</td><td>S. ESTUDOS (6º/7º)</td><td>S. ESTUDOS (6º/7º)</td><td>S. ESTUDOS (6º/7º)</td><td>PROVA</td><td>PROVA</td></tr>
             <tr><td>2</td><td>T</td><td>8ºC</td><td>21</td><td>S. ESTUDOS (8º/9º)</td><td>S. ESTUDOS (8º/9º)</td><td>S. ESTUDOS (8º/9º)</td><td>S. ESTUDOS</td><td>PROVA</td></tr>
             <tr><td>2</td><td>T</td><td>8ºB</td><td>22</td><td>ARENÃO Física (14h15 – 15h45)</td><td>AGRO – TURMA A (16h10 – 16h55)</td><td>—</td><td>FISCAIS</td><td>PROVA</td></tr>
-            <tr><td>2</td><td>T</td><td>8ºA</td><td>23</td><td>ARENÃO Geo (15h – 16h
+            <tr><td>2</td><td>T</td><td>8ºA</td><td>23</td><td>ARENÃO Geo (15h – 16h55)</td><td>AGRO – TURMA B (16h55 – 17h40)</td><td>—</td><td>FEDERADOS</td><td>PROVA</td></tr>
+            <tr><td>2</td><td>1</td><td>9ºA</td><td>24</td><td>ARENÃO Debate (16h10 – 17h40)</td><td>—</td><td>ARENÃO Mat (16h10 – 18h25)</td><td>PROVA</td><td>PROVA</td></tr>
+            <tr><td>2</td><td>1</td><td>9ºB</td><td>25</td><td>—</td><td>ARENÃO Mat 6º/7º (14h15 – 15h45)</td><td>ARENÃO Bio (14h15 – 16h55)</td><td>PROVA</td><td>PROVA</td></tr>
+            <tr><td>2</td><td>1</td><td>9ºC</td><td>26</td><td>—</td><td>ARENÃO Mat 8º/9º(14h15 – 15h45)</td><td>ARENÃO Qui (14h15 – 15h45)</td><td>PROVA</td><td>PROVA</td></tr>
+            <tr><td>2</td><td>1</td><td>9ºD</td><td>27</td><td>—</td><td>—</td><td>ARENÃO Hist (16h55 – 18h25)</td><td>PROVA</td><td>PROVA</td></tr>
+            <tr><td>2</td><td>2</td><td>9ºE</td><td>28</td><td>CAMBRIDGE</td><td>—</td><td>CAMBRIDGE</td><td>PROVA</td><td>PROVA</td></tr>
+            <tr><td>2</td><td>2</td><td>9ºF</td><td>29</td><td>CAMBRIDGE</td><td>—</td><td>CAMBRIDGE</td><td>PROVA</td><td>PROVA</td></tr>
+            <tr><td>2</td><td>2</td><td>9ºG</td><td>30</td><td>CAMBRIDGE</td><td>—</td><td>CAMBRIDGE</td><td>PROVA</td><td>PROVA</td></tr>
+            <tr><td>2</td><td>2</td><td>9ºH</td><td>31</td><td>—</td><td>—</td><td>—</td><td>PROVA</td><td>PROVA</td></tr>
+            <tr><td>Pátio</td><td>—</td><td>PÁTIO</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>S. ESTUDOS</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 3. REGISTAR NOVA RESERVA -->
+    <div class="card-box">
+      <h3 style="margin-top:0; font-size:14px; color:#1b4332;">➕ 3. Registar Nova Reserva</h3>
+      <form onsubmit="salvarReserva(event)">
+        <div style="display: grid; grid-template
