@@ -13,6 +13,7 @@
     .form-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 4px; color: #374151; }
     .form-group input, .form-group select { width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; box-sizing: border-box; font-size: 13px; }
     button.btn-submit { background-color: #1b4332; color: white; border: none; padding: 10px 16px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 13px; }
+    button.btn-submit:hover { background-color: #2d6a4f; }
     table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 11px; }
     th, td { border: 1px solid #e5e7eb; padding: 6px; text-align: left; }
     th { background-color: #1b4332; color: white; font-weight: bold; }
@@ -41,7 +42,7 @@
         <div class="form-group"><label>Data Desejada</label><input type="date" id="conData"></div>
         <div class="form-group"><label>Horário Início</label><input type="time" id="conInicio" value="14:00"></div>
         <div class="form-group"><label>Horário Término</label><input type="time" id="conFim" value="18:25"></div>
-        <button type="button" class="btn-submit" onclick="consultarSalas()">Ver Salas Livres</button>
+        <button type="button" id="btnConsultar" class="btn-submit">Ver Salas Livres</button>
       </div>
       <div id="resultadoConsulta" style="margin-top: 12px; font-size: 13px; color: #1b4332; background: #e6f4ea; padding: 12px; border-radius: 4px; display: none; line-height: 1.5; border: 1px solid #a3d9a5;"></div>
     </div>
@@ -49,7 +50,7 @@
     <!-- 2. REGISTAR / EDITAR RESERVA -->
     <div class="card-box" id="blocoReserva">
       <h3 style="margin-top:0; font-size:14px; color:#1b4332;" id="tituloFormReserva">➕ 2. Registar Nova Reserva</h3>
-      <form onsubmit="salvarReserva(event)">
+      <form id="formReserva">
         <input type="hidden" id="editId" value="">
         <input type="hidden" id="resData">
         <input type="hidden" id="resHorario">
@@ -118,8 +119,8 @@
       <div style="display: flex; justify-content: space-between; align-items: center;">
         <h3 style="margin:0; font-size:14px; color:#1b4332;">📋 4. Tabela Geral de Reservas (Registo Ativo)</h3>
         <div>
-          <button onclick="limparPassadas()" style="background:#d97706; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; font-size:11px; margin-right:5px;">Limpar Passadas</button>
-          <button onclick="zerarReservas()" style="background:#dc2626; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; font-size:11px;">Zerar Reservas</button>
+          <button type="button" id="btnLimparPassadas" style="background:#d97706; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; font-size:11px; margin-right:5px;">Limpar Passadas</button>
+          <button type="button" id="btnZerar" style="background:#dc2626; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; font-size:11px;">Zerar Reservas</button>
         </div>
       </div>
       <table>
@@ -133,6 +134,11 @@
 
   <script>
     var dbReservas = JSON.parse(localStorage.getItem('arena_reservas_salas_indep') || '[]');
+
+    document.getElementById('btnConsultar').addEventListener('click', consultarSalas);
+    document.getElementById('formReserva').addEventListener('submit', salvarReserva);
+    document.getElementById('btnLimparPassadas').addEventListener('click', limparPassadas);
+    document.getElementById('btnZerar').addEventListener('click', zerarReservas);
 
     function salvarReserva(e) {
       e.preventDefault();
@@ -204,7 +210,7 @@
 
     function apagarReserva(id) {
       if (confirm('Deseja apagar esta reserva?')) {
-        dbReservas = dbReservas.filter(function(x) { return x.id !== id; });
+        dbReservas = dbReservas.filter(function(x) { return x.id != id; });
         localStorage.setItem('arena_reservas_salas_indep', JSON.stringify(dbReservas));
         renderizarTudo();
       }
@@ -224,26 +230,6 @@
       localStorage.setItem('arena_reservas_salas_indep', JSON.stringify(dbReservas));
       renderizarTudo();
       alert('Reservas passadas limpas com sucesso!');
-    }
-
-    function prosseguirParaReserva(dataDesejada, horarioInicio, horarioFim) {
-      var checkboxes = document.querySelectorAll('.sala-checkbox:checked');
-      if (checkboxes.length === 0) {
-        alert('Por favor, selecione pelo menos uma sala nos quadradinhos.');
-        return;
-      }
-      var salasEscolhidas = [];
-      for (var i = 0; i < checkboxes.length; i++) {
-        salasEscolhidas.push(checkboxes[i].value);
-      }
-      document.getElementById('editId').value = '';
-      document.getElementById('tituloFormReserva').innerText = '➕ 2. Registar Nova Reserva';
-      document.getElementById('btnSalvarReserva').innerText = 'Efetuar Reserva';
-
-      document.getElementById('resSala').value = salasEscolhidas.join(', ');
-      document.getElementById('resData').value = dataDesejada;
-      document.getElementById('resHorario').value = horarioInicio + ' – ' + horarioFim;
-      document.getElementById('blocoReserva').scrollIntoView({ behavior: 'smooth' });
     }
 
     function consultarSalas() {
@@ -270,7 +256,6 @@
       var colIndex = diaSemana + 3; 
       var ocupadasSet = {};
       var linhas = document.querySelectorAll('#tabelaQuadroOficial tbody tr');
-      
       var editIdAtual = document.getElementById('editId').value;
 
       for (var i = 0; i < linhas.length; i++) {
@@ -307,13 +292,33 @@
       if (livres.length === 0) {
         resDiv.innerHTML = '⚠️ Para o dia <strong>' + dataStr + '</strong>, todas as salas encontram-se ocupadas.';
       } else {
-        var html = '✅ <strong>Salas livres / disponíveis para o dia ' + dataStr + ' (' + inicioStr + ' às ' + fimStr + '):</strong><br><div style="margin: 8px 0;">';
+        var html = '✅ <strong>Salas livres / disponíveis para o dia ' + dataStr + ' (' + inicioStr + ' às ' + fimStr + '):</strong><br><div style="margin: 8px 0;" id="listaCheckboxes">';
         for (var k = 0; k < livres.length; k++) {
           var sNome = (livres[k] === 'Tatame' || livres[k] === 'Pátio') ? livres[k] : ('Sala ' + livres[k]);
           html += '<label class="sala-checkbox-label"><input type="checkbox" class="sala-checkbox" value="' + sNome + '"> ' + sNome + '</label> ';
         }
-        html += '</div><button type="button" class="btn-submit" onclick="prosseguirParaReserva(\'' + dataStr + '\', \'' + inicioStr + '\', \'' + fimStr + '\')">➡️ Prosseguir para Reserva com as Salas Selecionadas</button>';
+        html += '</div><button type="button" id="btnProsseguir" class="btn-submit">➡️ Prosseguir para Reserva com as Salas Selecionadas</button>';
         resDiv.innerHTML = html;
+
+        document.getElementById('btnProsseguir').addEventListener('click', function() {
+          var checkboxes = document.querySelectorAll('.sala-checkbox:checked');
+          if (checkboxes.length === 0) {
+            alert('Por favor, selecione pelo menos uma sala nos quadradinhos.');
+            return;
+          }
+          var salasEscolhidas = [];
+          for (var c = 0; c < checkboxes.length; c++) {
+            salasEscolhidas.push(checkboxes[c].value);
+          }
+          document.getElementById('editId').value = '';
+          document.getElementById('tituloFormReserva').innerText = '➕ 2. Registar Nova Reserva';
+          document.getElementById('btnSalvarReserva').innerText = 'Efetuar Reserva';
+
+          document.getElementById('resSala').value = salasEscolhidas.join(', ');
+          document.getElementById('resData').value = dataStr;
+          document.getElementById('resHorario').value = inicioStr + ' – ' + fimStr;
+          document.getElementById('blocoReserva').scrollIntoView({ behavior: 'smooth' });
+        });
       }
     }
 
@@ -359,7 +364,7 @@
       }
       for (var i = 0; i < dbReservas.length; i++) {
         var r = dbReservas[i];
-        tb.innerHTML += '<tr><td>' + r.data + '</td><td>' + r.horario + '</td><td><strong>' + r.sala + '</strong></td><td>' + r.resp + '</td><td>' + r.atividade + '</td><td><button onclick="editarReserva(' + r.id + ')" style="color:#2563eb; background:none; border:none; cursor:pointer; font-weight:bold; margin-right:8px;">Editar</button><button onclick="apagarReserva(' + r.id + ')" style="color:red; background:none; border:none; cursor:pointer; font-weight:bold;">Apagar</button></td></tr>';
+        tb.innerHTML += '<tr><td>' + r.data + '</td><td>' + r.horario + '</td><td><strong>' + r.sala + '</strong></td><td>' + r.resp + '</td><td>' + r.atividade + '</td><td><button type="button" onclick="editarReserva(' + r.id + ')" style="color:#2563eb; background:none; border:none; cursor:pointer; font-weight:bold; margin-right:8px;">Editar</button><button type="button" onclick="apagarReserva(' + r.id + ')" style="color:red; background:none; border:none; cursor:pointer; font-weight:bold;">Apagar</button></td></tr>';
       }
     }
 
